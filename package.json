@@ -1,0 +1,19 @@
+{
+  "name": "cs-546-final-project",
+  "version": "1.0.0",
+  "description": "letterboxd for music",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robertfeliciano/CS546-final-project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/robertfeliciano/CS546-final-project/issues"
+  },
+  "homepage": "https://github.com/robertfeliciano/CS546-final-project#readme"
+}

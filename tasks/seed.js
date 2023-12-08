@@ -108,11 +108,25 @@ const main = async () => {
     );
   }
 
+  console.log("Seeding followers...");
+  for (let i = 1; i < userIds.length; i++){
+    let _ = await usersData.updateFollowers(userIds[i], userIds[i-1]);
+  }
 
+  console.log("Seeding following...");
+  for (let i  = 0; i < userIds.length - 1; i++) {
+    let _ = await usersData.updateFollowers(userIds[i], userIds[i+1]);
+  }
+
+  console.log("Seeding likes...");
+  for (let post_id of post_ids) {
+    const user_id = userIds[Math.floor(Math.random() * userIds.length)];
+    let _ = await postsData.likePost(post_id, user_id);
+  }
 
   await closeConnection();
   console.log('Done!');
-  console.log(`Completed seeding in ${(Date.now() - start) / 1000}s`);
+  console.log(`Finished seeding in ${(Date.now() - start) / 1000}s`);
 };
 
 main();

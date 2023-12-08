@@ -24,7 +24,6 @@ export const insertMusic = async (
     genre: genre,
     total_stars: 0,
     total_ratings: 0,
-    avg_rating: 0.0,
     posts: [],
     songs: songs // songs array is only empty if type === 'album'
   };
@@ -34,9 +33,17 @@ export const insertMusic = async (
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
     throw `Could not add music to database!`;
 
-  const music_id = insertInfo.insertedId.toString();
-  const new_music = await getMusicById(music_id);
-  return new_music;
+  if (type === 'song') {
+    const music_id = insertInfo.insertedId.toString();
+    const new_music = await getMusicById("song", music_id);
+    return new_music;
+  }
+  else { // type is album
+    const music_id = insertInfo.insertedId.toString();
+    const new_music = await getMusicById("album", music_id);
+    return new_music;
+  }
+
 }
 
 /**

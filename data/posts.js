@@ -41,7 +41,14 @@ export const createPost = async (
     const musicCollection = await music();
     let update_song_info = await musicCollection.findOneAndUpdate(
         {_id: music_id},
-        {$push: {posts: insertInfo.insertedId}}
+        {
+            $push: {posts: insertInfo.insertedId},
+            $inc:
+                {
+                    total_stars: rating,
+                    total_rankings: 1
+                }
+        }
     );
     if (!update_song_info)
         throw `Could not add post to ${user_id}'s post collection!`;

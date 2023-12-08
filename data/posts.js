@@ -2,6 +2,7 @@ import {posts, users, songs} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import * as validation from '../validation.js';
 
+
 export const createPost = async (
     song_id,
     rating,
@@ -35,6 +36,10 @@ export const createPost = async (
     return new_post;
 }
 
+/**
+ * get all posts on the db
+ * @returns {Promise<*>}
+ */
 export const getAllPosts = async () => {
     const postsCollection = await posts();
     
@@ -49,6 +54,12 @@ export const getAllPosts = async () => {
     return postList;
 }
 
+/**
+ * get a post by an id
+ * this will be called when a user clicks on a post to expand it
+ * @param postId
+ * @returns {Promise<*>}
+ */
 export const getPostById = async (postId) => {
     
     //input validation
@@ -63,81 +74,74 @@ export const getPostById = async (postId) => {
     return post;
 }
 
-export const remove = async (postId) => {
+/**
+ * delete a post from the db
+ * this post will have to be removed from the user's posts array
+ * and the array of any song/album it was posted about
+ * @param postId
+ * @returns {Promise<{deleted: boolean}>}
+ */
+export const removePost = async (postId) => {
 
     //input validation 
 
     const postsCollection = await posts();
     let post = await getPostById(postId);
-    let post_content = post['content'];
-    
-    const deletionInfo = await postsCollection.findOneAndDelete({
-        _id: new ObjectId(postId)
-    })
-    
-    if (!deletionInfo) {
-        throw [404, `Could not delete post with id of ${postId}`];
-    }
-
-    // get the user that made this post from the DB
-    const userCollection = await users();
+    const post_id_to_remove = new ObjectId(postId);
+    const song_id = new ObjectId(post.song_id);
     const user_id = new ObjectId(post.user_id);
-    let user = userCollection.findOne({_id: user_id});
-    let user_posts = user.userPosts;
 
-    // remove the post from the userPosts array
-    let index_of_deleted_post = user_posts.indexOf(postId);
-    user_posts.splice(index_of_deleted_post, 1);
-    user.userPosts = user_posts;
-
-    // update the user in the DB with the new userPosts array
-    const userUpdatedInfo = users.findOneAndUpdate(
+    // remove post from user that posted it
+    const userCollection = await users();
+    const userUpdatedInfo = userCollection.findOneAndUpdate(
         {_id: user_id},
-        {$set: user},
+        {$pull: {userPosts: post_id_to_remove}},
         {returnDocument: 'after'}
     );
-
     if (!userUpdatedInfo)
-        throw `Could not delete post with id of ${postId}`;
+        throw [404, `Could not delete post with id of ${postId} from user ${user_id.toString()}`];
 
     const songCollection = await songs();
-    const song_id = new ObjectId(post.song_id);
-    let song = songCollection.findOne({_id: song_id});
-    let song_posts = song.posts;
-    index_of_deleted_post = song_posts.indexOf(postId);
-    song_posts.splice(index_of_deleted_post, 1);
-    song.posts = song_posts;
-
-    // update the song in the DB with the new song_posts array
-    const songUpdatedInfo = users.findOneAndUpdate(
+    // remove post from song it belongs to
+    const songUpdatedInfo = songCollection.findOneAndUpdate(
         {_id: song_id},
-        {$set: song},
+        {$pull: {posts: post_id_to_remove}},
         {returnDocument: 'after'}
     );
 
     if (!songUpdatedInfo)
-        throw `Could not delete post with id of ${postId}`;
+        throw [404, `Could not delete post with id of ${postId} from song ${song_id.toString()}`];
+
+    const deletionInfo = await postsCollection.findOneAndDelete({
+        _id: new ObjectId(postId)
+    });
+
+    if (!deletionInfo) {
+        throw [404, `Could not delete post with id of ${postId}`];
+    }
 
     return {deleted: true};
 }
 
+
+/**
+ * the only thing that can be updated on a post is the number of likes it has
+ * @param postId the id of the post to update
+ * @param liker_id the id of the person who liked the post
+ * @returns {Promise<*>}
+ */
 export const update = async (
     postId,
-    like
+    liker_id
 ) => {
 
     //input validation 
 
     const postsCollection = await posts();
-    const curr_post = await getPostById(postId);
-    curr_post.likes.push(like);
-    const updatedPost = {
-        likes:curr_post.likes
-    }
 
-    const updatedInfo = await postsCollection.updateOne(
+    const updatedInfo = await postsCollection.findOneAndUpdate(
         {_id: new ObjectId(postId)},
-        {$set: updatedPost},
+        {$push: {likes: new ObjectId(liker_id)}},
         {returnDocument: 'after'}
     );
 

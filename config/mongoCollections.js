@@ -14,7 +14,8 @@ const getCollectionFn = (collection) => {
 };
 
 export const users = getCollectionFn('users');
-export const albums = getCollectionFn('albums');
-export const songs = getCollectionFn('songs');
+// export const albums = getCollectionFn('albums');
+// export const songs = getCollectionFn('songs');
 export const posts = getCollectionFn('posts');
 export const comments = getCollectionFn('comments');
+export const music = getCollectionFn('music')

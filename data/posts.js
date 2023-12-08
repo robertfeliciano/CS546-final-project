@@ -1,10 +1,10 @@
-import {posts, users, songs} from '../config/mongoCollections.js';
+import {posts, users, music} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import * as validation from '../validation.js';
 
 
 export const createPost = async (
-    song_id,
+    music_id,
     rating,
     user_id,
     content,
@@ -14,11 +14,12 @@ export const createPost = async (
     //input validation
 
     let newPost = {
-        song_id:song_id,
+        music_id:music_id,
         rating:rating,
         user_id:user_id,
         content:content,
         date:date,
+        comments:[],
         likes:0
     };
 
@@ -37,9 +38,9 @@ export const createPost = async (
     if (!update_user_info)
         throw `Could not add post to ${user_id}'s post collection!`;
 
-    const songCollection = await songs();
-    let update_song_info = await userCollection.findOneAndUpdate(
-        {_id: user_id},
+    const musicCollection = await music();
+    let update_song_info = await musicCollection.findOneAndUpdate(
+        {_id: music_id},
         {$push: {posts: insertInfo.insertedId}}
     );
     if (!update_song_info)
@@ -103,7 +104,7 @@ export const removePost = async (postId) => {
     const postsCollection = await posts();
     let post = await getPostById(postId);
     const post_id_to_remove = new ObjectId(postId);
-    const song_id = new ObjectId(post.song_id);
+    const music_id = new ObjectId(post.music_id);
     const user_id = new ObjectId(post.user_id);
 
     // remove post from user that posted it
@@ -116,15 +117,15 @@ export const removePost = async (postId) => {
     if (!userUpdatedInfo)
         throw [404, `Could not delete post with id of ${postId} from user ${user_id.toString()}`];
 
-    const songCollection = await songs();
     // remove post from song it belongs to
-    const songUpdatedInfo = await songCollection.findOneAndUpdate(
-        {_id: song_id},
+    const musicCollection = await music();
+    const songUpdatedInfo = await musicCollection.findOneAndUpdate(
+        {_id: music_id},
         {$pull: {posts: post_id_to_remove}},
         {returnDocument: 'after'}
     );
     if (!songUpdatedInfo)
-        throw [404, `Could not delete post with id of ${postId} from song ${song_id.toString()}`];
+        throw [404, `Could not delete post with id of ${postId} from piece ${music_id.toString()}`];
 
     const deletionInfo = await postsCollection.findOneAndDelete({
         _id: new ObjectId(postId)

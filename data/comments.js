@@ -1,4 +1,4 @@
-import {comments, users} from '../config/mongoCollections.js';
+import {comments, posts, users} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import * as validation from '../validation.js';
 
@@ -32,8 +32,16 @@ export const createComment = async (
     if (!update_user_info)
         throw `Could not add comment to ${user_id}'s comment collection!`;
 
+    const postCollection = await posts();
+    let update_post_info = await userCollection.findOneAndUpdate(
+        {_id: user_id},
+        {$push: {comments: insertInfo.insertedId}}
+    );
+    if (!update_post_info)
+        throw `Could not add comment to ${user_id}'s comment collection!`;
+
     const newId = insertInfo.insertedId.toString();
-    const new_comment = await get(newId);
+    const new_comment = await getCommentById(newId);
     
     return new_comment;
 }
@@ -67,13 +75,33 @@ export const getCommentById = async (commentId) => {
     return comment;
 }
 
-export const remove = async (commentId) => {
+export const removeComment = async (commentId) => {
 
     //input validation 
 
     const commentsCollection = await comments();
     let comment = await getCommentById(commentId);
-    let comment_content = comment['content'];
+    const comment_id_to_remove = new ObjectId(commentId);
+    const user_id = new ObjectId(comment.user_id);
+    const post_id = new ObjectId(comment.post_id)
+
+    const userCollection = await users();
+    const userUpdatedInfo = await userCollection.findOneAndUpdate(
+        {_id: user_id},
+        {$pull: {userComments: comment_id_to_remove}},
+        {returnDocument: 'after'}
+    );
+    if (!userUpdatedInfo)
+        throw [404, `Could not delete comment with id of ${commentId} from user ${user_id.toString()}`];
+
+    const postCollection = await posts();
+    const postUpdatedInfo = await postCollection.findOneAndUpdate(
+        {_id: post_id},
+        {$pull: {comments: comment_id_to_remove}},
+        {returnDocument: 'after'}
+    );
+    if (!postUpdatedInfo)
+        throw [404, `Could not delete comment with id of ${commentId} from user ${user_id.toString()}`];
     
     const deletionInfo = await commentsCollection.findOneAndDelete({
         _id: new ObjectId(commentId)
@@ -83,5 +111,5 @@ export const remove = async (commentId) => {
         throw [404, `Could not delete comment with id of ${commentId}`];
     }
 
-    return {comment: comment_content, deleted: true};
+    return {deleted: true};
 }

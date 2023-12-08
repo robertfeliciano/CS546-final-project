@@ -30,15 +30,15 @@ export const createComment = async (
         {$push: {userComments: insertInfo.insertedId}}
     );
     if (!update_user_info)
-        throw `Could not add comment to ${user_id}'s comment collection!`;
+        throw `Could not add comment to user ${user_id}'s comment collection!`;
 
     const postCollection = await posts();
-    let update_post_info = await userCollection.findOneAndUpdate(
-        {_id: user_id},
+    let update_post_info = await postCollection.findOneAndUpdate(
+        {_id: post_id},
         {$push: {comments: insertInfo.insertedId}}
     );
     if (!update_post_info)
-        throw `Could not add comment to ${user_id}'s comment collection!`;
+        throw `Could not add comment to post ${post_id}'s comment collection!`;
 
     const newId = insertInfo.insertedId.toString();
     const new_comment = await getCommentById(newId);

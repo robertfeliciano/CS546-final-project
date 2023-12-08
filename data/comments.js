@@ -1,4 +1,4 @@
-import {comments} from '../config/mongoCollections.js';
+import {comments, users} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import * as validation from '../validation.js';
 
@@ -20,10 +20,17 @@ export const createComment = async (
 
     const commentsCollection = await comments();
     const insertInfo = await commentsCollection.insertOne(newComment);
-    
     if (!insertInfo.acknowledged || !insertInfo.insertedId) {
         throw 'Could not add comment!';
     }
+
+    const userCollection = await users();
+    let update_user_info = await userCollection.findOneAndUpdate(
+        {_id: user_id},
+        {$push: {userComments: insertInfo.insertedId}}
+    );
+    if (!update_user_info)
+        throw `Could not add comment to ${user_id}'s comment collection!`;
 
     const newId = insertInfo.insertedId.toString();
     const new_comment = await get(newId);
@@ -46,7 +53,7 @@ export const getAll = async () => {
     return commentsList;
 }
 
-export const get = async (commentId) => {
+export const getCommentById = async (commentId) => {
     
     //input validation
 
@@ -65,7 +72,7 @@ export const remove = async (commentId) => {
     //input validation 
 
     const commentsCollection = await comments();
-    let comment = await get(commentId);
+    let comment = await getCommentById(commentId);
     let comment_content = comment['content'];
     
     const deletionInfo = await commentsCollection.findOneAndDelete({

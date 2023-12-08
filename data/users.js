@@ -1,4 +1,4 @@
-import {posts, users} from '../config/mongoCollections.js';
+import {users} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import bcrypt from 'bcryptjs';
 import * as postFunctions from './posts.js';
@@ -17,7 +17,7 @@ export const createUser = async (
 
     //input validation
 
-    // TOOD EMAIL VAL SHOULD SET TO LOWER CASE
+    // TODO: EMAIL VAL SHOULD SET TO LOWER CASE
 
     const hashed = await bcrypt.hash(rawPassword, saltRounds);
 
@@ -98,17 +98,15 @@ export const removeUser = async (userId) => {
 
     const userCollection = await users();
     let user = await getUserById(userId);
-    let user_name = user['username'];
+    const posts_to_remove = user.userPosts;
+    let user_name = user.username;
+    const user_id_to_remove = new ObjectId(userId);
 
-    // find other users that follow this user
-    // remove this user from their "following" list
-    const id_to_remove = new ObjectId(userId);
-
-    for (const following of user.followers) {
-        const following_id = new ObjectId(following);
+    for (const follower of user.followers) {
+        const following_id = new ObjectId(follower);
         await userCollection.findOneAndUpdate(
             {_id: following_id},
-            {$pull: {following: id_to_remove}}
+            {$pull: {following: user_id_to_remove}}
         )
     }
 
@@ -116,14 +114,11 @@ export const removeUser = async (userId) => {
         const following_id = new ObjectId(following);
         await userCollection.findOneAndUpdate(
             {_id: following_id},
-            {$pull: {followers: id_to_remove}}
+            {$pull: {followers: user_id_to_remove}}
         )
     }
 
-    const postCollection = await posts();
-    const posts_to_remove = await postCollection.find({user_id: id_to_remove}).project({_id:1}).toArray();
-    for (const post of posts_to_remove) {
-        const post_id = post._id;
+    for (const post_id of posts_to_remove) {
         // this takes care of removing each post from the song it was posted under
         await postFunctions.removePost(post_id);
     }

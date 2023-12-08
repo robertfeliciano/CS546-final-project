@@ -8,8 +8,7 @@ export const createPost = async (
     rating,
     user_id,
     content,
-    date,
-    likes
+    date
 ) => {
 
     //input validation
@@ -20,15 +19,31 @@ export const createPost = async (
         user_id:user_id,
         content:content,
         date:date,
-        likes:likes
+        likes:0
     };
 
+    // add post to post db
     const postsCollection = await posts();
     const insertInfo = await postsCollection.insertOne(newPost);
-    
     if (!insertInfo.acknowledged || !insertInfo.insertedId) {
         throw 'Could not add post!';
     }
+
+    const userCollection = await users();
+    let update_user_info = await userCollection.findOneAndUpdate(
+        {_id: user_id},
+        {$push: {userPosts: insertInfo.insertedId}}
+    );
+    if (!update_user_info)
+        throw `Could not add post to ${user_id}'s post collection!`;
+
+    const songCollection = await songs();
+    let update_song_info = await userCollection.findOneAndUpdate(
+        {_id: user_id},
+        {$push: {posts: insertInfo.insertedId}}
+    );
+    if (!update_song_info)
+        throw `Could not add post to ${user_id}'s post collection!`;
 
     const newId = insertInfo.insertedId.toString();
     const new_post = await getPostById(newId);
@@ -93,7 +108,7 @@ export const removePost = async (postId) => {
 
     // remove post from user that posted it
     const userCollection = await users();
-    const userUpdatedInfo = userCollection.findOneAndUpdate(
+    const userUpdatedInfo = await userCollection.findOneAndUpdate(
         {_id: user_id},
         {$pull: {userPosts: post_id_to_remove}},
         {returnDocument: 'after'}
@@ -103,12 +118,11 @@ export const removePost = async (postId) => {
 
     const songCollection = await songs();
     // remove post from song it belongs to
-    const songUpdatedInfo = songCollection.findOneAndUpdate(
+    const songUpdatedInfo = await songCollection.findOneAndUpdate(
         {_id: song_id},
         {$pull: {posts: post_id_to_remove}},
         {returnDocument: 'after'}
     );
-
     if (!songUpdatedInfo)
         throw [404, `Could not delete post with id of ${postId} from song ${song_id.toString()}`];
 
@@ -130,7 +144,7 @@ export const removePost = async (postId) => {
  * @param liker_id the id of the person who liked the post
  * @returns {Promise<*>}
  */
-export const update = async (
+export const updatePost = async (
     postId,
     liker_id
 ) => {

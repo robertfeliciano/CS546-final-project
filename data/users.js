@@ -29,6 +29,7 @@ export const createUser = async (
         userComments:[],
         following:[],
         followers:[],
+        likedPosts:[],
         bio:bio,
         profilePicture:profilePicture
     };
@@ -135,29 +136,59 @@ export const removeUser = async (userId) => {
     return {userName: user_name, deleted: true};
 }
 
+
+/**
+ * makes user b follow user a
+ * @param user_to_update user a
+ * @param new_follower_id user b
+ * @returns {Promise<{followers: ([]|*)}>}
+ */
 export const updateFollowers = async (user_to_update, new_follower_id) => {
+    // first check if user b already follows user a
     const userCollection = await users();
-    const updated = await userCollection.findOneAndUpdate(
+    const check = await userCollection.find(
+        {
+            _id: user_to_update,
+            followers: new ObjectId(new_follower_id)
+        }).toArray();
+
+    if (check.length > 0)
+        throw [204, `User ${new_follower_id} already follows ${user_to_update}`];
+
+    const updatedUserAFollowers = await userCollection.findOneAndUpdate(
         {_id: new ObjectId(user_to_update)},
-        {$push: {followers: new_follower_id}},
+        {$push: {followers: new ObjectId(new_follower_id)}},
         {returnDocument: 'after'}
     );
-    if (!updated) {
+    if (!updatedUserAFollowers) {
         throw [404, `Could not follow user with id of ${user_to_update}`];
     }
+
+    const updatedUserBFollowing = await userCollection.findOneAndUpdate(
+        {_id: new ObjectId(user_to_update)},
+        {$push: {following: new ObjectId(new_follower_id)}},
+        {returnDocument: 'after'}
+    );
+    if (!updatedUserBFollowing) {
+        throw [404, `Could not add ${new_follower_id} to following list of user ${user_to_update}`];
+    }
+    return {following: updatedUserBFollowing.following, followers: updatedUserAFollowers.followers};
 }
 
-export const updateFollowing = async (user_to_update, new_following_id) => {
-    const userCollection = await users();
-    const updated = await userCollection.findOneAndUpdate(
-        {_id: new ObjectId(user_to_update)},
-        {$push: {following: new_following_id}},
-        {returnDocument: 'after'}
-    );
-    if (!updated) {
-        throw [404, `Could not follow user with id of ${user_to_update}`];
-    }
-}
+// export const updateFollowing = async (user_to_update, new_following_id) => {
+//
+//     // TODO: check if already following
+//     const userCollection = await users();
+//     const updated = await userCollection.findOneAndUpdate(
+//         {_id: new ObjectId(user_to_update)},
+//         {$push: {following: new_following_id}},
+//         {returnDocument: 'after'}
+//     );
+//     if (!updated) {
+//         throw [404, `Could not follow user with id of ${new_following_id}`];
+//     }
+//     return {following: updated.following};
+// }
 
 export const updateUserPut = async (
     userId,

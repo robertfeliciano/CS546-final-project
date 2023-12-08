@@ -20,7 +20,7 @@ export const createPost = async (
         content:content,
         date:date,
         comments:[],
-        likes:0
+        likes:[]
     };
 
     // add post to post db
@@ -147,12 +147,12 @@ export const removePost = async (postId) => {
 
 
 /**
- * the only thing that can be updated on a post is the number of likes it has
+ * the only thing that can be updated on a post is the array of likes it has
  * @param postId the id of the post to update
  * @param liker_id the id of the person who liked the post
  * @returns {Promise<*>}
  */
-export const updatePost = async (
+export const likePost = async (
     postId,
     liker_id
 ) => {
@@ -170,6 +170,18 @@ export const updatePost = async (
     if (!updatedInfo) {
         throw [404, 'Could not update post successfully'];
     }
+
+
+    const userCollection  = await users();
+    const userUpdatedInfo = await userCollection.findOneAndUpdate(
+        {_id: new ObjectId(liker_id)},
+        {$push: {likedPosts: new ObjectId(postId)}},
+        {returnDocument: 'after'}
+    );
+
+    if (!userUpdatedInfo)
+        throw [404, 'Could not like post successfully!'];
+
 
     return updatedInfo
 }

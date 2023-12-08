@@ -95,6 +95,19 @@ const main = async () => {
     post_ids.push(created_post._id);
   }
 
+  console.log("Seeding comments...");
+  for (let post_id of post_ids) {
+    const user_id = userIds[Math.floor(Math.random() * userIds.length)];
+    const possible_comments = ["I agree!", "I dont agree", "Have you tried reading a book?", "Yes!"];
+    const cmnt_idx = Math.floor(Math.random() * possible_comments.length);
+    const created_cmnt = await commentsData.createComment(
+        post_id,
+        user_id,
+        possible_comments[cmnt_idx],
+        date
+    );
+  }
+
 
 
   await closeConnection();

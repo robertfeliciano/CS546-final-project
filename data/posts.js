@@ -46,7 +46,7 @@ export const createPost = async (
             $inc:
                 {
                     total_stars: rating,
-                    total_rankings: 1
+                    total_ratings: 1
                 }
         }
     );

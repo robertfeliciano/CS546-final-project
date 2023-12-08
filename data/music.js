@@ -80,5 +80,3 @@ export const getAlbumById = async (album_id) => {
   const album_found = getMusicById("song", album_id);
   return album_found;
 }
-
-export const addPost = async ()

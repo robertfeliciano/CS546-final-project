@@ -1,6 +1,6 @@
 import {comments} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
-import * as validation from '../validation.js;'
+import * as validation from '../validation.js';
 
 export const createComment = async (
     post_id,

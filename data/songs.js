@@ -1,7 +1,7 @@
 import {songs} from '../config/mongoCollections.js';
 import {getByTitle as getAlbum, update as updateAlbum} from './albums.js'
 import {ObjectId} from 'mongodb';
-import * as validation from '../validation.js;'
+import * as validation from '../validation.js';
 
 export const createSong = async (
     title,
@@ -41,7 +41,7 @@ export const createSong = async (
     return new_song;
 }
 
-export const getAll = async () => {
+export const getAllSongs = async () => {
     const songCollection = await songs();
     
     let songList = await songCollection
@@ -56,7 +56,7 @@ export const getAll = async () => {
     return songList;
 }
 
-export const get = async (songId) => {
+export const getSongById = async (songId) => {
     
     //input validation
 
@@ -75,12 +75,12 @@ export const remove = async (songId) => {
     //input validation 
 
     const songCollection = await songs();
-    let song = await get(songId);
+    let song = await getSongById(songId);
     let song_title = song['title'];
     
     const deletionInfo = await songCollection.findOneAndDelete({
         _id: new ObjectId(songId)
-    })
+    });
     
     if (!deletionInfo) {
         throw [404, `Could not delete song with id of ${songId}`];
@@ -100,8 +100,9 @@ export const update = async (
     //input validation 
 
     const songCollection = await songs();
-    const curr_song = await get(songId);
+    const curr_song = await getSongById(songId);
     curr_song.posts.push(postId);
+
     const updatedSong = {
         total_stars:curr_song.total_stars+stars,
         total_ratings:curr_song.total_ratings+1,
@@ -119,7 +120,7 @@ export const update = async (
         throw [404, 'Could not update song successfully'];
     }
 
-    let S = await get(songId);
+    let S = await getSongById(songId);
     const album = await getAlbum(S.album);
 
     const albumUpdatedInfo = await updateAlbum(album._id);

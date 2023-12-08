@@ -1,8 +1,8 @@
 import {albums} from '../config/mongoCollections.js';
 import {get as getSong} from './songs.js'
-import { getAll as getAllPosts } from './posts.js';
+import {  getAllPosts } from './posts.js';
 import {ObjectId} from 'mongodb';
-import * as validation from '../validation.js;'
+import * as validation from '../validation.js';
 
 export const createAlbum = async (
     title,

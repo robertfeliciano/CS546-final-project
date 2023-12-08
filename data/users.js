@@ -1,11 +1,16 @@
 import {users} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
-import * as validation from '../validation.js;'
+import bcrypt from 'bcrypt';
+import * as validation from '../validation.js';
+import {raw} from "express";
+
+
+const saltRounds = 16;
 
 export const createUser = async (
     username,
     email,
-    hashedPassword,
+    rawPassword,
     usersPosts,
     userComments,
     friends,
@@ -15,10 +20,12 @@ export const createUser = async (
 
     //input validation
 
+    const hashed = await bcrypt.hash(rawPassword, saltRounds);
+
     let newUser = {
         username:username,
         Email:email,
-        hashedPassword:hashedPassword,
+        hashedPassword:hashed,
         usersPosts:usersPosts,
         userComments:userComments,
         friends:friends,
@@ -27,6 +34,10 @@ export const createUser = async (
     };
 
     const userCollection = await users();
+    const dupes = await userCollection.find({emailAddress: email.toLowerCase()}).toArray();
+    if (dupes.length > 0)
+        throw `There is already a user with this email address.`;
+
     const insertInfo = await userCollection.insertOne(newUser);
     
     if (!insertInfo.acknowledged || !insertInfo.insertedId) {
@@ -87,7 +98,7 @@ export const removeUser = async (userId) => {
     return {userName: user_name, deleted: true};
 }
 
-export const updatePut = async (
+export const updateUserPut = async (
     userId,
     userPost,
     userComment,
@@ -120,7 +131,7 @@ export const updatePut = async (
     return updatedInfo;
 }
 
-export const updatePatch = async (
+export const updateUserPatch = async (
     userId,
     userInfo
 ) => {
@@ -139,4 +150,22 @@ export const updatePatch = async (
     }
 
     return updatedInfo;
+}
+
+
+export const loginUser = async (emailAddress, password) => {
+    // input validation
+
+    const db = await users();
+    const user = await db.findOne({emailAddress: emailAddress.toLowerCase()});
+    if (user === null) throw `Either the email address or password is invalid`;
+    let comp = await bcrypt.compare(password, user.password);
+    if (comp)
+        return {
+            username: user.username,
+            email: user.email,
+            hashedPassword: user.hashedPassword
+        };
+    else
+        throw `Either the email address or password is invalid`;
 }

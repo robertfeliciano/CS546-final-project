@@ -3,10 +3,6 @@ const router = Router();
 import {postsData, usersData} from '../data/index.js';
 import validation from '../validation.js';
 
-router.route('/new').get(async (req, res) => {
-  const users = await usersData.getAllUsers();
-  res.render('posts/new', {users: users});
-});
 router
   .route('/')
   .get(async (req, res) => {
@@ -29,9 +25,6 @@ router
       res.status(500).json({error: e});
     }
   })
-  .put(async (req, res) => {
-    res.send('ROUTED TO PUT ROUTE');
-  });
 
 router
   .route('/:id')

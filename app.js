@@ -5,7 +5,7 @@ import session from 'express-session';
 import configRoutes from './routes/index.js';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
-// import exphbs from 'express-handlebars';
+import exphbs from 'express-handlebars';
 import {dbConnection} from "./config/mongoConnection.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -96,11 +96,11 @@ app.use(
 // });
 
 
-// configRoutes(app);
+app.engine('handlebars', exphbs.engine({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+
+configRoutes(app);
 app.listen(3000, () => {
     console.log("Jukeboxd is up and running!");
     console.log('Your routes will be running on http://localhost:3000');
 });
-
-// app.engine('handlebars', exphbs.engine({defaultLayout: 'main'}));
-// app.set('view engine', 'handlebars');

@@ -1,19 +1,27 @@
 {
-  "name": "cs-546-final-project",
+  "name": "jukeboxd",
   "version": "1.0.0",
   "description": "letterboxd for music",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "node tasks/seed.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/robertfeliciano/CS546-final-project.git"
   },
-  "author": "",
+  "author": "Group 7",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/robertfeliciano/CS546-final-project/issues"
   },
-  "homepage": "https://github.com/robertfeliciano/CS546-final-project#readme"
+  "homepage": "https://github.com/robertfeliciano/CS546-final-project#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0"
+  }
 }

@@ -34,7 +34,7 @@ export const createUser = async (
     };
 
     const userCollection = await users();
-    const emailDupes = await userCollection.find({emailAddress: email.toLowerCase()}).toArray();
+    const emailDupes = await userCollection.find({email: email.toLowerCase()}).toArray();
     if (emailDupes.length > 0)
         throw `There is already a user with this email address.`;
 
@@ -48,10 +48,10 @@ export const createUser = async (
         throw 'Could not add user!';
     }
 
-    const newId = insertInfo.insertedId.toString();
-    const new_user = await getUserById(newId);
+    // const newId = insertInfo.insertedId.toString();
+    // const new_user = await getUserById(newId);
     
-    return new_user;
+    return {insertedUser: true};
 }
 
 export const getAllUsers = async () => {
@@ -256,8 +256,7 @@ export const loginUser = async (emailAddress, password) => {
     if (comp)
         return {
             username: user.username,
-            email: user.email,
-            hashedPassword: user.hashedPassword
+            email: user.email
         };
     else
         throw `Either the email address or password is invalid`;

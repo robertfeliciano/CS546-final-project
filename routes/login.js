@@ -1,6 +1,6 @@
 import {Router} from 'express';
-import loginValidate from '../validation.js';
 import {loginUser} from '../data/users.js';
+import * as validation from '../validation.js';
 
 const router = Router();
 
@@ -8,7 +8,6 @@ router
   .route('/login')
   .get(async (req, res) => {
     //code here for GET
-    //render view of login form
     if (req.session.user) {
       res.redirect('/posts')
     }

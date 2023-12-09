@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {createUser} from '../data/users.js';
-import { registerValidate } from '../validation.js';
+import * as validation from '../validation.js';
 
 
 const router = Router();

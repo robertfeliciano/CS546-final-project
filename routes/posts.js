@@ -1,7 +1,7 @@
 import {Router} from 'express';
 const router = Router();
 import {postsData, usersData} from '../data/index.js';
-import validation from '../validation.js';
+import * as val from '../validation.js';
 
 router.route('/new').get(async (req, res) => {
   const users = await usersData.getAllUsers();

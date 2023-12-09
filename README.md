@@ -1,5 +1,4 @@
-# CS546-final-project
-Jukeboxd!
+# Jukeboxd!
 
 ### Before you run...
 Ensure the node modules are installed!

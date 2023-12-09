@@ -17,13 +17,12 @@ export const createUser = async (
 
     //input validation
 
-    // TODO: EMAIL VAL SHOULD SET TO LOWER CASE
 
     const hashed = await bcrypt.hash(rawPassword, saltRounds);
 
     let newUser = {
-        username:username,
-        email:email,
+        username:username.toLowerCase(),
+        email:email.toLowerCase(),
         hashedPassword:hashed,
         userPosts:[],
         userComments:[],
@@ -35,9 +34,13 @@ export const createUser = async (
     };
 
     const userCollection = await users();
-    const dupes = await userCollection.find({emailAddress: email.toLowerCase()}).toArray();
-    if (dupes.length > 0)
+    const emailDupes = await userCollection.find({emailAddress: email.toLowerCase()}).toArray();
+    if (emailDupes.length > 0)
         throw `There is already a user with this email address.`;
+
+    const usernameDupes = await userCollection.find({username: username.toLowerCase()}).toArray();
+    if (usernameDupes.length > 0)
+        throw `There is already a user with this username.`
 
     const insertInfo = await userCollection.insertOne(newUser);
     
@@ -174,21 +177,6 @@ export const updateFollowers = async (user_to_update, new_follower_id) => {
     }
     return {following: updatedUserBFollowing.following, followers: updatedUserAFollowers.followers};
 }
-
-// export const updateFollowing = async (user_to_update, new_following_id) => {
-//
-//     // TODO: check if already following
-//     const userCollection = await users();
-//     const updated = await userCollection.findOneAndUpdate(
-//         {_id: new ObjectId(user_to_update)},
-//         {$push: {following: new_following_id}},
-//         {returnDocument: 'after'}
-//     );
-//     if (!updated) {
-//         throw [404, `Could not follow user with id of ${new_following_id}`];
-//     }
-//     return {following: updated.following};
-// }
 
 export const updateUserPut = async (
     userId,

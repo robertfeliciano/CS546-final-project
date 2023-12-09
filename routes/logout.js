@@ -1,6 +1,6 @@
-import express from 'express';
+import {Router} from 'express';
 
-const router = express.Router();
+const router = Router();
 
 router.route('/logout').get(async (req, res) => {
     //code here for GET
@@ -11,3 +11,5 @@ router.route('/logout').get(async (req, res) => {
         return res.redirect('/login');
     }
 });
+
+export default router;

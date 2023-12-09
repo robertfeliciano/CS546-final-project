@@ -1,8 +1,8 @@
-import express from 'express';
+import {Router} from 'express';
 import loginValidate from '../validation.js';
-import loginUser from '../data/users.js';
+import {loginUser} from '../data/users.js';
 
-const router = express.Router();
+const router = Router();
 
 router
   .route('/login')
@@ -60,3 +60,5 @@ router
     }
 
   });
+
+export default router;

@@ -1,17 +1,17 @@
 import {Router} from 'express';
 const router = Router();
-import {postData, userData} from '../data/index.js';
+import {postsData, usersData} from '../data/index.js';
 import validation from '../validation.js';
 
 router.route('/new').get(async (req, res) => {
-  const users = await userData.getAllUsers();
+  const users = await usersData.getAllUsers();
   res.render('posts/new', {users: users});
 });
 router
   .route('/')
   .get(async (req, res) => {
     try {
-      const postList = await postData.getAll();
+      const postList = await postsData.getAll();
       res.render('posts/index', {posts: postList});
     } catch (e) {
       res.status(500).json({error: e});
@@ -23,7 +23,7 @@ router
     if (!song_id)
     try {
       const date = new Date();
-      const newPost = await postData.createPost(song_id, rating, user_id, content, date, 0);
+      const newPost = await postsData.createPost(song_id, rating, user_id, content, date, 0);
       res.redirect(`/posts/${newPost._id}`);
     } catch (e) {
       res.status(500).json({error: e});
@@ -42,7 +42,7 @@ router
       return res.status(400).json({error: e});
     }
     try {
-      const post = await postData.getPostById(req.params.id);
+      const post = await postsData.getPostById(req.params.id);
       res.render('posts/single', {post: post});
     } catch (e) {
       res.status(404).json({error: e});
@@ -73,7 +73,7 @@ router
     }
 
     try {
-      const updatedPost = await postData.updatePostPut(
+      const updatedPost = await postsData.updatePostPut(
         req.params.id,
         updatedData
       );
@@ -107,7 +107,7 @@ router
     }
 
     try {
-      const updatedPost = await postData.updatePostPatch(
+      const updatedPost = await postsData.updatePostPatch(
         req.params.id,
         requestBody
       );
@@ -125,7 +125,7 @@ router
       return res.status(400).json({error: e});
     }
     try {
-      let deletedPost = await postData.removePost(req.params.id);
+      let deletedPost = await postsData.removePost(req.params.id);
       res.status(200).json(deletedPost);
     } catch (e) {
       let status = e[0];
@@ -141,7 +141,7 @@ router.route('/tag/:tag').get(async (req, res) => {
     return res.status(400).json({error: e});
   }
   try {
-    const postList = await postData.getPostsByTag(req.params.tag);
+    const postList = await postsData.getPostsByTag(req.params.tag);
     res.render('posts/index', {posts: postList});
   } catch (e) {
     res.status(400).json({error: e});
@@ -157,7 +157,7 @@ router.route('/tag/rename').patch(async (req, res) => {
   }
 
   try {
-    let getNewTagPosts = await postData.renameTag(
+    let getNewTagPosts = await postsData.renameTag(
       req.body.oldTag,
       req.body.newTag
     );

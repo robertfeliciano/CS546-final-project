@@ -1,9 +1,9 @@
-import express from 'express';
-import createUser from '../data/users.js';
+import {Router} from 'express';
+import {createUser} from '../data/users.js';
 import { registerValidate } from '../validation.js';
 
 
-const router = express.Router();
+const router = Router();
 
 
 router
@@ -69,3 +69,5 @@ router
     }
 
   });
+
+export default router;

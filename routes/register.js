@@ -5,7 +5,7 @@ import * as val from '../validation.js';
 const router = Router();
 
 router
-  .route('/register')
+  .route('/')
   .get(async (req, res) => {
     res.render('register');
   })
@@ -45,14 +45,14 @@ router
     }
 
     try {
-        const user = await createUser(
+        const inserted = await createUser(
             formInput.usernameInput,
             formInput.emailAddressInput,
             formInput.passwordInput,
-            [],
-            []
+            formInput.bioInput,
+            formInput.profilePictureInput
         );
-        if (user) { 
+        if (inserted) {
           return res.status(200).redirect('/login');
         }
         else {
@@ -61,10 +61,10 @@ router
     }
     catch (e) {
         if (e === 'Internal Server Error') {
-            return res.status(500).render('register', { error: e });
+          return res.status(500).render('register', { error: e });
         }
         else {
-            return res.status(400).render('register', { error: e });
+          return res.status(400).render('register', { error: e });
         }
     }
 

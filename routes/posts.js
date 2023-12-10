@@ -1,13 +1,22 @@
 import {Router} from 'express';
 const router = Router();
-import {postsData, usersData} from '../data/index.js';
-import * as val from '../validation.js';
+import {postsData} from '../data/index.js';
+import validation from '../validation.js';
+
+
+// under music: /music/:id GET request to see all posts under a song ---- /music/:id POST request to create a new post under a song
+// GET request: /posts/:id to see a specific post
+// DELETE request: /posts/:id to delete a specific post
+// PATCH request: /posts/:id to like a post
+// GET request /posts/:id/edit render the form to edit a post -> then PATCH request with the data that needs to be edited (content of post)
+// GET request /posts to see all posts from friends
 
 router
-  .route('/')
+  .route('/music/:id')
   .get(async (req, res) => {
     try {
-      const postList = await postsData.getAll();
+      req.params.id = validation.checkId(req.params.id, 'music id');
+      const postList = await postsData.getAll(req.params.id);
       res.render('posts/index', {posts: postList});
     } catch (e) {
       res.status(500).json({error: e});
@@ -16,8 +25,9 @@ router
   .post(async (req, res) => {
     const {song_id, rating, user_id, content} = req.body;
     let errors = [];
-    if (!song_id)
+    if (!song_id) throw 'You must provide a song id';
     try {
+      req.params.id = 
       const date = new Date();
       const newPost = await postsData.createPost(song_id, rating, user_id, content, date, 0);
       res.redirect(`/posts/${newPost._id}`);
@@ -27,7 +37,7 @@ router
   })
 
 router
-  .route('/:id')
+  .route('/posts/:id')
   .get(async (req, res) => {
     try {
       req.params.id = validation.checkId(req.params.id, 'Id URL Param');
@@ -126,40 +136,5 @@ router
       res.status(status).json({error: message});
     }
   });
-
-router.route('/tag/:tag').get(async (req, res) => {
-  try {
-    req.params.tag = validation.checkString(req.params.tag, 'Tag');
-  } catch (e) {
-    return res.status(400).json({error: e});
-  }
-  try {
-    const postList = await postsData.getPostsByTag(req.params.tag);
-    res.render('posts/index', {posts: postList});
-  } catch (e) {
-    res.status(400).json({error: e});
-  }
-});
-
-router.route('/tag/rename').patch(async (req, res) => {
-  try {
-    req.body.oldTag = validation.checkString(req.body.oldTag, 'Old Tag');
-    req.body.newTag = validation.checkString(req.body.newTag, 'New Tag');
-  } catch (e) {
-    res.status(400).json({error: e});
-  }
-
-  try {
-    let getNewTagPosts = await postsData.renameTag(
-      req.body.oldTag,
-      req.body.newTag
-    );
-    res.json(getNewTagPosts);
-  } catch (e) {
-    let status = e[0];
-    let message = e[1];
-    res.status(status).json({error: message});
-  }
-});
 
 export default router;

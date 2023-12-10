@@ -11,7 +11,7 @@ router
   })
   .post(async (req, res) => {
     //code here for POST
-    const { emailAddressInput, passwordInput } = req.body;
+    let { emailAddressInput, passwordInput } = req.body;
 
     // Check if all fields are supplied
     

@@ -24,6 +24,14 @@ const main = async () => {
     userIds.push(newuser._id);
   }
 
+  // let _iflashlantern = await usersData.createUser(
+  //     'iflashlantern',
+  //     'rfelici1@stevens.edu',
+  //     'Epicpassword!!123',
+  //     "Just a short bio, sweet like a short song!",
+  //     "happy_cat.jpg"
+  // );
+
   console.log("Seeding songs...");
   let MBDTF_ids = [];
   for (let song of MBDTF_songs) {
@@ -70,18 +78,20 @@ const main = async () => {
   console.log("Seeding posts...");
   let post_ids = [];
   const date = new Date().toLocaleDateString();
-  for (let [idx, song_id] of MBDTF_ids.entries()) {
-    const user_id = userIds[Math.floor(Math.random() * userIds.length)];
-    const post = song_posts[idx];
-    const created_post = await postsData.createPost(
-        song_id,
-        post.rating,
-        user_id,
-        post.content,
-        date
-    );
-    post_ids.push(created_post._id);
-  }
+  try {
+    for (let [idx, song_id] of MBDTF_ids.entries()) {
+      const user_id = userIds[Math.floor(Math.random() * userIds.length)];
+      const post = song_posts[idx];
+      const created_post = await postsData.createPost(
+          song_id,
+          post.rating,
+          user_id,
+          post.content,
+          date
+      );
+      post_ids.push(created_post._id);
+    }
+  } catch(e) { console.log(e); return; }
   for (let [idx, song_id] of Grad_ids.entries()) {
     const user_id = userIds[Math.floor(Math.random() * userIds.length)];
     const post = song_posts[idx];
@@ -129,4 +139,4 @@ const main = async () => {
   console.log(`Finished seeding in ${(Date.now() - start) / 1000}s`);
 };
 
-main();
+await main();

@@ -12,3 +12,5 @@ export const missingInput = (
         error: eMsg
       });
 };
+
+export const fromPostman = user_agent => /postman/i.test(user_agent);

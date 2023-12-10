@@ -1,6 +1,7 @@
 // input validation functions to be used in routes/* and data/*
 
 import fs from 'fs';
+import {ObjectId} from "mongodb";
 
 export const checkUsername = (name) => {
   if (name === undefined) throw `Must provide input for username`;
@@ -49,11 +50,20 @@ export const checkBio = (bio) => {
 export const checkProfilePic = async (pfp) => {
   pfp = pfp.trim();
   fs.readdir('./assets/photos', (err, files) => {
-    if (err)
-      throw `Could not read from available profile pictures... Try again soon!`;
-    if (!files.includes(pfp))
-      throw `Please select an available option!`;
+    if (err) throw `Could not read from available profile pictures... Try again soon!`;
+    if (!files.includes(pfp)) throw `Please select an available option!`;
     return pfp;
   })
+}
+
+export const checkId = (id, type) => {
+  if (!id) throw `You must provide an id to search for. ${type}`;
+  if (typeof id !== 'string') throw `Id must be a string for ${type}`;
+  if (id.trim().length === 0) throw `Id cannot be an empty string or just spaces for ${type}`;
+
+  id = id.trim();
+  if (!ObjectId.isValid(id)) throw `invalid object ID for ${type}`;
+
+  return id;
 }
 

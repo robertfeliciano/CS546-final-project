@@ -79,11 +79,11 @@ const getMusicById = async (of_type, music_id) => {
 }
 
 export const getSongById = async (song_id) => {
-  const song_found = getMusicById("song", song_id);
+  const song_found = await getMusicById("song", song_id);
   return song_found;
 }
 
 export const getAlbumById = async (album_id) => {
-  const album_found = getMusicById("song", album_id);
+  const album_found = await getMusicById("album", album_id);
   return album_found;
 }

@@ -5,7 +5,7 @@ import * as validation from '../validation.js';
 const router = Router();
 
 router
-  .route('/login')
+  .route('/')
   .get(async (req, res) => {
     res.render('login');
   })
@@ -14,27 +14,9 @@ router
     const { emailAddressInput, passwordInput } = req.body;
 
     // Check if all fields are supplied
-    const missingFields = [];
     
-    if (!emailAddressInput) missingFields.push('Email Address');
-    if (!passwordInput) missingFields.push('Password');
-
-    if (missingFields.length > 0) {
-        return res.status(400).render('login', { error: `Missing field(s): ${missingFields.join(', ')}` });
-    }
-
-    let check;
-
-    try {
-        check = loginValidate(emailAddressInput, passwordInput);
-    }
-    catch (e) {
-        return res.status(400).render('login', { error: e });
-    }
-
-    if (check !== true) {
-        return res.status(400).render('login', { error: check });
-    }
+    emailAddressInput = validation.checkEmail(emailAddressInput);
+    passwordInput = validation.checkPass(passwordInput);
 
     try {
       const user = await loginUser(emailAddressInput, passwordInput);
@@ -43,7 +25,7 @@ router
               username: user.username,
               emailAddress: user.email
           };
-          return res.status(200).redirect('/posts');
+          return res.status(200).redirect('/home');
       } else {
           return res.status(400).render('login', { error: 'Invalid email address and/or password' });
       }

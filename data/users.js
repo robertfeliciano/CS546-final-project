@@ -1,4 +1,4 @@
-import {users} from '../config/mongoCollections.js';
+import {comments, users} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import bcrypt from 'bcryptjs';
 import * as postFunctions from './posts.js';
@@ -34,7 +34,7 @@ export const createUser = async (
     };
 
     const userCollection = await users();
-    const emailDupes = await userCollection.find({emailAddress: email.toLowerCase()}).toArray();
+    const emailDupes = await userCollection.find({email: email.toLowerCase()}).toArray();
     if (emailDupes.length > 0)
         throw `There is already a user with this email address.`;
 
@@ -48,10 +48,10 @@ export const createUser = async (
         throw 'Could not add user!';
     }
 
-    const newId = insertInfo.insertedId.toString();
-    const new_user = await getUserById(newId);
+    // const newId = insertInfo.insertedId.toString();
+    // const new_user = await getUserById(newId);
     
-    return new_user;
+    return {insertedUser: true, _id: insertInfo.insertedId};
 }
 
 export const getAllUsers = async () => {
@@ -79,13 +79,34 @@ export const getUserById = async (userId) => {
     //input validation
 
     const userCollection = await users();
-    const user = await userCollection.findOne({_id: new ObjectId(userId)});
+    const user = await userCollection.findOne(
+        {_id: new ObjectId(userId)},
+        {hashedPassword: 0}
+    );
 
     if (user === null) {
         throw 'No user with that id';
     }
 
     return user;
+}
+
+export const getUserByName = async (username) => {
+    //input validation (name should be trimmed)
+    // switch this to fuzzy search later
+    const userCollection = await users();
+    const user = await userCollection.findOne(
+        {username: username}
+    );
+
+    if (user === null)
+        throw `No user with username=${username}`;
+
+    return {
+        username: user.username,
+        email: user.email,
+        _id: user._id
+    };
 }
 
 /**
@@ -101,8 +122,10 @@ export const removeUser = async (userId) => {
     //input validation 
 
     const userCollection = await users();
+    const commentsCollection = await comments();
     let user = await getUserById(userId);
     const posts_to_remove = user.userPosts;
+    const comments_to_remove = user.userComments;
     let user_name = user.username;
     const user_id_to_remove = new ObjectId(userId);
 
@@ -124,8 +147,14 @@ export const removeUser = async (userId) => {
 
     for (const post_id of posts_to_remove) {
         // this takes care of removing each post from the song it was posted under
-        await postFunctions.removePost(post_id);
+        await postFunctions.removePost(post_id, userId);
     }
+
+    for (const comment_id of comments_to_remove) {
+        await commentsCollection.findOneAndDelete({_id: comment_id});
+    }
+
+
 
     // finally... we delete the user
     const deletionInfo = await userCollection.findOneAndDelete({
@@ -256,8 +285,7 @@ export const loginUser = async (emailAddress, password) => {
     if (comp)
         return {
             username: user.username,
-            email: user.email,
-            hashedPassword: user.hashedPassword
+            email: user.email
         };
     else
         throw `Either the email address or password is invalid`;

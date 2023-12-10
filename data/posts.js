@@ -97,14 +97,52 @@ export const getPostById = async (postId) => {
     return post;
 }
 
+export const getAllPostsFromFollowing = async (userId) => {
+    //input validation
+
+    const userCollection = await users();
+    const postsCollection = await posts();
+
+    const user = await userCollection.findOne({_id: new ObjectId(userId)});
+    const followingList = user.following;
+
+    const postsFound = await postsCollection.find(
+        {
+            user_id: { $in: followingList }
+        }
+    ).toArray();
+
+    if (postsFound === null)
+        throw `Could not get posts from followed users.`;
+
+    return postsFound;
+}
+
+export const getAllPostsFromMusicId = async (musicId) => {
+    //input validation
+
+    const postCollection = await posts();
+    const postsFound = await postCollection.find(
+        {
+            music_id: new ObjectId(musicId)
+        }
+    ).toArray();
+
+    if (postsFound === null)
+        throw `Could not get posts from musicId ${musicId}`;
+
+    return postsFound;
+}
+
 /**
  * delete a post from the db
  * this post will have to be removed from the user's posts array
  * and the array of any song/album it was posted about
- * @param postId
+ * @param postId id of post that needs to be deleted
+ * @param deleterId id of user trying to delete the post
  * @returns {Promise<{deleted: boolean}>}
  */
-export const removePost = async (postId) => {
+export const removePost = async (postId, deleterId) => {
 
     //input validation 
 
@@ -113,6 +151,10 @@ export const removePost = async (postId) => {
     const post_id_to_remove = new ObjectId(postId);
     const music_id = new ObjectId(post.music_id);
     const user_id = new ObjectId(post.user_id);
+    deleterId = new ObjectId(deleterId);
+
+    if (!deleterId.equals(user_id))
+        throw `Only the original poster can delete a post.`;
 
     // remove post from user that posted it
     const userCollection = await users();

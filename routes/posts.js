@@ -172,6 +172,7 @@ router
       req.params.id = validation.checkId(req.params.id, 'Post ID');
       rating = validation.checkRating(rating, 'rating');
       content = validation.checkString(content, 'content');
+      if (content.length > 150) throw 'Content must be less than 150 characters';
       const user = await usersData.getUserById(user_id);
       let ownPost = false;
       for (const post of user.userPosts){

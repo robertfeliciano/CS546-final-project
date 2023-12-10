@@ -67,3 +67,21 @@ export const checkId = (id, type) => {
   return id;
 }
 
+export const checkString = (strVal, varName) => {
+    if (!strVal) throw `Error: You must supply a ${varName}!`;
+    if (typeof strVal !== 'string') throw `Error: ${varName} must be a string!`;
+    strVal = strVal.trim();
+    if (strVal.length === 0)
+      throw `Error: ${varName} cannot be an empty string or string with just spaces`;
+    if (!isNaN(strVal))
+      throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
+    return strVal;
+}
+
+export const checkRating = (intVal, varName) => {
+    if (!intVal) throw `Error: You must supply a ${varName}!`;
+    if (typeof intVal !== 'number') throw `Error: ${varName} must be a number!`;
+    if (!Number.isInteger(intVal)) throw `Error: ${varName} must be an integer!`;
+    if (intVal < 0 || intVal > 5) throw `Error: ${varName} must be a positive integer between 0 and 5!`;
+    return intVal;
+}

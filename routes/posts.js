@@ -31,7 +31,7 @@ router
 router
   .route('/:id')
   .get(async (req, res) => {
-    let user_id
+    let user_id;
     try {
       if (!req.session.user) res.render('/login');
       user_id = validation.checkId(req.session.user._id, 'User ID');
@@ -65,7 +65,7 @@ router
 
   .patch(async (req, res) => {
     // like a post
-    let user_id
+    let user_id;
     try {
       if (!req.session.user) res.render('/login');
       user_id = validation.checkId(req.session.user._id, 'User ID');
@@ -96,7 +96,7 @@ router
 
 
   .delete(async (req, res) => {
-    let user_id
+    let user_id;
     try {
       if (!req.session.user) res.render('/login');
       user_id = validation.checkId(req.session.user._id, 'User ID');
@@ -128,7 +128,7 @@ router
 router
   .route('/:id/edit')
   .get(async (req, res) => {
-    let user_id
+    let user_id;
     try {
       if (!req.session.user) res.render('/login');
       user_id = validation.checkId(req.session.user._id, 'User ID');

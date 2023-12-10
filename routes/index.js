@@ -10,7 +10,7 @@ const constructorMethod = (app) => {
   app.use('/register', registerRoutes);
   app.use('/posts', postRoutes);
   app.use('/users', userRoutes);
-  app.use('/home', homeRoutes);
+  // app.use('/home', homeRoutes);
 
   app.use('*', (req, res) => {
     res.status(404).json({error: 'Route not found'});

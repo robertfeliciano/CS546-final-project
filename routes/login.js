@@ -7,13 +7,7 @@ const router = Router();
 router
   .route('/login')
   .get(async (req, res) => {
-    //code here for GET
-    if (req.session.user) {
-      res.redirect('/posts')
-    }
-    else {
-      res.render('login');
-    }
+    res.render('login');
   })
   .post(async (req, res) => {
     //code here for POST
@@ -46,11 +40,10 @@ router
       const user = await loginUser(emailAddressInput, passwordInput);
       if (user) {
           req.session.user = {
-              firstName: user.firstName,
-              lastName: user.lastName,
-              emailAddress: user.emailAddress
+              username: user.username,
+              emailAddress: user.email
           };
-          res.status(200).redirect('/posts');
+          return res.status(200).redirect('/posts');
       } else {
           return res.status(400).render('login', { error: 'Invalid email address and/or password' });
       }

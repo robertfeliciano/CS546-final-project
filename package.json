@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "seed": "node tasks/seed.js"
+    "seed": "node tasks/seed.js",
+    "mytest": "node tasks/test.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^4.18.2",
+    "express-handlebars": "^7.1.2",
     "express-session": "^1.17.3",
     "mongodb": "^6.3.0"
   }

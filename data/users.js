@@ -292,3 +292,38 @@ export const loginUser = async (emailAddress, password) => {
     else
         throw `Either the email address or password is invalid`;
 }
+
+export const getRecommendations = async(userId) => {
+    //input validation 
+
+    let user = await getUserById(userId)
+    
+    let following = user.following
+
+    let friend_songs = {}
+
+    for (let user_f_id of following) {
+        let user_f = await getUserById(user_f_id)
+        for (let post_id of user_f.userPosts) {
+            let curr_user_post = await postFunctions.getPostById(post_id)
+            if (Object.keys(friend_songs).includes(curr_user_post.music_id)) {
+                friend_songs[curr_user_post.music_id] = friend_songs[curr_user_post.music_id] + 1 
+            }
+            else {
+                friend_songs[curr_user_post.music_id] = 1
+            } 
+        }
+    }
+
+    let user_songs = []
+    for (let user_post_id of user.userPosts) {
+        let curr_post = await postFunctions.getPostById(user_post_id)
+        user_songs.push(curr_post.music_id)
+    }
+
+    let not_listened = user_songs.filter(val => !Object.keys(friend_songs).includes(val))
+    let sorted_songs = not_listened.sort((key1,key2) => friend_songs[key1] - friend_songs[key2])
+
+    return sorted_songs
+
+}   

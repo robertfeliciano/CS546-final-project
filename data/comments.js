@@ -1,6 +1,6 @@
 import {comments, posts, users} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
-import * as validation from '../validation.js';
+import * as val from '../validation.js';
 
 export const createComment = async (
     post_id,
@@ -9,7 +9,10 @@ export const createComment = async (
     date
 ) => {
 
-    //input validation
+    post_id = val.checkId(post_id, "post id");
+    user_id = val.checkId(user_id, "user id");
+    content = val.checkString(content, "comment content");
+    date = val.checkDate(date);
 
     let newComment = {
         post_id:post_id,
@@ -62,8 +65,8 @@ export const getAll = async () => {
 }
 
 export const getCommentById = async (commentId) => {
-    
-    //input validation
+
+    commentId = val.checkId(commentId, "comment id");
 
     const commentsCollection = await comments();
     const comment = await commentsCollection.findOne({_id: new ObjectId(commentId)});
@@ -77,7 +80,7 @@ export const getCommentById = async (commentId) => {
 
 export const removeComment = async (commentId) => {
 
-    //input validation 
+    commentId = val.checkId(commentId, "comment id");
 
     const commentsCollection = await comments();
     let comment = await getCommentById(commentId);

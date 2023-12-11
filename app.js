@@ -95,6 +95,7 @@ app.use(
 //     next();
 // });
 
+
 app.engine('handlebars', exphbs.engine({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 

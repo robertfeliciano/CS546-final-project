@@ -120,12 +120,12 @@ const main = async () => {
 
   console.log("Seeding followers...");
   for (let i = 1; i < userIds.length; i++){
-    let _ = await usersData.updateFollowers(userIds[i], userIds[i-1]);
+    let _ = await usersData.addFollower(userIds[i], userIds[i-1]);
   }
 
   console.log("Seeding following...");
   for (let i  = 0; i < userIds.length - 1; i++) {
-    let _ = await usersData.updateFollowers(userIds[i], userIds[i+1]);
+    let _ = await usersData.addFollower(userIds[i], userIds[i+1]);
   }
 
   console.log("Seeding likes...");

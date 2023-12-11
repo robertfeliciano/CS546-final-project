@@ -139,11 +139,12 @@ router.route('/:id/edit').get(async (req, res) => {
         if (!req.session.user) res.render('/login');
         user_id = validation.checkId(req.session.user._id, 'User ID');
         req.params.id = validation.checkId(req.params.id, 'User Page ID');
+        req.body.userBio = validation.checkString(req.body.userBio, 'User Bio');
         if (!user_id.equals(req.params.id)){
             throw `User ${req.session.user._id} does not own user ${req.params.id}`;
         }
         const user = await usersData.getUserById(req.params.id);
-        const updatedUser = await usersData.updateUserPut(req.params.id, req.body.userPosts, req.body.userComments, req.body.friends);
+        const updatedUser = await usersData.updateUserPatch(req.params.id, req.body.userBio);
         return res.render('users/manage', {user: updatedUser});
     } catch (e) {
         return res.status(400).json({error: e});
@@ -160,14 +161,45 @@ router.route('/follow/:id').patch(async (req, res) => {
             throw `User ${req.session.user._id} cannot follow themselves`;
         }
         const user = await usersData.getUserById(req.params.id);
-        const updatedUser = await usersData.updateUserFollow(user_id, req.params.id);
+        //check if user is already following
+        for (const follower of user.followers) {
+            if (follower.equals(user_id)) {
+                throw `User ${user_id} already follows user ${req.params.id}`;
+            }
+        }
+        const updatedUser = await usersData.updateFollowers(req.params.id, user_id);
         return res.render(`/users/${req.params.id}`);
     } catch (e) {
         return res.status(400).json({error: e});
     }
 });
 
-
+router.route('/unfollow/:id').patch(async (req, res) => {
+    //code here for PATCH
+    try {
+        if (!req.session.user) res.render('/login');
+        user_id = validation.checkId(req.session.user._id, 'User ID');
+        req.params.id = validation.checkId(req.params.id, 'User Page ID');
+        if (user_id.equals(req.params.id)){
+            throw `User ${req.session.user._id} cannot unfollow themselves`;
+        }
+        const user = await usersData.getUserById(req.params.id);
+        //check to make sure user is following
+        let following = false;
+        for (const follower of user.followers) {
+            if (follower.equals(user_id)) {
+                following = true;
+            }
+        }
+        if (!following) {
+            throw `User ${user_id} does not follow user ${req.params.id}`;
+        }
+        const updatedUser = await usersData.unfollow(req.params.id, user_id);
+        return res.render(`/users/${req.params.id}`);
+    } catch (e) {
+        return res.status(400).json({error: e});
+    }
+});
 
 
 export default router;

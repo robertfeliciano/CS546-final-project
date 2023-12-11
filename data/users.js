@@ -1,4 +1,4 @@
-import {comments, users} from '../config/mongoCollections.js';
+import {comments, users, posts} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import bcrypt from 'bcryptjs';
 import * as postFunctions from './posts.js';
@@ -292,3 +292,34 @@ export const loginUser = async (emailAddress, password) => {
     else
         throw `Either the email address or password is invalid`;
 }
+
+export const getRecommendations = async(userId) => {
+    //input validation 
+
+    let user = await getUserById(userId)
+
+    const postCollection = await posts();
+    
+    const postList = await postCollection
+      .find({user_id: {$in: user.following}})
+      .toArray()
+    
+    const userPostMusicIds = []
+    for (let post of user.userPosts) {
+        let curr_post = await postFunctions.getPostById(post)
+        userPostMusicIds.push(curr_post.music_id)
+    }
+    
+    const filteredPostList = postList.filter(post => !userPostMusicIds.includes(post.music_id))
+
+    const musicIdFrequency = filteredPostList.reduce((map, post) => {
+        const musicId = post.music_id;
+        map[musicId] = (map[musicId] || 0) + 1;
+        return map;
+      }, {});
+
+    const sortedMusicIds = Object.keys(musicIdFrequency).sort((a, b) => musicIdFrequency[b] - musicIdFrequency[a]);
+
+    return sortedMusicIds
+
+}   

@@ -29,18 +29,17 @@ export const createPost = async (
     if (!insertInfo.acknowledged || !insertInfo.insertedId) {
         throw 'Could not add post!';
     }
-
     const userCollection = await users();
     let update_user_info = await userCollection.findOneAndUpdate(
-        {_id: user_id},
+        {_id: new ObjectId(user_id)},
         {$push: {userPosts: insertInfo.insertedId}}
     );
     if (!update_user_info)
-        throw `Could not add post to ${user_id}'s post collection!`;
+        throw `Could not add post to user ${user_id}'s post collection!`;
 
     const musicCollection = await music();
     let update_song_info = await musicCollection.findOneAndUpdate(
-        {_id: music_id},
+        {_id: new ObjectId(music_id)},
         {
             $push: {posts: insertInfo.insertedId},
             $inc:
@@ -51,7 +50,7 @@ export const createPost = async (
         }
     );
     if (!update_song_info)
-        throw `Could not add post to ${user_id}'s post collection!`;
+        throw `Could not add update posts for music piece ${music_id}'s post collection!`;
 
     const newId = insertInfo.insertedId.toString();
     const new_post = await getPostById(newId);

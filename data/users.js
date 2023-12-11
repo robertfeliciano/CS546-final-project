@@ -171,38 +171,38 @@ export const removeUser = async (userId) => {
 
 /**
  * makes user b follow user a
- * @param user_to_update user a
+ * @param user_to_follow user a
  * @param new_follower_id user b
  * @returns {Promise<{followers: ([]|*)}>}
  */
-export const updateFollowers = async (user_to_update, new_follower_id) => {
+export const updateFollowers = async (user_to_follow, new_follower_id) => {
     // first check if user b already follows user a
     const userCollection = await users();
     const check = await userCollection.find(
         {
-            _id: user_to_update,
+            _id: user_to_follow,
             followers: new ObjectId(new_follower_id)
         }).toArray();
 
     if (check.length > 0)
-        throw [204, `User ${new_follower_id} already follows ${user_to_update}`];
+        throw [204, `User ${new_follower_id} already follows ${user_to_follow}`];
 
     const updatedUserAFollowers = await userCollection.findOneAndUpdate(
-        {_id: new ObjectId(user_to_update)},
+        {_id: new ObjectId(user_to_follow)},
         {$push: {followers: new ObjectId(new_follower_id)}},
         {returnDocument: 'after'}
     );
     if (!updatedUserAFollowers) {
-        throw [404, `Could not follow user with id of ${user_to_update}`];
+        throw [404, `Could not follow user with id of ${user_to_follow}`];
     }
 
     const updatedUserBFollowing = await userCollection.findOneAndUpdate(
-        {_id: new ObjectId(user_to_update)},
+        {_id: new ObjectId(user_to_follow)},
         {$push: {following: new ObjectId(new_follower_id)}},
         {returnDocument: 'after'}
     );
     if (!updatedUserBFollowing) {
-        throw [404, `Could not add ${new_follower_id} to following list of user ${user_to_update}`];
+        throw [404, `Could not add ${new_follower_id} to following list of user ${user_to_follow}`];
     }
     return {following: updatedUserBFollowing.following, followers: updatedUserAFollowers.followers};
 }
@@ -284,8 +284,10 @@ export const loginUser = async (emailAddress, password) => {
     let comp = await bcrypt.compare(password, user.password);
     if (comp)
         return {
+            _id: user._id,
             username: user.username,
-            email: user.email
+            email: user.email,
+            following: user.following
         };
     else
         throw `Either the email address or password is invalid`;

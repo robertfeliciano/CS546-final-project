@@ -1,4 +1,4 @@
-import {comments, users} from '../config/mongoCollections.js';
+import {comments, users, posts} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import bcrypt from 'bcryptjs';
 import * as postFunctions from './posts.js';
@@ -297,33 +297,29 @@ export const getRecommendations = async(userId) => {
     //input validation 
 
     let user = await getUserById(userId)
+
+    const postCollection = await posts();
     
-    let following = user.following
-
-    let friend_songs = {}
-
-    for (let user_f_id of following) {
-        let user_f = await getUserById(user_f_id)
-        for (let post_id of user_f.userPosts) {
-            let curr_user_post = await postFunctions.getPostById(post_id)
-            if (Object.keys(friend_songs).includes(curr_user_post.music_id)) {
-                friend_songs[curr_user_post.music_id] = friend_songs[curr_user_post.music_id] + 1 
-            }
-            else {
-                friend_songs[curr_user_post.music_id] = 1
-            } 
-        }
+    const postList = await postCollection
+      .find({user_id: {$in: user.following}})
+      .toArray()
+    
+    const userPostMusicIds = []
+    for (let post of user.userPosts) {
+        let curr_post = await postFunctions.getPostById(post)
+        userPostMusicIds.push(curr_post.music_id)
     }
+    
+    const filteredPostList = postList.filter(post => !userPostMusicIds.includes(post.music_id))
 
-    let user_songs = []
-    for (let user_post_id of user.userPosts) {
-        let curr_post = await postFunctions.getPostById(user_post_id)
-        user_songs.push(curr_post.music_id)
-    }
+    const musicIdFrequency = filteredPostList.reduce((map, post) => {
+        const musicId = post.music_id;
+        map[musicId] = (map[musicId] || 0) + 1;
+        return map;
+      }, {});
 
-    let not_listened = user_songs.filter(val => !Object.keys(friend_songs).includes(val))
-    let sorted_songs = not_listened.sort((key1,key2) => friend_songs[key1] - friend_songs[key2])
+    const sortedMusicIds = Object.keys(musicIdFrequency).sort((a, b) => musicIdFrequency[b] - musicIdFrequency[a]);
 
-    return sorted_songs
+    return sortedMusicIds
 
 }   

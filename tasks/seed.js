@@ -77,7 +77,7 @@ const main = async () => {
 
   console.log("Seeding posts...");
   let post_ids = [];
-  const date = new Date().toLocaleDateString();
+  const date = new Date();
   try {
     for (let [idx, song_id] of MBDTF_ids.entries()) {
       const user_id = userIds[Math.floor(Math.random() * userIds.length)];

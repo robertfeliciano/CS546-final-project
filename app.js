@@ -38,9 +38,8 @@ app.use(
         secret: 'some secret string!',
         saveUninitialized: false,
         resave: false,
-        // TODO: REMOVE USER:TRUE FIELD
-        user: true,
-        // will need to store user _id and username here for rendering stuff
+        // TODO: REMOVE THIS
+        user: true
     })
 )
 

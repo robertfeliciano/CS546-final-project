@@ -13,7 +13,7 @@ router
     let formInput = req.body;
 
     // Check if all fields are supplied
-    const missingFields = [];
+    let missingFields = [];
     if (!formInput.usernameInput) missingFields.push('Username');
     if (!formInput.emailAddressInput) missingFields.push('Email Address');
     if (!formInput.passwordInput) missingFields.push('Password');

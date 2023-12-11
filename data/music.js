@@ -1,5 +1,8 @@
 import {music} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
+import Fuse from 'fuse.js';
+
+//input validation
 
 /**
  * insert new music into db
@@ -35,12 +38,12 @@ export const insertMusic = async (
 
   if (type === 'song') {
     const music_id = insertInfo.insertedId.toString();
-    const new_music = await getMusicById("song", music_id);
+    const new_music = await getTypeMusicById("song", music_id);
     return new_music;
   }
   else { // type is album
     const music_id = insertInfo.insertedId.toString();
-    const new_music = await getMusicById("album", music_id);
+    const new_music = await getTypeMusicById("album", music_id);
     return new_music;
   }
 
@@ -69,21 +72,59 @@ export const getAllAlbums = async () => {
   return song_list;
 }
 
-const getMusicById = async (of_type, music_id) => {
+export const getAllMusic = async () => {
+  const musicCollection = await music();
+  const music_found = await musicCollection.find(
+      {},
+      {posts: 0}
+  ).toArray();
+  return music_found;
+}
+
+const getTypeMusicById = async (of_type, music_id) => {
   const musicCollection = await music();
   const song_found = await musicCollection.findOne({
     type: of_type,
     _id: new ObjectId(music_id)
   });
+  // TODO TEST !SONG_FOUND
   return song_found;
 }
 
 export const getSongById = async (song_id) => {
-  const song_found = await getMusicById("song", song_id);
+  const song_found = await getTypeMusicById("song", song_id);
   return song_found;
 }
 
 export const getAlbumById = async (album_id) => {
-  const album_found = await getMusicById("album", album_id);
+  const album_found = await getTypeMusicById("album", album_id);
   return album_found;
+}
+
+export const getMusicById = async (music_id) => {
+  const musicCollection = await music();
+  const music_found = await musicCollection.findOne({
+    _id: new ObjectId(music_id)
+  });
+  return music_found;
+}
+
+export const fuzzyFindMusic = async (query) => {
+  const albums = await getAllAlbums();
+  const songs = await getAllSongs();
+  const piece_options = {
+    keys: ['name'], threshold: 0.45
+  }
+  const fuse_albums = new Fuse(
+      albums, piece_options
+  );
+  const fuse_songs = new Fuse(
+      songs, piece_options
+  );
+  const albums_found = fuse_albums.search(query);
+  const songs_found = fuse_songs.search(query);
+
+  return [
+      albums_found.map(obj => obj.item),
+      songs_found.map(obj => obj.item)];
 }

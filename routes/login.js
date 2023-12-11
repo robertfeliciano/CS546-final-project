@@ -11,7 +11,7 @@ router
   })
   .post(async (req, res) => {
     //code here for POST
-    const { emailAddressInput, passwordInput } = req.body;
+    let { emailAddressInput, passwordInput } = req.body;
 
     // Check if all fields are supplied
     
@@ -22,8 +22,10 @@ router
       const user = await loginUser(emailAddressInput, passwordInput);
       if (user) {
           req.session.user = {
+              id: user._id,
               username: user.username,
-              emailAddress: user.email
+              emailAddress: user.email,
+              following: user.following
           };
           return res.status(200).redirect('/home');
       } else {

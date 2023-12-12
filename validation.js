@@ -73,8 +73,8 @@ export const checkString = (strVal, varName) => {
     strVal = strVal.trim();
     if (strVal.length === 0)
       throw `Error: ${varName} cannot be an empty string or string with just spaces`;
-    if (strVal.length > 250)
-      throw `Error: ${varName} cannot be longer than 250 characters!`;
+    if (strVal.length > 150)
+      throw `Error: ${varName} cannot be longer than 150 characters!`;
     if (!isNaN(strVal))
       throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
     return strVal;

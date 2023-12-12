@@ -52,6 +52,24 @@ export const checkProfilePic = async (pfp) => {
   })
 }
 
+export const checkString = (strVal, varName) => {
+    if (!strVal) throw `Error: You must supply a ${varName}!`;
+    if (typeof strVal !== 'string') throw `Error: ${varName} must be a string!`;
+    strVal = strVal.trim();
+    if (strVal.length === 0)
+      throw `Error: ${varName} cannot be an empty string or string with just spaces`;
+    if (!isNaN(strVal))
+      throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
+    return strVal;
+}
+
+export const checkRating = (intVal, varName) => {
+    if (!intVal) throw `Error: You must supply a ${varName}!`;
+    if (typeof intVal !== 'number') throw `Error: ${varName} must be a number!`;
+    if (!Number.isInteger(intVal)) throw `Error: ${varName} must be an integer!`;
+    if (intVal < 0 || intVal > 5) throw `Error: ${varName} must be a positive integer between 0 and 5!`;
+    return intVal;
+}
 
 // error functions
 
@@ -130,6 +148,31 @@ $(document).ready(function () {
 		} catch (e) {
 			event.preventDefault();
 			displayError('#profilePictureInput', e.message ?? e);
+		}
+	}
+
+	$('#music-submission-form').submit(function (event)) {
+		const rating = $('#ratingInput').val();
+		const content = $('#contentInput').val();
+		clearErrors();
+
+		// check for missing fields
+		let missingFields = [];
+		if (!rating) missingFields.push('Rating');
+		if (!content) missingFields.push('Content');
+
+		if (missingFields.length > 0) {
+			event.preventDefault();
+			displayError('#contentInput', `Missing field(s): ${missingFields.join(', ')}`);
+		}
+		
+		// check for specific validity
+		try {
+			checkRating(rating);
+			checkString(content);
+		} catch (e) {
+			event.preventDefault();
+			displayError('#contentInput', e.message ?? e);
 		}
 	}
 });

@@ -49,14 +49,7 @@ router
           break;
         }
       }
-      if (ownPost) {
-        //posts/manage is if you own the post you are accessing
-        res.render('posts/manage', {post: post});
-      }
-      else {
-        //posts/single is if you don't own the post you are accessing
-        res.render('posts/single', {post: post});
-      }
+      res.render('posts/single', {post: post, ownPost: ownPost});
     } catch (e) {
       res.status(404).json({error: e});
     }
@@ -85,7 +78,7 @@ router
       }
       if (!alreadyLiked) {
         const post = await postsData.likePost(req.params.id, user_id);
-        res.status(200).render('posts/single', {post: post});
+        res.status(200).render('posts/single', {post: post, ownPost: false});
       }
     } catch (e) {
       let status = e[0];
@@ -117,7 +110,7 @@ router
         res.status(403).json({error: 'You do not have permission to delete this post'});
       }
       let deletedPost = await postsData.removePost(req.params.id, user_id);
-      res.status(200).json(deletedPost);
+      res.render('posts/', {message: 'Post deleted successfully'});
     } catch (e) {
       let status = e[0];
       let message = e[1];

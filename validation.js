@@ -7,7 +7,6 @@ export const checkUsername = (name) => {
   if (name === undefined) throw `Must provide input for username`;
   name = name.trim();
   if (name === "") throw `Username must not be an empty string.`;
-  if (/\d/.test(name)) throw `Username must not contain numbers.`;
   if (name.length < 2 || name.length > 25) throw `Username must be between 2 and 25 characters.`;
   return name;
 }
@@ -58,13 +57,14 @@ export const checkProfilePic = async (pfp) => {
 
 export const checkId = (id, type) => {
   if (!id) throw `You must provide an id to search for. ${type}`;
-  if (typeof id !== 'string') throw `Id must be a string for ${type}`;
-  if (id.trim().length === 0) throw `Id cannot be an empty string or just spaces for ${type}`;
+  if (typeof id === 'string') {
+    id = id.trim()
+    if (id.length === 0) throw `Id cannot be an empty string or just spaces for ${type}`;
+  }
+  if (typeof id !== 'string' && !ObjectId.isValid(id)) throw `invalid id for ${type}`;
 
-  id = id.trim();
   if (!ObjectId.isValid(id)) throw `invalid object ID for ${type}`;
-
-  return id;
+  return new ObjectId(id);
 }
 
 export const checkString = (strVal, varName) => {
@@ -73,9 +73,45 @@ export const checkString = (strVal, varName) => {
     strVal = strVal.trim();
     if (strVal.length === 0)
       throw `Error: ${varName} cannot be an empty string or string with just spaces`;
+    if (strVal.length > 250)
+      throw `Error: ${varName} cannot be longer than 250 characters!`;
     if (!isNaN(strVal))
       throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
     return strVal;
+}
+
+export const checkGenre = (strVal) => {
+  if (!strVal) throw `Error: You must supply a genre!`;
+  if (typeof strVal !== 'string') throw `Error: genre must be a string!`;
+  strVal = strVal.trim();
+  if (strVal.length === 0)
+    throw `Error: genre cannot be an empty string or string with just spaces`;
+  if (!isNaN(strVal))
+    throw `Error: ${strVal} is not a valid value for genre as it only contains digits`;
+  return strVal;
+}
+
+export const checkType = (strVal) => {
+  if (!strVal) throw `Error: You must supply a type of music!`;
+  if (typeof strVal !== 'string') throw `Error: type of music must be a string!`;
+  strVal = strVal.trim();
+  if (strVal !== 'album' && strVal !== 'song') throw `Error: type of music must either be album or song`;
+  if (strVal.length === 0)
+    throw `Error: type of music cannot be an empty string or string with just spaces`;
+  if (!isNaN(strVal))
+    throw `Error: ${strVal} is not a valid value for a type of music as it only contains digits`;
+  return strVal;
+}
+
+export const checkName = (name, which) => {
+  if (!name) throw `Error: You must supply a ${which}!`;
+  if (typeof name !== 'string') throw `Error: ${which} must be a string!`;
+  name = name.trim();
+  if (name.length === 0)
+    throw `Error: ${which} cannot be an empty string or string with just spaces`;
+  if (!isNaN(name))
+    throw `Error: ${name} is not a valid value for ${which} as it only contains digits`;
+  return name;
 }
 
 export const checkRating = (intVal, varName) => {
@@ -84,4 +120,10 @@ export const checkRating = (intVal, varName) => {
     if (!Number.isInteger(intVal)) throw `Error: ${varName} must be an integer!`;
     if (intVal < 0 || intVal > 5) throw `Error: ${varName} must be a positive integer between 0 and 5!`;
     return intVal;
+}
+
+export const checkDate = (date) => {
+  if (!(date instanceof Date))
+    throw `Error: must supply a valid entry for Date!`;
+  return date;
 }

@@ -2,6 +2,7 @@ import {Router} from 'express';
 import * as val  from '../validation.js';
 import {postsData} from '../data/index.js'
 import {fromPostman} from "../helpers.js";
+import {ObjectId} from "mongodb";
 
 const router = Router();
 
@@ -9,11 +10,13 @@ const router = Router();
 router
     .route('/')
     .get(async (req, res) => {
+        // req.session.user = {_id: '65778e7ebfbd20eee0371d87'};
         try {
-            const following_posts = await postsData.getAllPostsFromFollowing(
+            let following_posts = await postsData.getAllPostsFromFollowing(
                 req.session.user._id
             );
-            // TODO SORT BASED ON DATE-TIME OF POST, MOST RECENT COMES FIRST
+            // SORT BASED ON DATE-TIME OF POST, MOST RECENT COMES FIRST
+            following_posts = following_posts.sort((a, b) => b.date - a.date);
             if (fromPostman(req.headers['user-agent']))
                 return res.json({posts: following_posts});
             else

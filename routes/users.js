@@ -163,6 +163,7 @@ router.route('/follow/:id').patch(async (req, res) => {
             }
         }
         const updatedUser = await usersData.addFollower(req.params.id, user_id);
+        req.session.user.following.push(req.params.id);
         return res.render(`/users/${req.params.id}`);
     } catch (e) {
         return res.status(400).json({error: e});
@@ -189,6 +190,7 @@ router.route('/unfollow/:id').patch(async (req, res) => {
         if (!following) {
             throw `User ${user_id} does not follow user ${req.params.id}`;
         }
+        req.session.user.following.splice(req.session.user.following.indexOf(req.params.id), 1);
         const updatedUser = await usersData.removeFollower(req.params.id, user_id);
         return res.render(`/users/${req.params.id}`);
     } catch (e) {

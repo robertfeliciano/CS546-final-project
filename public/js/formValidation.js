@@ -37,6 +37,22 @@ const confirmPass = (original, confirmed) => {
   return confirmed;
 }
 
+export const checkBio = (bio) => {
+  bio = bio.trim();
+  if (bio.length < 1 || bio.length > 150) throw `Bio must be between 1 and 150 characters!`;
+  return bio;
+}
+
+export const checkProfilePic = async (pfp) => {
+  pfp = pfp.trim();
+  fs.readdir('./assets/photos', (err, files) => {
+    if (err) throw `Could not read from available profile pictures... Try again soon!`;
+    if (!files.includes(pfp)) throw `Please select an available option!`;
+    return pfp;
+  })
+}
+
+
 // error functions
 
 function displayError(input, message) {
@@ -49,6 +65,9 @@ function clearErrors() {
 }
 
 // validate forms
+// TODO generalize erroring and let user know which field caused the error
+// TODO multiple errors
+// TODO figure out where to put errors, should it just be hidden before?
 
 $(document).ready(function () {
 	// TODO attach to actual form once it is made and get correct ids
@@ -68,14 +87,48 @@ $(document).ready(function () {
 		}
 		
 		// check for specific validity
-		// TODO multiple errors, might have to rewrite checking functions
 		try {
 			checkEmail(email);
 			checkPass(password);
 		} catch (e) {
 			event.preventDefault();
-			// TODO figure out where to put errors, should it just be hidden before?
 			displayError('#passwordInput', e.message ?? e);
 		}
 	}
+
+	$('#registration-form').submit(function (event)) {
+		const username = $('usernameInput').val();
+		const email = $('#emailAddressInput').val();
+		const password = $('#passwordInput').val();
+		const password2 = $('#confirmPasswordInput').val();
+		const bio = $('bioInput').val();
+		const profilePicture = $('bioInput').val();
+		clearErrors();
+
+		// check for missing fields
+		let missingFields = [];
+    if (!username) missingFields.push('Username');
+    if (!emailAddress) missingFields.push('Email Address');
+    if (!password) missingFields.push('Password');
+    if (!password2) missingFields.push('Confirm Password');
+    if (!bio) missingFields.push('Bio');
+    if (!profilePicture) missingFields.push('Profile Picture');
+		
+		if (missingFields.length > 0) {
+			event.preventDefault();
+			displayError('#passwordInput', `Missing field(s): ${missingFields.join(', ')}`);
+		}
+
+		// check for specific validity
+		try {
+			checkUsername(user);
+			checkEmail(email);
+			checkPass(password);
+			checkConfirmPass(password, password2);
+			checkBio(bio);
+			checkProfilePic(profilePicture);
+		} catch (e) {
+			event.preventDefault();
+			displayError('#confirmPasswordInput', e.message ?? e);
+		}
 });

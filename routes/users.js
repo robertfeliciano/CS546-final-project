@@ -55,13 +55,8 @@ router.route('/:id').get(async (req, res) => {
     }
     try {
       const user = await usersData.getUserById(req.params.id);
-      if (user_id.equals(req.params.id)) {
-        res.render('users/manage', {user: user});
-      }
-      else {
-        res.render('users/single', {user: user});
-      }
-
+      let owner = user_id.equals(req.params.id);
+      res.render('users/single', {user: user, owner: owner})
     } catch (e) {
       res.status(404).json({error: e});
     }
@@ -145,7 +140,7 @@ router.route('/:id/edit').get(async (req, res) => {
         }
         const user = await usersData.getUserById(req.params.id);
         const updatedUser = await usersData.updateUserPatch(req.params.id, req.body.userBio);
-        return res.render('users/manage', {user: updatedUser});
+        return res.render('users/single', {user: updatedUser, owner: true});
     } catch (e) {
         return res.status(400).json({error: e});
     }
@@ -167,7 +162,7 @@ router.route('/follow/:id').patch(async (req, res) => {
                 throw `User ${user_id} already follows user ${req.params.id}`;
             }
         }
-        const updatedUser = await usersData.updateFollowers(req.params.id, user_id);
+        const updatedUser = await usersData.addFollower(req.params.id, user_id);
         return res.render(`/users/${req.params.id}`);
     } catch (e) {
         return res.status(400).json({error: e});
@@ -194,7 +189,7 @@ router.route('/unfollow/:id').patch(async (req, res) => {
         if (!following) {
             throw `User ${user_id} does not follow user ${req.params.id}`;
         }
-        const updatedUser = await usersData.unfollow(req.params.id, user_id);
+        const updatedUser = await usersData.removeFollower(req.params.id, user_id);
         return res.render(`/users/${req.params.id}`);
     } catch (e) {
         return res.status(400).json({error: e});

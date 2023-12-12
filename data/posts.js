@@ -268,6 +268,8 @@ export const editPostContent = async (postId, newContent) => {
     newContent = val.checkString(newContent, "post content");
 
     const postCollection = await posts();
+    // const originalPost = postCollection.findOne({_id: new ObjectId(postId)});
+
     const updatedInfo = await postCollection.findOneAndUpdate(
         {_id: new ObjectId(postId)},
         {$set: {content: newContent}}

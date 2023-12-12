@@ -333,6 +333,19 @@ const updateUserPatch = async (
     return updatedInfo;
 }
 
+export const updateUserBio = async (userId, newBio) => {
+    const userCollection = await users();
+    userId = val.checkId(userId);
+    newBio = val.checkBio(newBio);
+    const updatedInfo = await userCollection.findOneAndUpdate(
+        {_id: new ObjectId(userId)},
+        {$set: {bio: newBio}}
+    )
+    if (!updatedInfo)
+        throw `Could not update user ${userId}'s bio successfully!`;
+    return updatedInfo;
+}
+
 
 /**
  * This function will be called when a user submits the login form

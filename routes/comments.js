@@ -35,14 +35,13 @@ router
   });
 
 router
-  .route('/:post_id/:id')
-  .delete(async (req, res) => {
-    // delete a comment
+  .route('/:id')
+  .get(async (req, res) => {
+    // get a comment
     let user_id;
     try {
       if (!req.session.user) res.render('/login');
       user_id = validation.checkId(req.session.user._id, 'User ID');
-      req.params.post_id = validation.checkId(req.params.post_id, 'Post ID');
       req.params.id = validation.checkId(req.params.id, 'Comment ID');
     } catch (e) {
       return res.status(400).json({error: e});
@@ -52,8 +51,30 @@ router
       if (!comment.user_id.equals(user_id)) {
         throw `User ${user_id} does not own comment ${req.params.id}`;
       }
+      let ownComment = comment.user_id.equals(user_id);
+      res.render('comments/single', {comment: comment, ownComment: ownComment});
+    } catch (e) {
+      res.status(500).json({error: e});
+    }
+  })
+  .delete(async (req, res) => {
+    // delete a comment
+    let user_id;
+    try {
+      if (!req.session.user) res.render('/login');
+      user_id = validation.checkId(req.session.user._id, 'User ID');
+      req.params.id = validation.checkId(req.params.id, 'Comment ID');
+    } catch (e) {
+      return res.status(400).json({error: e});
+    }
+    try {
+      const comment = await commentsData.getCommentById(req.params.id);
+      if (!comment.user_id.equals(user_id)) {
+        throw `User ${user_id} does not own comment ${req.params.id}`;
+      }
+      const post_id = comment.post_id;
       await commentsData.deleteComment(req.params.id);
-      res.redirect(`/posts/${req.params.post_id}`);
+      res.redirect(`/posts/${post_id}`);
     } catch (e) {
       res.status(500).json({error: e});
     }

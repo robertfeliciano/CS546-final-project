@@ -61,12 +61,11 @@ router
        * so: "The%20life%20of%20pablo"
        */
       let query = req.query.piece;
-      // TODO: ERROR CHECKING
-      console.log(`query: ${query}`);
+      query = val.checkName(query, 'search query');
+      // albums and songs could potentially be empty, thats fine
+      // we just want to display nothing then.
       const [albums, songs] = await musicData.fuzzyFindMusic(query);
-      console.log(albums);
-      console.log("\n\n\n\n\n\n");
-      console.log(songs);
+      return res.render('searchResult', {albums: albums, songs: songs});
     });
 
 router

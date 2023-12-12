@@ -48,26 +48,34 @@ function clearErrors() {
 	$('.error-message').remove();
 }
 
-
 // validate forms
 
 $(document).ready(function () {
 	// TODO attach to actual form once it is made and get correct ids
 	$('#login-form').submit(function (event)) {
-		// TODO: show multiple errors at once?
 		const email = $('#emailAddressInput').val();
 		const password = $('#passwordInput').val();
-		const password2 = $('#confirmPasswordInput').val();
-		
 		clearErrors();
+
+		// check for missing fields
+		let missingFields = [];
+		if (!email) missingFields.push('Email Address');
+		if (!password) missingFields.push('Password');
+
+		if (missingFields.length > 0) {
+			event.preventDefault();
+			displayError('#passwordInput', `Missing field(s): ${missingFields.join(', ')}`);
+		}
+		
+		// check for specific validity
+		// TODO multiple errors, might have to rewrite checking functions
 		try {
 			checkEmail(email);
 			checkPass(password);
-			checkConfirmPass(password, password2);
 		} catch (e) {
 			event.preventDefault();
 			// TODO figure out where to put errors, should it just be hidden before?
-			displayError('#confirmPasswordInput', e.message ?? e);
+			displayError('#passwordInput', e.message ?? e);
 		}
 	}
 });

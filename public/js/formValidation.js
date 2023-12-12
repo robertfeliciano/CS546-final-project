@@ -102,7 +102,7 @@ $(document).ready(function () {
 		const password = $('#passwordInput').val();
 		const password2 = $('#confirmPasswordInput').val();
 		const bio = $('bioInput').val();
-		const profilePicture = $('bioInput').val();
+		const profilePicture = $('profilePictureInput').val();
 		clearErrors();
 
 		// check for missing fields
@@ -129,6 +129,7 @@ $(document).ready(function () {
 			checkProfilePic(profilePicture);
 		} catch (e) {
 			event.preventDefault();
-			displayError('#confirmPasswordInput', e.message ?? e);
+			displayError('#profilePictureInput', e.message ?? e);
 		}
+	}
 });

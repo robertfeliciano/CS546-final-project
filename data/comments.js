@@ -80,8 +80,12 @@ export const getCommentById = async (commentId) => {
 
 export const removeComment = async (commentId, deleterId) => {
 
-    commentId = val.checkId(commentId, "comment id");
-    deleterId = val.checkId(deleterId, 'deleter id');
+    try {
+        commentId = val.checkId(commentId, "comment id");
+        deleterId = val.checkId(deleterId, 'deleter id');
+    } catch(emsg) {
+        throw [400, emsg]
+    }
 
 
     const commentsCollection = await comments();
@@ -90,9 +94,10 @@ export const removeComment = async (commentId, deleterId) => {
     const comment_id_to_remove = new ObjectId(commentId);
     const user_id = new ObjectId(comment.user_id);
     const post_id = new ObjectId(comment.post_id)
+    deleterId = new ObjectId(deleterId);
     commentId = new ObjectId(commentId);
 
-    if (!commentId.equals(user_id)) throw [500, `Only the original poster is allowed to delete a comment`];
+    if (!deleterId.equals(user_id)) throw [400, `Only the original poster is allowed to delete a comment`];
 
     const userCollection = await users();
     const userUpdatedInfo = await userCollection.findOneAndUpdate(

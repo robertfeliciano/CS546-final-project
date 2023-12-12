@@ -136,7 +136,11 @@ export const getUserByName = async (username) => {
  */
 export const removeUser = async (userId) => {
 
-    userId = val.checkId(userId, 'user id');
+    try {
+        userId = val.checkId(userId, 'user id');
+    } catch(emsg) {
+        throw [400, emsg];
+    }
 
     const userCollection = await users();
     let user = await getUserById(userId);
@@ -195,8 +199,12 @@ export const removeUser = async (userId) => {
  */
 export const addFollower = async (user_to_follow, new_follower_id) => {
 
-    user_to_follow = val.checkId(user_to_follow, 'user to follow id');
-    new_follower_id = val.checkId(new_follower_id, 'new follower id');
+    try {
+        user_to_follow = val.checkId(user_to_follow, 'user to follow id');
+        new_follower_id = val.checkId(new_follower_id, 'new follower id');
+    } catch(emsg) {
+        throw [400, emsg];
+    }
 
     // first check if user b already follows user a
     const userCollection = await users();
@@ -230,9 +238,12 @@ export const addFollower = async (user_to_follow, new_follower_id) => {
 }
 
 export const removeFollower = async (user_to_unfollow, unfollower_id) => {
-
-    user_to_unfollow = val.checkId(user_to_unfollow, 'user to unfollow id');
-    unfollower_id = val.checkId(unfollower_id, 'unfollower id');
+    try {
+        user_to_unfollow = val.checkId(user_to_unfollow, 'user to unfollow id');
+        unfollower_id = val.checkId(unfollower_id, 'unfollower id');
+    } catch(emsg) {
+        throw [400, emsg];
+    }
 
     // first check if user b doesnt already follow user a
     const userCollection = await users();

@@ -151,8 +151,12 @@ export const getAllPostsFromMusicId = async (musicId) => {
  */
 export const removePost = async (postId, deleterId) => {
 
-    postId = val.checkId(postId, 'post id');
-    deleterId = val.checkId(deleterId, 'deleter id');
+    try {
+        postId = val.checkId(postId, 'post id');
+        deleterId = val.checkId(deleterId, 'deleter id');
+    } catch(emsg) {
+        throw [400, emsg];
+    }
 
     const postsCollection = await posts();
     let post = await getPostById(postId);
@@ -162,7 +166,7 @@ export const removePost = async (postId, deleterId) => {
     deleterId = new ObjectId(deleterId);
 
     if (!deleterId.equals(user_id))
-        throw `Only the original poster can delete a post.`;
+        throw [400, `Only the original poster can delete a post.`];
 
     // remove post from user that posted it
     const userCollection = await users();
@@ -227,8 +231,12 @@ export const likePost = async (
     liker_id
 ) => {
 
-    postId = val.checkId(postId, 'post id');
-    liker_id = val.checkId(liker_id, 'liker id');
+    try {
+        postId = val.checkId(postId, 'post id');
+        liker_id = val.checkId(liker_id, 'liker id');
+    } catch(emsg) {
+        throw [400, emsg];
+    }
 
     const postsCollection = await posts();
 

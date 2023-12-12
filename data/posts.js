@@ -1,6 +1,6 @@
-import {posts, users, music} from '../config/mongoCollections.js';
+import {posts, users, music, comments} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
-import * as validation from '../validation.js';
+import * as val from '../validation.js';
 
 
 export const createPost = async (
@@ -11,7 +11,11 @@ export const createPost = async (
     date
 ) => {
 
-    //input validation
+    music_id = val.checkId(music_id, 'music piece id');
+    rating = val.checkRating(rating, 'music rating');
+    user_id = val.checkId(user_id, 'user id');
+    content = val.checkString(content, 'post content');
+    date = val.checkDate(date);
 
     let newPost = {
         music_id:music_id,
@@ -84,7 +88,7 @@ export const getAllPosts = async () => {
  */
 export const getPostById = async (postId) => {
     
-    //input validation
+    postId = val.checkId(postId, 'post id');
 
     const postsCollection = await posts();
     const post = await postsCollection.findOne({_id: new ObjectId(postId)});
@@ -97,12 +101,15 @@ export const getPostById = async (postId) => {
 }
 
 export const getAllPostsFromFollowing = async (userId) => {
-    //input validation
+
+    userId = val.checkId(userId, 'user id');
 
     const userCollection = await users();
     const postsCollection = await posts();
 
     const user = await userCollection.findOne({_id: new ObjectId(userId)});
+    if (!user)
+        throw `Could not find user with id: ${userId.toString()}`;
     const followingList = user.following;
 
     const postsFound = await postsCollection.find(
@@ -118,7 +125,8 @@ export const getAllPostsFromFollowing = async (userId) => {
 }
 
 export const getAllPostsFromMusicId = async (musicId) => {
-    //input validation
+
+    musicId = val.checkId(musicId, 'music id');
 
     const postCollection = await posts();
     const postsFound = await postCollection.find(
@@ -143,7 +151,8 @@ export const getAllPostsFromMusicId = async (musicId) => {
  */
 export const removePost = async (postId, deleterId) => {
 
-    //input validation 
+    postId = val.checkId(postId, 'post id');
+    deleterId = val.checkId(deleterId, 'deleter id');
 
     const postsCollection = await posts();
     let post = await getPostById(postId);
@@ -175,9 +184,29 @@ export const removePost = async (postId, deleterId) => {
     if (!songUpdatedInfo)
         throw [404, `Could not delete post with id of ${postId} from piece ${music_id.toString()}`];
 
+
+    // remove comments under the post
+    const commentCollection = await comments();
+    for (let comment_id of post.comments){
+        const updatedComment = await commentCollection.findOneAndDelete({_id: new ObjectId(comment_id)});
+        if (!updatedComment)
+            throw [404, `Could not delete comments on post ${postId}`];
+    }
+
+    // remove post from the likes of the users who have liked it
+    for (let liker_id of post.likes){
+        const updatedUserLikes = await userCollection.findOneAndUpdate(
+            {_id: new ObjectId(liker_id)},
+            {$pull: {liked_posts: new ObjectId(postId)}}
+        )
+        if (!updatedUserLikes)
+            throw [404, `Could not remove post from other users' likes`];
+    }
+
     const deletionInfo = await postsCollection.findOneAndDelete({
         _id: new ObjectId(postId)
     });
+
 
     if (!deletionInfo) {
         throw [404, `Could not delete post with id of ${postId}`];
@@ -198,7 +227,8 @@ export const likePost = async (
     liker_id
 ) => {
 
-    //input validation 
+    postId = val.checkId(postId, 'post id');
+    liker_id = val.checkId(liker_id, 'liker id');
 
     const postsCollection = await posts();
 

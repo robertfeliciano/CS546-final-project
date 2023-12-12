@@ -351,7 +351,7 @@ export const loginUser = async (emailAddress, password) => {
     let comp = await bcrypt.compare(password, user.password);
     if (comp)
         return {
-            _id: user._id,
+            _id: new ObjectId(user._id),
             username: user.username,
             email: user.email,
             following: user.following

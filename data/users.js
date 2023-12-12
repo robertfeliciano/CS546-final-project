@@ -351,7 +351,7 @@ export const loginUser = async (emailAddress, password) => {
 
 export const getRecommendations = async(userId) => {
 
-    userId = val.checkId(userId);
+    userId = val.checkId(userId, 'user id');
 
     let user = await getUserById(userId)
 

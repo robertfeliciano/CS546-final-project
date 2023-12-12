@@ -250,7 +250,6 @@ export const likePost = async (
         throw [404, 'Could not update post successfully'];
     }
 
-
     const userCollection  = await users();
     const userUpdatedInfo = await userCollection.findOneAndUpdate(
         {_id: new ObjectId(liker_id)},
@@ -261,6 +260,21 @@ export const likePost = async (
     if (!userUpdatedInfo)
         throw [404, 'Could not like post successfully!'];
 
-
     return updatedInfo
+}
+
+export const editPostContent = async (postId, newContent) => {
+    postId = val.checkId(postId);
+    newContent = val.checkString(newContent, "post content");
+
+    const postCollection = await posts();
+    const updatedInfo = await postCollection.findOneAndUpdate(
+        {_id: new ObjectId(postId)},
+        {$set: {content: newContent}}
+    );
+
+    if (!updatedInfo)
+        throw [404, 'Could not edit post successfully!'];
+
+    return updatedInfo;
 }

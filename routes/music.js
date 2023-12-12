@@ -55,6 +55,10 @@ router
     .get(async (req, res) => {
       /**
        * TODO: FRONT END TEAM
+       * upon submitting something to a search bar
+       * the action should be /music/search?piece=nameofpiece
+       * with method GET
+       * Also...
        * When the user inputs something into a search bar,
        * for example: "The life of pablo"
        * replace spaces with %20

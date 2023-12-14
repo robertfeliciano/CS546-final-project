@@ -176,3 +176,57 @@ export const getSongsFromAlbum = async (albumId) => {
     throw `Could not get songs for album with id ${albumId}`;
   return albumSongs;
 }
+
+export const getPostsForMusic = async (musicId) => {
+  musicId = val.checkId(musicId, 'music id');
+  const allMusic = await music();
+  // i am tired of reformatting the stuff Compass lets me copy, so it's staying this way now
+  const piecePosts = await allMusic.aggregate([
+    {
+      '$match': {
+        '_id': new ObjectId(musicId)
+      }
+    }, {
+      '$unwind': '$posts'
+    }, {
+      '$lookup': {
+        'from': 'posts',
+        'localField': 'posts',
+        'foreignField': '_id',
+        'as': 'musicPosts'
+      }
+    }, {
+      '$replaceRoot': {
+        'newRoot': {
+          '$arrayElemAt': [
+            '$musicPosts', 0
+          ]
+        }
+      }
+    }, {
+      '$lookup': {
+        'from': 'users',
+        'localField': 'user_id',
+        'foreignField': '_id',
+        'as': 'userInfo'
+      }
+    }, {
+      '$set': {
+        'username': {
+          '$arrayElemAt': [
+            '$userInfo.username', 0
+          ]
+        }
+      }
+    }, {
+      '$project': {
+        'userInfo': 0
+      }
+    }
+  ]).toArray();
+
+  if (!piecePosts)
+    throw `Could not get posts for music piece with id ${musicId}`;
+
+  return piecePosts;
+}

@@ -71,9 +71,52 @@ export const createPost = async (
 export const getAllPosts = async () => {
     const postsCollection = await posts();
     
-    let postList = await postsCollection
-        .find({})
-        .toArray();
+    let postList = await postsCollection.aggregate([
+        {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'user_id',
+                'foreignField': '_id',
+                'as': 'userInfo'
+            }
+        }, {
+            '$set': {
+                'userInfo': {
+                    '$arrayElemAt': [
+                        '$userInfo', 0
+                    ]
+                }
+            }
+        }, {
+            '$set': {
+                'username': '$userInfo.username'
+            }
+        }, {
+            '$lookup': {
+                'from': 'music',
+                'localField': 'music_id',
+                'foreignField': '_id',
+                'as': 'musicInfo'
+            }
+        }, {
+            '$set': {
+                'musicInfo': {
+                    '$arrayElemAt': [
+                        '$musicInfo', 0
+                    ]
+                }
+            }
+        }, {
+            '$set': {
+                'piecename': '$musicInfo.name'
+            }
+        }, {
+            '$project': {
+                'userInfo': 0,
+                'musicInfo': 0
+            }
+        }
+    ]).toArray();
     
     if (!postList) {
         throw 'Could not get all posts';
@@ -93,7 +136,50 @@ export const getPostById = async (postId) => {
     postId = val.checkId(postId, 'post id');
 
     const postsCollection = await posts();
-    const post = await postsCollection.findOne({_id: new ObjectId(postId)});
+    const post = await postsCollection.aggregate([
+        {
+            '$match': {
+                '_id': new ObjectId(postId)
+            }
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'user_id',
+                'foreignField': '_id',
+                'as': 'userInfo'
+            }
+        }, {
+            '$lookup': {
+                'from': 'music',
+                'localField': 'music_id',
+                'foreignField': '_id',
+                'as': 'musicInfo'
+            }
+        }, {
+            '$set': {
+                'username': {
+                    '$arrayElemAt': [
+                        '$userInfo.username', 0
+                    ]
+                },
+                'piecename': {
+                    '$arrayElemAt': [
+                        '$musicInfo.name', 0
+                    ]
+                },
+                'artist': {
+                    '$arrayElemAt': [
+                        '$musicInfo.artist', 0
+                    ]
+                }
+            }
+        }, {
+            '$project': {
+                'userInfo': 0,
+                'musicInfo': 0
+            }
+        }
+    ]).toArray();
 
     if (post === null) {
         throw 'No post with that id';
@@ -114,11 +200,59 @@ export const getAllPostsFromFollowing = async (userId) => {
         throw `Could not find user with id: ${userId.toString()}`;
     const followingList = user.following;
 
-    const postsFound = await postsCollection.find(
+    const postsFound = await postsCollection.aggregate([
         {
-            user_id: { $in: followingList }
+            '$match': {
+                'user_id': {
+                    '$in': followingList
+                }
+            }
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'user_id',
+                'foreignField': '_id',
+                'as': 'userInfo'
+            }
+        }, {
+            '$set': {
+                'userInfo': {
+                    '$arrayElemAt': [
+                        '$userInfo', 0
+                    ]
+                }
+            }
+        }, {
+            '$set': {
+                'username': '$userInfo.username'
+            }
+        }, {
+            '$lookup': {
+                'from': 'music',
+                'localField': 'music_id',
+                'foreignField': '_id',
+                'as': 'musicInfo'
+            }
+        }, {
+            '$set': {
+                'musicInfo': {
+                    '$arrayElemAt': [
+                        '$musicInfo', 0
+                    ]
+                }
+            }
+        }, {
+            '$set': {
+                'piecename': '$musicInfo.name',
+                'artist': '$musicInfo.artist'
+            }
+        }, {
+            '$project': {
+                'userInfo': 0,
+                'musicInfo': 0
+            }
         }
-    ).toArray();
+    ]).toArray();
 
     if (postsFound === null)
         throw `Could not get posts from followed users.`;
@@ -131,11 +265,45 @@ export const getAllPostsFromMusicId = async (musicId) => {
     musicId = val.checkId(musicId, 'music id');
 
     const postCollection = await posts();
-    const postsFound = await postCollection.find(
+    const postsFound = await postCollection.aggregate([
         {
-            music_id: new ObjectId(musicId)
+            '$match': {
+                'music_id': new ObjectId(musicId)
+            }
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'user_id',
+                'foreignField': '_id',
+                'as': 'userInfo'
+            }
+        }, {
+            '$lookup': {
+                'from': 'music',
+                'localField': 'music_id',
+                'foreignField': '_id',
+                'as': 'musicInfo'
+            }
+        }, {
+            '$set': {
+                'musicInfo': {
+                    '$arrayElemAt': [
+                        '$musicInfo', 0
+                    ]
+                },
+                'userInfo': {
+                    '$arrayElemAt': [
+                        '$userInfo', 0
+                    ]
+                }
+            }
+        }, {
+            '$set': {
+                'username': '$userInfo.username',
+                'piecename': '$musicInfo.name'
+            }
         }
-    ).toArray();
+    ]).toArray();
 
     if (postsFound === null)
         throw `Could not get posts from musicId ${musicId}`;
@@ -343,3 +511,8 @@ export const getCommentDetailsFromPost = async (postId) => {
         throw `Could not get comments for post with id ${postId}`;
     return commentDetails;
 }
+
+
+// console.log(await getCommentDetailsFromPost('657a270512ba1278581f8902'));
+// console.log(await getAllPosts());
+// console.log(await getCommentDetailsFromPost('657a270512ba1278581f88fb'));

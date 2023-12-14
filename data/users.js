@@ -73,7 +73,7 @@ export const getAllUsers = async () => {
 }
 
 /**
- * gets the user information from teh db based on the id
+ * gets the user information from the db based on the id
  * @param userId
  * @returns {Promise<*>}
  */
@@ -437,7 +437,7 @@ export const getRecommendations = async(userId) => {
                                             (a, b) => musicIdFrequency[b] - musicIdFrequency[a]
                                         );
 
-    return sortedMusicIds
+    return sortedMusicIds;
 
 }
 

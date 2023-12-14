@@ -230,3 +230,5 @@ export const getPostsForMusic = async (musicId) => {
 
   return piecePosts;
 }
+
+// console.log(await getPostsForMusic('657a270512ba1278581f88e7'));

@@ -7,6 +7,9 @@ import {fileURLToPath} from 'url';
 import {dirname} from 'path';
 import exphbs from 'express-handlebars';
 import {dbConnection} from "./config/mongoConnection.js";
+import {fromPostman} from "./helpers.js";
+import {ObjectId} from "mongodb";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -38,11 +41,23 @@ app.use(
         secret: 'some secret string!',
         saveUninitialized: false,
         resave: false,
-        // TODO: REMOVE THIS
-        user: true
+        // // TODO: REMOVE THIS
+        // user: true
     })
 )
 
+
+// MIDDLEWARE FOR TESTING WITH POSTMAN
+app.use('/', (req, res, next) => {
+  console.log(`${req.method}\t${req.originalUrl}`);
+  if (fromPostman(req.headers['user-agent']))
+    req.session.user = {
+      _id: new ObjectId('657a26e412ba1278581f88d7'),
+      email: 'coolguy87@example.com',
+      username: "coolguy87"
+    }
+  next();
+});
 
 // MIDDLEWARE FOR USER AUTH
 // app.get('/', (req, res, next) => {

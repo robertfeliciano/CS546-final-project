@@ -153,7 +153,8 @@ export const removeUser = async (userId) => {
         const following_id = new ObjectId(follower);
         const updatedUser = await userCollection.findOneAndUpdate(
             {_id: following_id},
-            {$pull: {following: user_id_to_remove}}
+            {$pull: {following: user_id_to_remove}},
+            {returnDocument: 'after'}
         )
         if (!updatedUser) throw `Could not remove user: could not remove from users' following list`
     }
@@ -162,7 +163,8 @@ export const removeUser = async (userId) => {
         const following_id = new ObjectId(following);
         const updatedUser = await userCollection.findOneAndUpdate(
             {_id: following_id},
-            {$pull: {followers: user_id_to_remove}}
+            {$pull: {followers: user_id_to_remove}},
+            {returnDocument: 'after'}
         )
         if (!updatedUser) throw `Could not remover user; could not remove from user's following list`;
     }
@@ -339,7 +341,8 @@ export const updateUserBio = async (userId, newBio) => {
     newBio = val.checkBio(newBio);
     const updatedInfo = await userCollection.findOneAndUpdate(
         {_id: new ObjectId(userId)},
-        {$set: {bio: newBio}}
+        {$set: {bio: newBio}},
+        {returnDocument: 'after'}
     )
     if (!updatedInfo)
         throw `Could not update user ${userId}'s bio successfully!`;
@@ -373,6 +376,35 @@ export const loginUser = async (emailAddress, password) => {
         throw `Either the email address or password is invalid`;
 }
 
+
+export const alreadyLikedPost = async (userId, postId) => {
+    userId = val.checkId(userId, 'user id');
+    postId = val.checkId(postId, 'post id');
+    const userCollection = await users();
+    const userLikedPost = await userCollection.findOne({
+        _id: new ObjectId(userId),
+        likedPosts: new ObjectId(postId)
+    });
+    if (userLikedPost)
+        return true;
+    else
+        return false;
+}
+
+export const userOwnsPost = async (userId, postId) => {
+    userId = val.checkId(userId, 'user id');
+    postId = val.checkId(postId, 'post id');
+    const userCollection = await users();
+    const foundPost = await userCollection.findOne({
+        _id: new ObjectId(userId),
+        userPosts: new ObjectId(postId)
+    });
+    if (foundPost)
+        return true;
+    else
+        return false;
+}
+
 export const getRecommendations = async(userId) => {
 
     userId = val.checkId(userId, 'user id');
@@ -399,8 +431,89 @@ export const getRecommendations = async(userId) => {
         return map;
       }, {});
 
-    const sortedMusicIds = Object.keys(musicIdFrequency).sort((a, b) => musicIdFrequency[b] - musicIdFrequency[a]);
+    const sortedMusicIds = Object
+                                        .keys(musicIdFrequency)
+                                        .sort(
+                                            (a, b) => musicIdFrequency[b] - musicIdFrequency[a]
+                                        );
 
     return sortedMusicIds
 
-}   
+}
+
+export const getFollowing = async (userId) => {
+    userId = val.checkId(userId, 'user id');
+
+    const userCollection = await users();
+
+    const following = userCollection.aggregate([
+        {
+            '$match': {
+                '_id': new ObjectId(userId)
+            }
+        }, {
+            '$unwind': '$following'
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'following',
+                'foreignField': '_id',
+                'as': 'following'
+            }
+        }, {
+            '$replaceRoot': {
+                'newRoot': {
+                    '$arrayElemAt': [
+                        '$following', 0
+                    ]
+                }
+            }
+        }, {
+            '$project': {
+                'username': 1
+            }
+        }
+    ]).toArray();
+    if (!following)
+        throw `Could not get following list for user with id ${userId}`;
+    return following;
+}
+
+export const getFollowers = async (userId) => {
+    userId = val.checkId(userId, 'user id');
+
+    const userCollection = await users();
+
+    const followers = userCollection.aggregate([
+        {
+            '$match': {
+                '_id': new ObjectId(userId)
+            }
+        }, {
+            '$unwind': '$followers'
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'followers',
+                'foreignField': '_id',
+                'as': 'followers'
+            }
+        }, {
+            '$replaceRoot': {
+                'newRoot': {
+                    '$arrayElemAt': [
+                        '$followers', 0
+                    ]
+                }
+            }
+        }, {
+            '$project': {
+                'username': 1
+            }
+        }
+    ]).toArray();
+    if (!followers)
+        throw `Could not get following list for user with id ${userId}`;
+    return followers;
+}
+

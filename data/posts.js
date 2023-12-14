@@ -36,7 +36,8 @@ export const createPost = async (
     const userCollection = await users();
     let update_user_info = await userCollection.findOneAndUpdate(
         {_id: new ObjectId(user_id)},
-        {$push: {userPosts: insertInfo.insertedId}}
+        {$push: {userPosts: insertInfo.insertedId}},
+        {returnDocument: 'after'}
     );
     if (!update_user_info)
         throw `Could not add post to user ${user_id}'s post collection!`;
@@ -51,7 +52,8 @@ export const createPost = async (
                     total_stars: rating,
                     total_ratings: 1
                 }
-        }
+        },
+        {returnDocument: 'after'}
     );
     if (!update_song_info)
         throw `Could not add update posts for music piece ${music_id}'s post collection!`;
@@ -201,7 +203,8 @@ export const removePost = async (postId, deleterId) => {
     for (let liker_id of post.likes){
         const updatedUserLikes = await userCollection.findOneAndUpdate(
             {_id: new ObjectId(liker_id)},
-            {$pull: {liked_posts: new ObjectId(postId)}}
+            {$pull: {liked_posts: new ObjectId(postId)}},
+            {returnDocument: 'after'}
         )
         if (!updatedUserLikes)
             throw [404, `Could not remove post from other users' likes`];
@@ -263,8 +266,9 @@ export const likePost = async (
     return updatedInfo
 }
 
-export const editPostContent = async (postId, newContent) => {
+export const editPostContent = async (postId, newRating, newContent) => {
     postId = val.checkId(postId);
+    newRating = val.checkRating(newRating, "post rating");
     newContent = val.checkString(newContent, "post content");
 
     const postCollection = await posts();
@@ -272,11 +276,70 @@ export const editPostContent = async (postId, newContent) => {
 
     const updatedInfo = await postCollection.findOneAndUpdate(
         {_id: new ObjectId(postId)},
-        {$set: {content: newContent}}
+        {$set: {rating: newRating, content: newContent}},
+        {returnDocument: 'after'}
     );
 
     if (!updatedInfo)
         throw [404, 'Could not edit post successfully!'];
 
     return updatedInfo;
+}
+
+export const getCommentDetailsFromPost = async (postId) => {
+    postId = val.checkId(postId, 'post id');
+
+    const postCollection = await posts();
+
+    const commentDetails = await postCollection.aggregate([
+        {
+            '$match': {
+                '_id': new ObjectId(postId)
+            }
+        }, {
+            '$unwind': '$comments'
+        }, {
+            '$project': {
+                '_id': 0,
+                'comments': 1
+            }
+        }, {
+            '$lookup': {
+                'from': 'comments',
+                'localField': 'comments',
+                'foreignField': '_id',
+                'as': 'commentDetails'
+            }
+        }, {
+            '$replaceRoot': {
+                'newRoot': {
+                    '$arrayElemAt': [
+                        '$commentDetails', 0
+                    ]
+                }
+            }
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'user_id',
+                'foreignField': '_id',
+                'as': 'userInfo'
+            }
+        }, {
+            '$set': {
+                'username': {
+                    '$arrayElemAt': [
+                        '$userInfo.username', 0
+                    ]
+                }
+            }
+        }, {
+            '$project': {
+                'userInfo': 0
+            }
+        }
+    ]).toArray();
+    if (!commentDetails)
+        throw `Could not get comments for post with id ${postId}`;
+    return commentDetails;
 }

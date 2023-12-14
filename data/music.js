@@ -25,7 +25,7 @@ export const insertMusic = async (
 
   type = val.checkType(type);
   name = val.checkName(name, 'name');
-  artist = val.checkName(name, 'artist');
+  artist = val.checkName(artist, 'artist');
   genre = val.checkGenre(genre);
   if (!Array.isArray(songs))
     throw `Songs must be an array`;
@@ -151,4 +151,28 @@ export const fuzzyFindMusic = async (query) => {
   return [
       albums_found.map(obj => obj.item),
       songs_found.map(obj => obj.item)];
+}
+
+export const getSongsFromAlbum = async (albumId) => {
+  albumId = val.checkId(albumId, 'album id');
+
+  const albums = await music();
+  const albumSongs = await albums.aggregate([
+    { $match: { _id: new ObjectId(albumId) } },
+    { $unwind: '$songs' },
+    { $project: { _id: 0, songs: 1 } },
+    { $lookup: {
+            from: 'music',
+            localField: 'songs',
+            foreignField: '_id',
+            as: 'songDetails'
+      }
+    },
+    { $replaceRoot: {
+        newRoot: { $arrayElemAt: ['$songDetails', 0 ] }
+      }
+    }]).toArray();
+  if (!albumSongs)
+    throw `Could not get songs for album with id ${albumId}`;
+  return albumSongs;
 }

@@ -52,17 +52,19 @@ router
 
         try {
           const user = await usersData.getUserById(req.params.id);
+          const userPosts = await usersData.getPostsFromUserId(req.params.id);
+          const likedPosts = await usersData.getLikedPostsFromUserId(req.params.id);
           let curr_user_id = req.session.user._id;
           let owner = curr_user_id.equals(req.params.id);
           if (fromPostman(req.headers['user-agent']))
-            res.json({user: user, owner: owner});
+            return res.json({user: user, posts: userPosts, likes: likedPosts, owner: owner});
           // TODO pass in whether or not current user follows the user by :id
           // this determines whether or not to render a follow button
           // if they are NOT the same user and they DO NOT follow:
           // display follow button
           // if they are NOT the same user and they DO follow:
           // display UNfollow button
-          res.render('users/single', {user: user, owner: owner})
+          res.render('users/single', {user: user, posts: userPosts, likes: likedPosts, owner: owner})
         } catch (e) {
           res.status(404).json({error: e});
         }
@@ -87,6 +89,9 @@ router
             if (!removed)
                 return res.status(500).json({error: 'Internal Server Error'});
 
+            if (fromPostman(req.headers['user-agent']))
+              return res.json({deleted: removed});
+
             return res.redirect('/register');
         } catch (e) {
             // e is always an array after removing user
@@ -104,14 +109,9 @@ router.route('/:id/followers').get(async (req, res) => {
     }
 
     try {
-        const user = await usersData.getUserById(req.params.id);
-        const followers = user.followers;
-        let followerList = [];
-        for (const follower of followers) {
-            const followerUser = await usersData.getUserById(follower);
-            followerList.push(followerUser);
-        }
-
+        const followerList = await usersData.getFollowing(req.params.id);
+        if (fromPostman(req.headers['user-agent']))
+          return res.json({followers: followerList});
         return res.render('users/followers', {users: followerList});
     } catch(e) {
         return res.status(404).json({error: e});
@@ -127,13 +127,9 @@ router.route('/:id/following').get(async (req, res) => {
         return res.status(400).json({error: e});
     }
     try {
-        const user = await usersData.getUserById(req.params.id);
-        const following = user.following;
-        let followingList = [];
-        for (const follow of following) {
-            const followingUser = await usersData.getUserById(follow);
-            followingList.push(followingUser);
-        }
+        const followingList = await usersData.getFollowing(req.params.id);
+        if (fromPostman(req.headers['user-agent']))
+          return res.json({following: followingList});
         return res.render('users/following', {users: followingList});
     } catch(e) {
         return res.status(404).json({error: e});
@@ -157,6 +153,8 @@ router
                 return res.status(403).json({error: `User${user_id} does not own ${req.params.id}'s profile.`});
             }
             const user = await usersData.getUserById(req.params.id);
+            if (fromPostman(req.headers['user-agent']))
+              return res.json({user:user});
             return res.render('users/edit', {user: user});
         } catch(e) {
             return res.status(404).json({error: e});
@@ -178,6 +176,9 @@ router
         }
         try {
             const updatedUser = await usersData.updateUserBio(req.params.id, req.body.userBio);
+            if (fromPostman(req.headers['user-agent']))
+              return res.json({user: updatedUser, owner: true});
+            // TODO maybe redirect to /users/:id instead of just rendering....
             return res.render('users/single', {user: updatedUser, owner: true});
         } catch(e) {
             return res.status(404).json({error: e});
@@ -201,9 +202,15 @@ router
         }
         try {
             const updatedUser = await usersData.addFollower(req.params.id, req.session.user._id);
-            req.session.user.following.push(req.params.id);
-            return res.render(`/users/${req.params.id}`);
+
+            req.session.user.following = await usersData.getFollowing(req.session.user._id);
+
+            if (fromPostman(req.headers['user-agent']))
+              return res.json({user: updatedUser, following: req.session.user.following})
+
+            return res.redirect(`/users/${req.params.id}`);
         } catch(e) {
+            console.log(e);
             return res.status(e[0]).json({error: e[1]});
         }
     });
@@ -225,11 +232,16 @@ router
             return res.status(400).json({error: e});
         }
         try {
-            const index_of_user_to_unfollow = req.session.user.following.indexOf(req.params.id)
-            req.session.user.following.splice(index_of_user_to_unfollow, 1);
             const updatedUser= await usersData.removeFollower(req.params.id, req.session.user._id);
-            return res.render(`/users/${req.params.id}`);
+
+            req.session.user.following = await usersData.getFollowing(req.session.user._id);
+
+            if (fromPostman(req.headers['user-agent']))
+              return res.json({user: updatedUser, following: req.session.user.following})
+
+            return res.redirect(`/users/${req.params.id}`);
         } catch(e) {
+            console.log(e);
             return res.status(e[0]).json({error: e[1]});
         }
     });

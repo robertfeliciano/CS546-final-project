@@ -50,9 +50,10 @@ app.use('/', (req, res, next) => {
   console.log(`${req.method}\t${req.originalUrl}`);
   if (fromPostman(req.headers['user-agent']))
     req.session.user = {
-      _id: new ObjectId('657a26e412ba1278581f88d7'),
+      _id: new ObjectId('657c7ce52ecab94e7ade612b'),
       email: 'coolguy87@example.com',
-      username: "coolguy87"
+      username: "coolguy87",
+      following: []
     }
   next();
 });

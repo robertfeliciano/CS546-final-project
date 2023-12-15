@@ -3,13 +3,14 @@ return res.render('searchResult', {albums: albums, songs: songs});
 -->
 
 <div class="middle">
-    <div class="feed">
+    <div class="post-1">
         ({{#each albums}})
-            <div class="music-cell">
+            <div class="post-1">
                 <img src="public/pics/vinyl.webp" alt="vinyl">
                 <h3>{{name}}</h3>
             </div>
         ({{/each}})
+
         ({{#each songs}})
             <div class="music-cell">
                 <img src="public/pics/vinyl.webp" alt="vinyl">

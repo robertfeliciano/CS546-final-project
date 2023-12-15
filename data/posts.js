@@ -185,7 +185,7 @@ export const getPostById = async (postId) => {
         throw 'No post with that id';
     }
 
-    return post;
+    return post[0];
 }
 
 export const getAllPostsFromFollowing = async (userId) => {

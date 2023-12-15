@@ -1,0 +1,28 @@
+<!-- FILEPATH: /Users/sabahnaveed/CS546/final-repo/CS546-final-project/views/posts/song.handlebars -->
+
+<div class="song-details">
+    <h2>{{songName}}</h2>
+    <h3>by {{artistName}}</h3>
+    <p>Average Rating: {{averageRating}}</p>
+</div>
+
+<div class="existing-posts">
+    <h4>Existing Posts:</h4>
+    {{#each posts}}
+        <div class="post">
+            <p>{{comment}}</p>
+            <p>Rating: {{rating}}</p>
+        </div>
+    {{/each}}
+</div>
+
+<div class="new-post-form">
+    <h4>Create a New Post:</h4>
+    <form action="/music" method="POST">
+        <label for="comment">Comment:</label>
+        <textarea id="comment" name="comment" required>{{post.content}}</textarea>
+        <label for="rating">Rating:</label>
+        <input type="number" id="rating" name="rating" min="1" max="5" value="{{post.rating}}"required>
+        <button type="submit">Submit</button>
+    </form>
+</div>

@@ -85,3 +85,15 @@ export const checkRating = (intVal, varName) => {
     if (intVal < 0 || intVal > 5) throw `Error: ${varName} must be a positive integer between 0 and 5!`;
     return intVal;
 }
+
+export const checkType = (strVal) => {
+  if (!strVal) throw `Error: You must supply a type of music!`;
+  if (typeof strVal !== 'string') throw `Error: type of music must be a string!`;
+  strVal = strVal.trim();
+  if (strVal !== 'album' && strVal !== 'song') throw `Error: type of music must either be album or song`;
+  if (strVal.length === 0)
+    throw `Error: type of music cannot be an empty string or string with just spaces`;
+  if (!isNaN(strVal))
+    throw `Error: ${strVal} is not a valid value for a type of music as it only contains digits`;
+  return strVal;
+}

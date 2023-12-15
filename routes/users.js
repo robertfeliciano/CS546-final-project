@@ -1,6 +1,7 @@
 import {Router} from 'express';
 import {usersData} from '../data/index.js';
 import * as validation  from '../validation.js';
+import {fromPostman} from "../helpers.js";
 
 const router = Router();
 
@@ -29,6 +30,8 @@ router
                 return res.status(500).json({error: "Internal Server Error"});
 
             const isEmpty = users.length === 0;
+            if (fromPostman(req.headers['user-agent']))
+              res.json({users: users});
             return res.render('users/search', {users: users, empty: isEmpty});
         } catch(e){
             return res.status(404).json({error: e})
@@ -51,6 +54,14 @@ router
           const user = await usersData.getUserById(req.params.id);
           let curr_user_id = req.session.user._id;
           let owner = curr_user_id.equals(req.params.id);
+          if (fromPostman(req.headers['user-agent']))
+            res.json({user: user, owner: owner});
+          // TODO pass in whether or not current user follows the user by :id
+          // this determines whether or not to render a follow button
+          // if they are NOT the same user and they DO NOT follow:
+          // display follow button
+          // if they are NOT the same user and they DO follow:
+          // display UNfollow button
           res.render('users/single', {user: user, owner: owner})
         } catch (e) {
           res.status(404).json({error: e});

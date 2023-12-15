@@ -16,7 +16,7 @@ router
                 req.session.user._id
             );
             // SORT BASED ON DATE-TIME OF POST, MOST RECENT COMES FIRST
-            following_posts = following_posts.sort((a, b) => b.date - a.date);
+            following_posts = following_posts.sort((a, b) => b.date.getTime() - a.date.getTime());
             if (fromPostman(req.headers['user-agent']))
                 return res.json({posts: following_posts});
             else

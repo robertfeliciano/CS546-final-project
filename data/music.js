@@ -1,6 +1,8 @@
 import {music} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import Fuse from 'fuse.js';
+import * as val from '../validation.js';
+import {checkType} from "../validation.js";
 
 //input validation
 
@@ -20,6 +22,14 @@ export const insertMusic = async (
     genre,
     songs
 ) => {
+
+  type = val.checkType(type);
+  name = val.checkName(name, 'name');
+  artist = val.checkName(artist, 'artist');
+  genre = val.checkGenre(genre);
+  if (!Array.isArray(songs))
+    throw `Songs must be an array`;
+
   let newMusic = {
     type: type,
     name: name,
@@ -55,10 +65,13 @@ export const insertMusic = async (
  * @returns {Promise<void>}
  */
 const getMusicOfType = async (find_type) => {
+  find_type = checkType(find_type);
   const musicCollection = await music();
   const song_list = await musicCollection.find(
       {type: find_type}
   ).toArray();
+  if (!song_list)
+    throw `Could not find music of type ${find_type}`;
   return song_list;
 }
 
@@ -82,26 +95,34 @@ export const getAllMusic = async () => {
 }
 
 const getTypeMusicById = async (of_type, music_id) => {
+
+  of_type = val.checkType(of_type);
+  music_id = val.checkId(music_id, 'music id');
+
   const musicCollection = await music();
   const song_found = await musicCollection.findOne({
     type: of_type,
     _id: new ObjectId(music_id)
   });
-  // TODO TEST !SONG_FOUND
+  if (!song_found)
+    throw `Could not find songs of type ${of_type}`;
   return song_found;
 }
 
 export const getSongById = async (song_id) => {
+  song_id = val.checkId(song_id, 'song id');
   const song_found = await getTypeMusicById("song", song_id);
   return song_found;
 }
 
 export const getAlbumById = async (album_id) => {
+  album_id = val.checkId(album_id, 'album id');
   const album_found = await getTypeMusicById("album", album_id);
   return album_found;
 }
 
 export const getMusicById = async (music_id) => {
+  music_id = val.checkId(music_id, 'music id');
   const musicCollection = await music();
   const music_found = await musicCollection.findOne({
     _id: new ObjectId(music_id)
@@ -110,11 +131,14 @@ export const getMusicById = async (music_id) => {
 }
 
 export const fuzzyFindMusic = async (query) => {
+
+  query = val.checkName(query, 'search query');
+
   const albums = await getAllAlbums();
   const songs = await getAllSongs();
   const piece_options = {
     keys: ['name'], threshold: 0.45
-  }
+  };
   const fuse_albums = new Fuse(
       albums, piece_options
   );
@@ -128,3 +152,88 @@ export const fuzzyFindMusic = async (query) => {
       albums_found.map(obj => obj.item),
       songs_found.map(obj => obj.item)];
 }
+
+export const getSongsFromAlbum = async (albumId) => {
+  albumId = val.checkId(albumId, 'album id');
+
+  const albums = await music();
+  const albumSongs = await albums.aggregate([
+    { $match: { _id: new ObjectId(albumId) } },
+    { $unwind: '$songs' },
+    { $project: { _id: 0, songs: 1 } },
+    { $lookup: {
+            from: 'music',
+            localField: 'songs',
+            foreignField: '_id',
+            as: 'songDetails'
+      }
+    },
+    { $replaceRoot: {
+        newRoot: { $arrayElemAt: ['$songDetails', 0 ] }
+      }
+    }]).toArray();
+  if (!albumSongs)
+    throw `Could not get songs for album with id ${albumId}`;
+  return albumSongs;
+}
+
+export const getPostsForMusic = async (musicId) => {
+  musicId = val.checkId(musicId, 'music id');
+  const allMusic = await music();
+  // i am tired of reformatting the stuff Compass lets me copy, so it's staying this way now
+  let piecePosts = await allMusic.aggregate([
+    {
+      '$match': {
+        '_id': new ObjectId(musicId)
+      }
+    }, {
+      '$unwind': '$posts'
+    }, {
+      '$lookup': {
+        'from': 'posts',
+        'localField': 'posts',
+        'foreignField': '_id',
+        'as': 'musicPosts'
+      }
+    }, {
+      '$replaceRoot': {
+        'newRoot': {
+          '$arrayElemAt': [
+            '$musicPosts', 0
+          ]
+        }
+      }
+    }, {
+      '$lookup': {
+        'from': 'users',
+        'localField': 'user_id',
+        'foreignField': '_id',
+        'as': 'userInfo'
+      }
+    }, {
+      '$set': {
+        'username': {
+          '$arrayElemAt': [
+            '$userInfo.username', 0
+          ]
+        }
+      }
+    }, {
+      '$project': {
+        'userInfo': 0
+      }
+    }
+  ]).toArray();
+
+  piecePosts = piecePosts.sort((p1, p2) => p2.date.getTime() - p1.date.getTime())
+
+  if (!piecePosts)
+    throw `Could not get posts for music piece with id ${musicId}`;
+
+  return piecePosts;
+}
+
+// console.log(await getPostsForMusic('657a270512ba1278581f88e7'));
+// console.log(await getAllMusic());
+// console.log(await fuzzyFindMusic('my beatufiel dark twitsed fantsay'));
+// console.log(await getPostsForMusic('657a270512ba1278581f88e7'));

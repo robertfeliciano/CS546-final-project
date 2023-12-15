@@ -55,18 +55,23 @@ router
     .get(async (req, res) => {
       /**
        * TODO: FRONT END TEAM
+       * upon submitting something to a search bar
+       * the action should be /music/search?piece=nameofpiece
+       * with method GET
+       * Also...
        * When the user inputs something into a search bar,
        * for example: "The life of pablo"
        * replace spaces with %20
        * so: "The%20life%20of%20pablo"
        */
       let query = req.query.piece;
-      // TODO: ERROR CHECKING
-      console.log(`query: ${query}`);
+      query = val.checkName(query, 'search query');
+      // albums and songs could potentially be empty, thats fine
+      // we just want to display nothing then.
       const [albums, songs] = await musicData.fuzzyFindMusic(query);
-      console.log(albums);
-      console.log("\n\n\n\n\n\n");
-      console.log(songs);
+      if (fromPostman(req.headers['user-agent']))
+        return res.json({albums: albums, songs: songs});
+      return res.render('searchResult', {albums: albums, songs: songs});
     });
 
 router
@@ -80,11 +85,12 @@ router
       try {
         const piece = await musicData.getMusicById(req.params.id);
         const avg = piece.total_stars/piece.total_ratings;
+        const musicPosts = await musicData.getPostsForMusic(req.params.id)
         const meta = {
           id: piece._id,
           name: piece.name,
           type: piece.type,
-          posts: piece.posts,
+          posts: musicPosts,
           avg: avg,
           genre: piece.genre,
           artist: piece.artist,
@@ -99,9 +105,6 @@ router
     })
     .post(async (req, res) => {
       // create a post for the song with the id in the url
-      // // TODO REMOVE MANUALLY SET ID
-      // if (fromPostman(req.headers['user-agent']))
-      //   req.session.user = {_id: '65772a17682b98b10642d2dc'};
       try{
         req.params.id = val.checkId(req.params.id, "music id");
       } catch(e) {

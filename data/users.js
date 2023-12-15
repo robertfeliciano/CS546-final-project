@@ -1,8 +1,10 @@
-import {comments, users, posts} from '../config/mongoCollections.js';
+import {users, posts} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import bcrypt from 'bcryptjs';
 import * as postFunctions from './posts.js';
-import * as validation from '../validation.js';
+import * as commentFunctions from "./comments.js";
+import * as val from '../validation.js';
+import Fuse from 'fuse.js';
 
 
 const saltRounds = 16;
@@ -15,7 +17,11 @@ export const createUser = async (
     profilePicture
 ) => {
 
-    //input validation
+    username = val.checkUsername(username);
+    email = val.checkEmail(email);
+    rawPassword = val.checkPass(rawPassword);
+    bio = val.checkBio(bio);
+    profilePicture = val.checkProfilePic(profilePicture);
 
 
     const hashed = await bcrypt.hash(rawPassword, saltRounds);
@@ -47,9 +53,6 @@ export const createUser = async (
     if (!insertInfo.acknowledged || !insertInfo.insertedId) {
         throw 'Could not add user!';
     }
-
-    // const newId = insertInfo.insertedId.toString();
-    // const new_user = await getUserById(newId);
     
     return {insertedUser: true, _id: insertInfo.insertedId};
 }
@@ -59,7 +62,7 @@ export const getAllUsers = async () => {
     
     let userList = await userCollection
         .find({})
-        .project({_id : 1, username:1})
+        .project({_id : 1, username:1, bio:1})
         .toArray();
     
     if (!userList) {
@@ -70,13 +73,13 @@ export const getAllUsers = async () => {
 }
 
 /**
- * gets the user information from teh db based on the id
+ * gets the user information from the db based on the id
  * @param userId
  * @returns {Promise<*>}
  */
 export const getUserById = async (userId) => {
     
-    //input validation
+    userId = val.checkId(userId, 'user id');
 
     const userCollection = await users();
     const user = await userCollection.findOne(
@@ -91,9 +94,23 @@ export const getUserById = async (userId) => {
     return user;
 }
 
+export const fuzzyFindUser = async (username) => {
+    username = val.checkUsername(username);
+
+    const users = await getAllUsers();
+    const options = {
+        keys: ['username'], threshold: 0.45
+    };
+    const fuse_users = new Fuse(users, options);
+    const users_found = fuse_users.search(username);
+
+    return users_found.map(obj => obj.item);
+}
+
 export const getUserByName = async (username) => {
-    //input validation (name should be trimmed)
-    // switch this to fuzzy search later
+
+    username = val.checkUsername(username);
+
     const userCollection = await users();
     const user = await userCollection.findOne(
         {username: username}
@@ -119,10 +136,13 @@ export const getUserByName = async (username) => {
  */
 export const removeUser = async (userId) => {
 
-    //input validation 
+    try {
+        userId = val.checkId(userId, 'user id');
+    } catch(emsg) {
+        throw [400, emsg];
+    }
 
     const userCollection = await users();
-    const commentsCollection = await comments();
     let user = await getUserById(userId);
     const posts_to_remove = user.userPosts;
     const comments_to_remove = user.userComments;
@@ -131,30 +151,34 @@ export const removeUser = async (userId) => {
 
     for (const follower of user.followers) {
         const following_id = new ObjectId(follower);
-        await userCollection.findOneAndUpdate(
+        const updatedUser = await userCollection.findOneAndUpdate(
             {_id: following_id},
-            {$pull: {following: user_id_to_remove}}
+            {$pull: {following: user_id_to_remove}},
+            {returnDocument: 'after'}
         )
+        if (!updatedUser) throw `Could not remove user: could not remove from users' following list`
     }
 
     for (const following of user.following) {
         const following_id = new ObjectId(following);
-        await userCollection.findOneAndUpdate(
+        const updatedUser = await userCollection.findOneAndUpdate(
             {_id: following_id},
-            {$pull: {followers: user_id_to_remove}}
+            {$pull: {followers: user_id_to_remove}},
+            {returnDocument: 'after'}
         )
+        if (!updatedUser) throw `Could not remover user; could not remove from user's following list`;
     }
 
     for (const post_id of posts_to_remove) {
         // this takes care of removing each post from the song it was posted under
-        await postFunctions.removePost(post_id, userId);
+        const del = await postFunctions.removePost(post_id, userId);
+        if (!del.deleted) throw `Could not remove user, could ont remove user's posts`;
     }
 
     for (const comment_id of comments_to_remove) {
-        await commentsCollection.findOneAndDelete({_id: comment_id});
+        const del = await commentFunctions.removeComment(comment_id, userId);
+        if (!del.deleted) throw `Could not remove user, could ont remove user's comments`;
     }
-
-
 
     // finally... we delete the user
     const deletionInfo = await userCollection.findOneAndDelete({
@@ -175,7 +199,15 @@ export const removeUser = async (userId) => {
  * @param new_follower_id user b
  * @returns {Promise<{followers: ([]|*)}>}
  */
-export const updateFollowers = async (user_to_follow, new_follower_id) => {
+export const addFollower = async (user_to_follow, new_follower_id) => {
+
+    try {
+        user_to_follow = val.checkId(user_to_follow, 'user to follow id');
+        new_follower_id = val.checkId(new_follower_id, 'new follower id');
+    } catch(emsg) {
+        throw [400, emsg];
+    }
+
     // first check if user b already follows user a
     const userCollection = await users();
     const check = await userCollection.find(
@@ -207,14 +239,51 @@ export const updateFollowers = async (user_to_follow, new_follower_id) => {
     return {following: updatedUserBFollowing.following, followers: updatedUserAFollowers.followers};
 }
 
-export const updateUserPut = async (
+export const removeFollower = async (user_to_unfollow, unfollower_id) => {
+    try {
+        user_to_unfollow = val.checkId(user_to_unfollow, 'user to unfollow id');
+        unfollower_id = val.checkId(unfollower_id, 'unfollower id');
+    } catch(emsg) {
+        throw [400, emsg];
+    }
+
+    // first check if user b doesnt already follow user a
+    const userCollection = await users();
+    const check = await userCollection.find(
+        {
+            _id: user_to_unfollow,
+            followers: new ObjectId(unfollower_id)
+        }).toArray();
+
+    if (check.length !== 0)
+        throw [204, `User ${unfollower_id} doesn't already follow ${user_to_unfollow}`];
+
+    const updatedUserAFollowers = await userCollection.findOneAndUpdate(
+        {_id: new ObjectId(user_to_unfollow)},
+        {$pull: {followers: new ObjectId(unfollower_id)}},
+        {returnDocument: 'after'}
+    );
+    if (!updatedUserAFollowers) {
+        throw [404, `Could not follow user with id of ${user_to_unfollow}`];
+    }
+
+    const updatedUserBFollowing = await userCollection.findOneAndUpdate(
+        {_id: new ObjectId(user_to_unfollow)},
+        {$pull: {following: new ObjectId(unfollower_id)}},
+        {returnDocument: 'after'}
+    );
+    if (!updatedUserBFollowing) {
+        throw [404, `Could not add ${unfollower_id} to following list of user ${user_to_unfollow}`];
+    }
+    return {following: updatedUserBFollowing.following, followers: updatedUserAFollowers.followers};
+}
+
+const updateUserPut = async (
     userId,
     userPost,
     userComment,
     friend
 ) => {
-
-    //input validation 
 
     const userCollection = await users();
     let curr_user = await getUserById(userId);
@@ -247,12 +316,10 @@ export const updateUserPut = async (
  * @param userInfo
  * @returns {Promise<*>}
  */
-export const updateUserPatch = async (
+const updateUserPatch = async (
     userId,
     userInfo
 ) => {
-    
-    //input validation
 
     const userCollection = await users();
     const updatedInfo = await userCollection.findOneAndUpdate(
@@ -268,6 +335,20 @@ export const updateUserPatch = async (
     return updatedInfo;
 }
 
+export const updateUserBio = async (userId, newBio) => {
+    const userCollection = await users();
+    userId = val.checkId(userId);
+    newBio = val.checkBio(newBio);
+    const updatedInfo = await userCollection.findOneAndUpdate(
+        {_id: new ObjectId(userId)},
+        {$set: {bio: newBio}},
+        {returnDocument: 'after'}
+    )
+    if (!updatedInfo)
+        throw `Could not update user ${userId}'s bio successfully!`;
+    return updatedInfo;
+}
+
 
 /**
  * This function will be called when a user submits the login form
@@ -276,15 +357,18 @@ export const updateUserPatch = async (
  * @returns {Promise<{hashedPassword: *, email: *, username}>}
  */
 export const loginUser = async (emailAddress, password) => {
-    // input validation
+
+    emailAddress = val.checkEmail(emailAddress);
+    password = val.checkPass(password);
 
     const db = await users();
     const user = await db.findOne({emailAddress: emailAddress.toLowerCase()});
     if (user === null) throw `Either the email address or password is invalid`;
+    // TODO user following = getFollowing (so i can get ids for links but display as username)
     let comp = await bcrypt.compare(password, user.password);
     if (comp)
         return {
-            _id: user._id,
+            _id: new ObjectId(user._id),
             username: user.username,
             email: user.email,
             following: user.following
@@ -293,8 +377,38 @@ export const loginUser = async (emailAddress, password) => {
         throw `Either the email address or password is invalid`;
 }
 
+
+export const alreadyLikedPost = async (userId, postId) => {
+    userId = val.checkId(userId, 'user id');
+    postId = val.checkId(postId, 'post id');
+    const userCollection = await users();
+    const userLikedPost = await userCollection.findOne({
+        _id: new ObjectId(userId),
+        likedPosts: new ObjectId(postId)
+    });
+    if (userLikedPost)
+        return true;
+    else
+        return false;
+}
+
+export const userOwnsPost = async (userId, postId) => {
+    userId = val.checkId(userId, 'user id');
+    postId = val.checkId(postId, 'post id');
+    const userCollection = await users();
+    const foundPost = await userCollection.findOne({
+        _id: new ObjectId(userId),
+        userPosts: new ObjectId(postId)
+    });
+    if (foundPost)
+        return true;
+    else
+        return false;
+}
+
 export const getRecommendations = async(userId) => {
-    //input validation 
+
+    userId = val.checkId(userId, 'user id');
 
     let user = await getUserById(userId)
 
@@ -318,8 +432,89 @@ export const getRecommendations = async(userId) => {
         return map;
       }, {});
 
-    const sortedMusicIds = Object.keys(musicIdFrequency).sort((a, b) => musicIdFrequency[b] - musicIdFrequency[a]);
+    const sortedMusicIds = Object
+                                        .keys(musicIdFrequency)
+                                        .sort(
+                                            (a, b) => musicIdFrequency[b] - musicIdFrequency[a]
+                                        );
 
-    return sortedMusicIds
+    return sortedMusicIds;
 
-}   
+}
+
+export const getFollowing = async (userId) => {
+    userId = val.checkId(userId, 'user id');
+
+    const userCollection = await users();
+
+    const following = userCollection.aggregate([
+        {
+            '$match': {
+                '_id': new ObjectId(userId)
+            }
+        }, {
+            '$unwind': '$following'
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'following',
+                'foreignField': '_id',
+                'as': 'following'
+            }
+        }, {
+            '$replaceRoot': {
+                'newRoot': {
+                    '$arrayElemAt': [
+                        '$following', 0
+                    ]
+                }
+            }
+        }, {
+            '$project': {
+                'username': 1
+            }
+        }
+    ]).toArray();
+    if (!following)
+        throw `Could not get following list for user with id ${userId}`;
+    return following;
+}
+
+export const getFollowers = async (userId) => {
+    userId = val.checkId(userId, 'user id');
+
+    const userCollection = await users();
+
+    const followers = userCollection.aggregate([
+        {
+            '$match': {
+                '_id': new ObjectId(userId)
+            }
+        }, {
+            '$unwind': '$followers'
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'followers',
+                'foreignField': '_id',
+                'as': 'followers'
+            }
+        }, {
+            '$replaceRoot': {
+                'newRoot': {
+                    '$arrayElemAt': [
+                        '$followers', 0
+                    ]
+                }
+            }
+        }, {
+            '$project': {
+                'username': 1
+            }
+        }
+    ]).toArray();
+    if (!followers)
+        throw `Could not get following list for user with id ${userId}`;
+    return followers;
+}
+

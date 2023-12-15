@@ -1,6 +1,6 @@
 import {comments, posts, users} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
-import * as validation from '../validation.js';
+import * as val from '../validation.js';
 
 export const createComment = async (
     post_id,
@@ -9,7 +9,10 @@ export const createComment = async (
     date
 ) => {
 
-    //input validation
+    post_id = val.checkId(post_id, "post id");
+    user_id = val.checkId(user_id, "user id");
+    content = val.checkString(content, "comment content");
+    date = val.checkDate(date);
 
     let newComment = {
         post_id:post_id,
@@ -27,7 +30,8 @@ export const createComment = async (
     const userCollection = await users();
     let update_user_info = await userCollection.findOneAndUpdate(
         {_id: user_id},
-        {$push: {userComments: insertInfo.insertedId}}
+        {$push: {userComments: insertInfo.insertedId}},
+        {returnDocument: 'after'}
     );
     if (!update_user_info)
         throw `Could not add comment to user ${user_id}'s comment collection!`;
@@ -35,7 +39,8 @@ export const createComment = async (
     const postCollection = await posts();
     let update_post_info = await postCollection.findOneAndUpdate(
         {_id: post_id},
-        {$push: {comments: insertInfo.insertedId}}
+        {$push: {comments: insertInfo.insertedId}},
+        {returnDocument: 'after'}
     );
     if (!update_post_info)
         throw `Could not add comment to post ${post_id}'s comment collection!`;
@@ -62,8 +67,8 @@ export const getAll = async () => {
 }
 
 export const getCommentById = async (commentId) => {
-    
-    //input validation
+
+    commentId = val.checkId(commentId, "comment id");
 
     const commentsCollection = await comments();
     const comment = await commentsCollection.findOne({_id: new ObjectId(commentId)});
@@ -75,15 +80,26 @@ export const getCommentById = async (commentId) => {
     return comment;
 }
 
-export const removeComment = async (commentId) => {
+export const removeComment = async (commentId, deleterId) => {
 
-    //input validation 
+    try {
+        commentId = val.checkId(commentId, "comment id");
+        deleterId = val.checkId(deleterId, 'deleter id');
+    } catch(emsg) {
+        throw [400, emsg]
+    }
+
 
     const commentsCollection = await comments();
     let comment = await getCommentById(commentId);
+
     const comment_id_to_remove = new ObjectId(commentId);
     const user_id = new ObjectId(comment.user_id);
     const post_id = new ObjectId(comment.post_id)
+    deleterId = new ObjectId(deleterId);
+    commentId = new ObjectId(commentId);
+
+    if (!deleterId.equals(user_id)) throw [400, `Only the original poster is allowed to delete a comment`];
 
     const userCollection = await users();
     const userUpdatedInfo = await userCollection.findOneAndUpdate(

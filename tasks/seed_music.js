@@ -64,67 +64,67 @@ export const Grad_songs = [
   {
     "name": "Good Morning",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "Champion",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "Stronger",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "I Wonder",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "Good Life",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "Can't Tell Me Nothing",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "Barry Bonds",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "Drunk and Hot Girls",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "Flashing Lights",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "Everything I Am",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "The Glory",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "Homecoming",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   },
   {
     "name": "Big Brother",
     "artist": "Kanye West",
-    "genre": "Hip-Hop"
+    "genre": "hip-hop"
   }
 ];
 

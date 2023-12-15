@@ -16,7 +16,6 @@ const constructorMethod = (app) => {
   app.use('/home', homeRoutes);
   app.use('/music', musicRoutes);
   app.use('/comments', commentRoutes);
-  // TODO need error routes
 
   app.use('*', (req, res) => {
     res.redirect('/home');

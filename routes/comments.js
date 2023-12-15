@@ -2,6 +2,7 @@ import {Router} from 'express';
 const router = Router();
 import { commentsData } from '../data/index.js';
 import * as validation from '../validation.js';
+import xss from 'xss';
 
 
 // ALL ROUTES REQUIRE USER TO BE LOGGED IN
@@ -22,19 +23,19 @@ router
       // user_id = validation.checkId(req.session.user._id, 'User ID');
       req.params.id = validation.checkId(req.params.id, 'Post ID');
 
-      req.body.content = validation.checkString(req.body.content, 'Comment Content');
+      req.body.content = validation.checkString(xss(req.body.content), 'Comment Content');
     } catch (e) {
-      return res.status(400).json({error: e});
+      return res.status(400).render("error",{error: e, link:`/posts/`});
     }
 
     try {
       const comment = await commentsData.createComment(req.params.id, req.params.user._id, req.body.content, new Date());
       if (comment === undefined)
-        return res.status(500).json({error: "Internal Server Error"});
+        return res.status(500).render("error",{error: "Internal Service Error", link:`/posts/${req.params.id}`});
       // redirect to GET /comments/:new_comment_id to view the comment you made
       res.redirect(`/comments/${comment._id}`);
     } catch (e) {
-      res.status(500).json({error: e});
+      res.status(500).render("error",{error: e, link:`/posts/${req.params.id}`});
     }
   })
   .get(async (req, res) => {
@@ -46,13 +47,13 @@ router
 
       req.params.id = validation.checkId(req.params.id, 'Comment ID');
     } catch (e) {
-      return res.status(400).json({error: e});
+      return res.status(400).render("error",{error: e, link:`/posts/`});
     }
 
     try {
       const comment = await commentsData.getCommentById(req.params.id);
       if (comment === undefined)
-        return res.status(500).json({error: 'Internal Server Error'});
+        return res.status(500).render("error",{error: "Internal Service Error", link:`/posts/`});
 
       const commenterId = comment.user_id;
       const user_id = req.session.user._id;
@@ -61,7 +62,7 @@ router
 
     } catch (e) {
       // only error caught would be if db cant find comment
-      res.status(404).json({error: e});
+      res.status(404).render("error",{error: e, link:`/posts/`});
     }
   })
   .delete(async (req, res) => {
@@ -73,19 +74,19 @@ router
 
       req.params.id = validation.checkId(req.params.id, 'Comment ID');
     } catch (e) {
-      return res.status(400).json({error: e});
+      return res.status(400).render("error",{error: e, link:`/posts/`});
     }
 
     try {
       const comment = await commentsData.getCommentById(req.params.id);
       if (comment === undefined)
-        return res.status(500).json({error: 'Internal Server Error'});
+        return res.status(500).render("error",{error: "Internal Service Error", link:`/posts/`});
 
       const commenterId = comment.user_id;
       const user_id = req.session.user._id;
       let ownComment = commenterId.equals(user_id);
       if (!ownComment) {
-        return res.status(400).json({error: 'Only comment owner can delete a comment'});
+        return res.status(400).render("error",{error: 'Only comment owner can delete a comment', link:`/posts/`});
       }
       const post_id = comment.post_id;
       await commentsData.removeComment(req.params.id, user_id);
@@ -93,10 +94,10 @@ router
 
     } catch (e) {
       if (Array.isArray(e)) // when removeComment throws
-        res.status(e[0]).json({error: e[1]});
+        res.status(e[0]).render("error",{error: e[1], link:`/posts/`});
 
       // when getCommentById throws
-      res.status(500).json({error: e});
+      res.status(500).render("error",{error: e, link:`/posts/`});
     }
   });
 

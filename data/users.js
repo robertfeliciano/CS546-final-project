@@ -379,14 +379,15 @@ export const loginUser = async (emailAddress, password) => {
     const db = await users();
     const user = await db.findOne({emailAddress: emailAddress.toLowerCase()});
     if (user === null) throw `Either the email address or password is invalid`;
-    // TODO user following = getFollowing (so i can get ids for links but display as username)
+    
+    const following_list = await getFollowing(user._id);
     let comp = await bcrypt.compare(password, user.password);
     if (comp)
         return {
             _id: new ObjectId(user._id),
             username: user.username,
             email: user.email,
-            following: user.following
+            following: following_list
         };
     else
         throw `Either the email address or password is invalid`;

@@ -80,7 +80,7 @@ function checkErrors(meta) {
 	clearErrors();
 
 	// check empty values
-	let anyMissing = false;
+	let anyErrors = false;
 	meta.forEach([id, name, checker, id2] => {
 		const value = $(id).val();
 		if (!value) {
@@ -89,8 +89,8 @@ function checkErrors(meta) {
 		}
 	});
 
-	if (anyMissing)
-		return;
+	if (anyErrors)
+		return true;
 
 	// check specific errors
 	meta.forEach([id, name, checker, id2] => {
@@ -100,8 +100,11 @@ function checkErrors(meta) {
 			checker(value, name, value2)
 		} catch (e) {
 			displayError(id, e.message ?? e);
+			anyErrors = true;
 		};
 	});
+
+	return anyErrors;
 }
 
 // validate forms
@@ -111,12 +114,26 @@ function checkErrors(meta) {
 // TODO attach to actual form once it is made and get correct ids
 
 $(document).ready(function () {
+	$('#music-search').submit(function event)) {
+		event.preventDefault();
+
+		// ignore if empty
+		const searchVal = $('#musicSearchInput').val();
+		if (!searchVal || searchVal.trim() === '')
+			return;
+
+		// redirect
+		const query = encodeURIComponent(searchVal.trim());
+		window.location.replace(`/music/search?piece=${query}`);
+	}
+
 	$('#login-form').submit(function (event)) {
 		const meta = {
 			['#emailAddressInput', 'Email Address', checkEmail]
 			['#passwordInput', 'Password', checkPassword]
-		}
-		checkErrors(meta);
+		};
+		if (checkErrors(meta))
+			event.preventDefault();
 	}
 
 	$('#registration-form').submit(function (event)) {
@@ -127,15 +144,17 @@ $(document).ready(function () {
 			['#confirmPasswordInput', 'Confirm Password', checkConfirmPass, '#passwordInput'],
 			['#bioInput', 'Bio', checkBio],
 			['#profilePic', 'Profile Picture', checkProfilePic],
-		}
-		checkErrors(meta);
+		};
+		if (checkErrors(meta))
+			event.preventDefault();
 	}
 
 	$('#music-submission-form').submit(function (event)) {
 		const meta = {
 			['#ratingInput', 'Rating', checkRating],
 			['#contentInput', 'Content', checkString]
-		}
-		checkErrors(meta);
+		};
+		if (checkErrors(meta))
+			event.preventDefault();
 	}
 });

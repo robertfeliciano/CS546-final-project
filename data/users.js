@@ -84,7 +84,7 @@ export const getUserById = async (userId) => {
     const userCollection = await users();
     const user = await userCollection.findOne(
         {_id: new ObjectId(userId)},
-        {hashedPassword: 0}
+        {projection: {hashedPassword: 0}}
     );
 
     if (user === null) {
@@ -143,7 +143,13 @@ export const removeUser = async (userId) => {
     }
 
     const userCollection = await users();
-    let user = await getUserById(userId);
+    let user;
+    try {
+        user = await getUserById(userId);
+    }
+    catch (e) {
+        throw [404, e];
+    }
     const posts_to_remove = user.userPosts;
     const comments_to_remove = user.userComments;
     let user_name = user.username;
@@ -156,7 +162,7 @@ export const removeUser = async (userId) => {
             {$pull: {following: user_id_to_remove}},
             {returnDocument: 'after'}
         )
-        if (!updatedUser) throw `Could not remove user: could not remove from users' following list`
+        if (!updatedUser) throw [400, `Could not remove user: could not remove from users' following list`];
     }
 
     for (const following of user.following) {
@@ -166,19 +172,28 @@ export const removeUser = async (userId) => {
             {$pull: {followers: user_id_to_remove}},
             {returnDocument: 'after'}
         )
-        if (!updatedUser) throw `Could not remover user; could not remove from user's following list`;
+        if (!updatedUser) throw [400, `Could not remover user; could not remove from user's following list`]
+    }
+
+    // need to remove the user frm the list of likers on posts that they've liked
+    for (let likedPostId of user.likedPosts) {
+        likedPostId = new ObjectId(likedPostId);
+        const unliked = await postFunctions.unlikePost(likedPostId, userId);
+        if (!unliked) throw [400, `Could not remove user fully; could not remove user like from a likedPost`];
     }
 
     for (const post_id of posts_to_remove) {
         // this takes care of removing each post from the song it was posted under
         const del = await postFunctions.removePost(post_id, userId);
-        if (!del.deleted) throw `Could not remove user, could ont remove user's posts`;
+        if (!del.deleted) throw [400 `Could not remove user, could not remove user's posts`]
     }
+    console.log('removed user posts');
 
     for (const comment_id of comments_to_remove) {
         const del = await commentFunctions.removeComment(comment_id, userId);
-        if (!del.deleted) throw `Could not remove user, could ont remove user's comments`;
+        if (!del.deleted) throw [400, `Could not remove user, could not remove user's comments`];
     }
+    console.log('removed user comments');
 
     // finally... we delete the user
     const deletionInfo = await userCollection.findOneAndDelete({
@@ -229,8 +244,8 @@ export const addFollower = async (user_to_follow, new_follower_id) => {
     }
 
     const updatedUserBFollowing = await userCollection.findOneAndUpdate(
-        {_id: new ObjectId(user_to_follow)},
-        {$push: {following: new ObjectId(new_follower_id)}},
+        {_id: new ObjectId(new_follower_id)},
+        {$push: {following: new ObjectId(user_to_follow)}},
         {returnDocument: 'after'}
     );
     if (!updatedUserBFollowing) {
@@ -251,11 +266,11 @@ export const removeFollower = async (user_to_unfollow, unfollower_id) => {
     const userCollection = await users();
     const check = await userCollection.find(
         {
-            _id: user_to_unfollow,
+            _id: new ObjectId(user_to_unfollow),
             followers: new ObjectId(unfollower_id)
         }).toArray();
 
-    if (check.length !== 0)
+    if (check.length === 0)
         throw [204, `User ${unfollower_id} doesn't already follow ${user_to_unfollow}`];
 
     const updatedUserAFollowers = await userCollection.findOneAndUpdate(
@@ -268,8 +283,8 @@ export const removeFollower = async (user_to_unfollow, unfollower_id) => {
     }
 
     const updatedUserBFollowing = await userCollection.findOneAndUpdate(
-        {_id: new ObjectId(user_to_unfollow)},
-        {$pull: {following: new ObjectId(unfollower_id)}},
+        {_id: new ObjectId(unfollower_id)},
+        {$pull: {following: new ObjectId(user_to_unfollow)}},
         {returnDocument: 'after'}
     );
     if (!updatedUserBFollowing) {
@@ -376,7 +391,6 @@ export const loginUser = async (emailAddress, password) => {
     else
         throw `Either the email address or password is invalid`;
 }
-
 
 export const alreadyLikedPost = async (userId, postId) => {
     userId = val.checkId(userId, 'user id');
@@ -518,3 +532,129 @@ export const getFollowers = async (userId) => {
     return followers;
 }
 
+export const getPostsFromUserId = async (userId) => {
+    userId = val.checkId(userId, 'user id');
+
+    let userCollection = await users();
+    let userPosts = await userCollection.aggregate([
+        {
+            '$match': {
+                '_id': new ObjectId(userId)
+            }
+        }, {
+            '$unwind': '$userPosts'
+        }, {
+            '$lookup': {
+                'from': 'posts',
+                'localField': 'userPosts',
+                'foreignField': '_id',
+                'as': 'postInfo'
+            }
+        }, {
+            '$set': {
+                'postInfo': {
+                    '$arrayElemAt': [
+                        '$postInfo', 0
+                    ]
+                }
+            }
+        }, {
+            '$replaceRoot': {
+                'newRoot': '$postInfo'
+            }
+        }, {
+            '$lookup': {
+                'from': 'music',
+                'localField': 'music_id',
+                'foreignField': '_id',
+                'as': 'musicInfo'
+            }
+        }, {
+            '$set': {
+                'musicInfo': {
+                    '$arrayElemAt': [
+                        '$musicInfo', 0
+                    ]
+                }
+            }
+        }, {
+            '$set': {
+                'piecename': '$musicInfo.name'
+            }
+        }, {
+            '$project': {
+                'musicInfo': 0,
+                'comments': 0
+            }
+        }
+    ]).toArray();
+
+    if (!userPosts)
+        throw `Could not get posts for user with id ${userId}`;
+
+    return userPosts;
+}
+
+export const getLikedPostsFromUserId = async (userId) => {
+    userId = val.checkId(userId);
+
+    const userCollection = await users();
+    const likedPosts = await userCollection.aggregate([
+        {
+            '$match': {
+                '_id': new ObjectId(userId)
+            }
+        }, {
+            '$unwind': '$likedPosts'
+        }, {
+            '$lookup': {
+                'from': 'posts',
+                'localField': 'likedPosts',
+                'foreignField': '_id',
+                'as': 'postInfo'
+            }
+        }, {
+            '$set': {
+                'postInfo': {
+                    '$arrayElemAt': [
+                        '$postInfo', 0
+                    ]
+                }
+            }
+        }, {
+            '$replaceRoot': {
+                'newRoot': '$postInfo'
+            }
+        }, {
+            '$lookup': {
+                'from': 'music',
+                'localField': 'music_id',
+                'foreignField': '_id',
+                'as': 'musicInfo'
+            }
+        }, {
+            '$set': {
+                'musicInfo': {
+                    '$arrayElemAt': [
+                        '$musicInfo', 0
+                    ]
+                }
+            }
+        }, {
+            '$set': {
+                'piecename': '$musicInfo.name'
+            }
+        }, {
+            '$project': {
+                'musicInfo': 0,
+                'comments': 0
+            }
+        }
+    ]).toArray();
+
+    if (!likedPosts)
+        throw `Could not get liked posts for user with id ${userId}`;
+
+    return likedPosts;
+}
+// console.log(await getLikedPostsFromUserId('657a26e412ba1278581f88d7'));

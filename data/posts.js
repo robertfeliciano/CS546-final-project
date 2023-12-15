@@ -335,8 +335,10 @@ export const removePost = async (postId, deleterId) => {
     const user_id = new ObjectId(post.user_id);
     deleterId = new ObjectId(deleterId);
 
-    if (!deleterId.equals(user_id))
+    if (!deleterId.equals(user_id)) {
+        // console.log(user_id);
         throw [400, `Only the original poster can delete a post.`];
+    }
 
     // remove post from user that posted it
     const userCollection = await users();
@@ -425,6 +427,40 @@ export const likePost = async (
     const userUpdatedInfo = await userCollection.findOneAndUpdate(
         {_id: new ObjectId(liker_id)},
         {$push: {likedPosts: new ObjectId(postId)}},
+        {returnDocument: 'after'}
+    );
+
+    if (!userUpdatedInfo)
+        throw [404, 'Could not like post successfully!'];
+
+    return updatedInfo
+}
+
+export const unlikePost = async (postId, unlikerId) => {
+
+    try {
+        postId = val.checkId(postId, 'post id');
+        unlikerId = val.checkId(unlikerId, 'unliker id');
+    } catch(emsg) {
+        throw [400, emsg];
+    }
+
+    const postsCollection = await posts();
+
+    const updatedInfo = await postsCollection.findOneAndUpdate(
+        {_id: new ObjectId(postId)},
+        {pull: {likes: new ObjectId(unlikerId)}},
+        {returnDocument: 'after'}
+    );
+
+    if (!updatedInfo) {
+        throw [404, 'Could not update post successfully'];
+    }
+
+    const userCollection  = await users();
+    const userUpdatedInfo = await userCollection.findOneAndUpdate(
+        {_id: new ObjectId(unlikerId)},
+        {pull: {likedPosts: new ObjectId(postId)}},
         {returnDocument: 'after'}
     );
 

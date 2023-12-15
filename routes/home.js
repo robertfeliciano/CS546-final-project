@@ -20,7 +20,10 @@ router
             if (fromPostman(req.headers['user-agent']))
                 return res.json({posts: following_posts});
             else
-                return res.render('home', req.session.user);
+                //render temp html
+                return res.render('<h1>hello</h1>');
+                
+                return res.render('posts/home', req.session.user);
         } catch(e) {
             return res.status(500).json({error: "Internal Server Error", problem: e});
         }

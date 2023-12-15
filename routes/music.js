@@ -71,7 +71,7 @@ router
       const [albums, songs] = await musicData.fuzzyFindMusic(query);
       if (fromPostman(req.headers['user-agent']))
         return res.json({albums: albums, songs: songs});
-      return res.render('searchResult', {albums: albums, songs: songs});
+      return res.render('music/searchResult', {albums: albums, songs: songs});
     });
 
 router

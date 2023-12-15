@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jukeboxd</title>
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
+    <link rel="stylesheet" href="public/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <h2 class="logo"> 
+                Juxeboxd.
+            </h2>
+            <div class="search-bar">
+                <i class="uil uil-search"></i>
+                <input type="search" placeholder="Search for a song or album......">
+            </div>
+            <div class="profile-tr">
+                <div class="profile-photo">
+                    <img src="../../public/pics/profpic.png" alt="profile picture">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Main Posts -->
+    <main>
+        <div class="container">
+            <!-------------------------- Left Sidebar -------------------------->
+            <div class="left">
+                <a class="profile">
+                    <div class="profile-photo">
+                        <img src="../../public/pics/profpic.png" alt="profile picture">
+                    </div>
+                    <div class="handle">
+                        <h4>Patrick Hill</h4>
+                        <p class="text-muted">
+                            @graffixnyc
+                        </p>
+                    </div>
+                </a>
+                <div class="sidebar">
+                    <h1 class="explore-header-left">
+                        Explore Panel
+                    </h1>
+                    <a href="" class="menu-item active">
+                        <span>
+                            <i class="uil uil-home"></i>
+                        </span>
+                        <h3>
+                            Home
+                        </h3>
+                    </a>
+                    <a href="" class="menu-item">
+                        <span>
+                            <i class="uil uil-music"></i>
+                        </span>
+                        <h3>
+                            Find Songs
+                        </h3>
+                    </a>
+                    <a href="" class="menu-item">
+                        <span>
+                            <i class="uil uil-analytics"></i>
+                        </span>
+                        <h3>
+                            Analytics
+                        </h3>
+                    </a>
+                        
+                    <h1 class="settings-header-left">
+                        Settings
+                    </h1>
+                    <a href="" class="menu-item">
+                        <span>
+                            <i class="uil uil-setting"></i>
+                        </span>
+                        <h3>
+                            Settings
+                        </h3>
+                    </a>
+                    <a href="" class="menu-item">
+                        <span>
+                            <i class="uil uil-sign-out-alt"></i>
+                        </span>
+                        <h3>
+                            Logout
+                        </h3>
+                    </a>
+                </div>
+            </div>
+            <!-------------------------- Main Content -------------------------->
+            {{{body}}}
+
+            <!-------------------------- Right Sidebar -------------------------->
+            <div class="right">
+                <div class="friends">
+                    <div class="heading">
+                        <h4>Friends</h4>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="search-bar">
+                        <i class="uil uil-search"></i>
+                        <input type="search" placeholder="Search for a friend..." id="friend-search">
+                    </div>
+                    <!-- Categories -->
+                    <div class="category">
+                        <h6 class="active"> Following </h6>
+                        <h6> Followers </h6>
+                    </div>
+                    <!-- Friends -->
+                    <div class="friend">
+                        <div class="profile-photo">
+                            <img src="../../public/pics/profpic.png" alt="profile picture">
+                        </div>
+                        <div class="friend-body">
+                            <h5> Grace Hopper </h5>
+                            <p> Following </p>
+                        </div>
+                    </div>
+                    <div class="friend">
+                        <div class="profile-photo">
+                            <img src="../../public/pics/profpic.png" alt="profile picture">
+                        </div>
+                        <div class="friend-body">
+                            <h5> Alan Turing </h5>
+                            <p> Following </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

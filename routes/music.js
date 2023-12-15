@@ -3,6 +3,7 @@ import * as val  from '../validation.js';
 import {musicData, postsData} from '../data/index.js'
 import {fromPostman} from "../helpers.js";
 const router = Router();
+import xss from 'xss';
 
 router
     .route('/')
@@ -26,7 +27,7 @@ router
           return res.json({songs: all_songs});
         return res.render('music', {music: all_songs});
       } catch(e) {
-        return res.status(500).json({error: "Internal Server Error", problem: e});
+        return res.status(500).render("error",{error: "Internal Server Error", problem: e, link:`/music/`});
       }
     });
 
@@ -40,7 +41,7 @@ router
           return res.json({albums: all_albums});
         return res.render('music', {music: all_albums});
       } catch (e) {
-        return res.status(500).json({error: "Internal Server Error", problem: e});
+        return res.status(500).render("error",{error: "Internal Server Error", problem: e, link:`/music/`});
       }
     });
 
@@ -80,7 +81,7 @@ router
       try {
         req.params.id = val.checkId(req.params.id, "music id");
       } catch(e) {
-        return res.status(400).json({error: e});
+        return res.status(400).render("error",{error: e, link:`/music/`});
       }
       try {
         const piece = await musicData.getMusicById(req.params.id);
@@ -100,7 +101,7 @@ router
           return res.json(meta);
         return res.render('musicPiece', meta);
       } catch(e) {
-        return res.status(500).json({error: `No piece with id ${req.params.id} found`});
+        return res.status(500).render("error",{error: `No piece with id ${req.params.id} found`, link:`/music/`});
       }
     })
     .post(async (req, res) => {
@@ -108,11 +109,14 @@ router
       try{
         req.params.id = val.checkId(req.params.id, "music id");
       } catch(e) {
-        return res.status(400).json({error:e});
+        return res.status(400).render("error",{error: e, link:`/music/`});
+      }
+      for (let key of Object.keys(req.body)) {
+        req.body[key] = xss(req.body[key])
       }
       let formInput = req.body;
       if (!formInput)
-        return res.status(400).json({error:"Must provide form input."});
+        return res.status(400).render("error",{error: "Must provide form input.", link:`/music/${req.params.id}`});
       let missingFields = [];
       if (!formInput.rating)
         missingFields.push('Rating');
@@ -120,18 +124,18 @@ router
         missingFields.push('Post content');
       if (missingFields.length > 0) {
         if (fromPostman(req.headers['user-agent']))
-          return res.status(400).json({error: `Missing Field(s): ${missingFields.toString()}`});
+          return res.status(400).render("error",{error: `Missing Field(s): ${missingFields.toString()}`, link:`/music/${req.params.id}`});
         else
-          return res.status(400).json({error: `Missing Field(s): ${missingFields.toString()}`});
+          return res.status(400).render("error",{error: `Missing Field(s): ${missingFields.toString()}`, link:`/music/${req.params.id}`});
       }
       try {
         formInput.rating = val.checkRating(formInput.rating, 'Music rating');
         formInput.content = val.checkString(formInput.content, 'Post content');
       } catch(e) {
         if (fromPostman(req.headers['user-agent']))
-          return res.status(400).json({error: e});
+          return res.status(400).render("error",{error: e, link:`/music/${req.params.id}`});
         else
-          return res.status(400).json({error: e});
+          return res.status(400).render("error",{error: e, link:`/music/${req.params.id}`});
       }
       try {
         const date = new Date();
@@ -150,7 +154,7 @@ router
         }
       } catch(e) {
         console.log(e);
-        return res.status(500).json({error: "Internal Server Error"});
+        return res.status(500).render("error",{error: "Internal Server Error", link:`/music/${req.params.id}`});
       }
     });
 

@@ -1,6 +1,7 @@
 import {Router} from 'express';
 import {loginUser} from '../data/users.js';
 import * as validation from '../validation.js';
+import xss from 'xss';
 
 const router = Router();
 
@@ -11,6 +12,10 @@ router
   })
   .post(async (req, res) => {
     //code here for POST
+    for (let key of Object.keys(req.body)) {
+      req.body[key] = xss(req.body[key])
+    }
+
     let { emailAddressInput, passwordInput } = req.body;
 
     // Check if all fields are supplied

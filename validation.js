@@ -73,22 +73,17 @@ export const checkString = (strVal, varName) => {
     strVal = strVal.trim();
     if (strVal.length === 0)
       throw `Error: ${varName} cannot be an empty string or string with just spaces`;
-    if (strVal.length > 150)
-      throw `Error: ${varName} cannot be longer than 150 characters!`;
     if (!isNaN(strVal))
       throw `Error: ${strVal} is not a valid value for ${varName} as it only contains digits`;
     return strVal;
 }
 
-export const checkGenre = (strVal) => {
-  if (!strVal) throw `Error: You must supply a genre!`;
-  if (typeof strVal !== 'string') throw `Error: genre must be a string!`;
-  strVal = strVal.trim();
-  if (strVal.length === 0)
-    throw `Error: genre cannot be an empty string or string with just spaces`;
-  if (!isNaN(strVal))
-    throw `Error: ${strVal} is not a valid value for genre as it only contains digits`;
-  return strVal;
+export const checkRating = (intVal, varName) => {
+    if (!intVal) throw `Error: You must supply a ${varName}!`;
+    if (typeof intVal !== 'number') throw `Error: ${varName} must be a number!`;
+    if (!Number.isInteger(intVal)) throw `Error: ${varName} must be an integer!`;
+    if (intVal < 0 || intVal > 5) throw `Error: ${varName} must be a positive integer between 0 and 5!`;
+    return intVal;
 }
 
 export const checkType = (strVal) => {
@@ -101,29 +96,4 @@ export const checkType = (strVal) => {
   if (!isNaN(strVal))
     throw `Error: ${strVal} is not a valid value for a type of music as it only contains digits`;
   return strVal;
-}
-
-export const checkName = (name, which) => {
-  if (!name) throw `Error: You must supply a ${which}!`;
-  if (typeof name !== 'string') throw `Error: ${which} must be a string!`;
-  name = name.trim();
-  if (name.length === 0)
-    throw `Error: ${which} cannot be an empty string or string with just spaces`;
-  if (!isNaN(name))
-    throw `Error: ${name} is not a valid value for ${which} as it only contains digits`;
-  return name;
-}
-
-export const checkRating = (intVal, varName) => {
-    if (!intVal) throw `Error: You must supply a ${varName}!`;
-    if (typeof intVal !== 'number') throw `Error: ${varName} must be a number!`;
-    if (!Number.isInteger(intVal)) throw `Error: ${varName} must be an integer!`;
-    if (intVal < 0 || intVal > 5) throw `Error: ${varName} must be a positive integer between 0 and 5!`;
-    return intVal;
-}
-
-export const checkDate = (date) => {
-  if (!(date instanceof Date))
-    throw `Error: must supply a valid entry for Date!`;
-  return date;
 }

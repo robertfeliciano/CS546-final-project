@@ -181,7 +181,7 @@ export const getPostsForMusic = async (musicId) => {
   musicId = val.checkId(musicId, 'music id');
   const allMusic = await music();
   // i am tired of reformatting the stuff Compass lets me copy, so it's staying this way now
-  const piecePosts = await allMusic.aggregate([
+  let piecePosts = await allMusic.aggregate([
     {
       '$match': {
         '_id': new ObjectId(musicId)
@@ -225,10 +225,15 @@ export const getPostsForMusic = async (musicId) => {
     }
   ]).toArray();
 
+  piecePosts = piecePosts.sort((p1, p2) => p2.date.getTime() - p1.date.getTime())
+
   if (!piecePosts)
     throw `Could not get posts for music piece with id ${musicId}`;
 
   return piecePosts;
 }
 
+// console.log(await getPostsForMusic('657a270512ba1278581f88e7'));
+// console.log(await getAllMusic());
+// console.log(await fuzzyFindMusic('my beatufiel dark twitsed fantsay'));
 // console.log(await getPostsForMusic('657a270512ba1278581f88e7'));

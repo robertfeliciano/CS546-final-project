@@ -62,7 +62,7 @@ export const getAllUsers = async () => {
     
     let userList = await userCollection
         .find({})
-        .project({_id : 1, username:1})
+        .project({_id : 1, username:1, bio:1})
         .toArray();
     
     if (!userList) {
@@ -364,6 +364,7 @@ export const loginUser = async (emailAddress, password) => {
     const db = await users();
     const user = await db.findOne({emailAddress: emailAddress.toLowerCase()});
     if (user === null) throw `Either the email address or password is invalid`;
+    // TODO user following = getFollowing (so i can get ids for links but display as username)
     let comp = await bcrypt.compare(password, user.password);
     if (comp)
         return {

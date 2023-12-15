@@ -8,7 +8,7 @@ return res.render('searchResult', {albums: albums, songs: songs});
             <h1>-------------------</h1>
             <div class="reg">
                 <img src="public/pics/vinyl.webp" alt="vinyl">
-                <h3>{{name}}</h3>
+                <a href="/music/{{_id}}">{{name}}</a>
                 <h3>{{artist}}</h3>
             </div>
             <h1>-------------------</h1>
@@ -18,7 +18,7 @@ return res.render('searchResult', {albums: albums, songs: songs});
             <h1>-------------------</h1>
             <div class="reg">
                 <img src="../../public/pics/vinyl.webp" alt="vinyl">
-                <h3>{{name}}</h3>
+                <a href="/music/{{_id}}">{{name}}</a>
                 <h3>{{artist}}</h3>
             </div>
             <h1>-------------------</h1>

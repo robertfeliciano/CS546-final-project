@@ -16,7 +16,7 @@
             </h2>
             <div class="search-bar">
                 <i class="uil uil-search"></i>
-                <input type="search" placeholder="Search for a song or album......">
+                <input id="searchInput" type="search" placeholder="Search for a song or album......" onkeydown="searchOnEnter(event)">
             </div>
             <div class="profile-tr">
                 <div class="profile-photo">
@@ -47,7 +47,7 @@
                     <h1 class="explore-header-left">
                         Explore Panel
                     </h1>
-                    <a href="" class="menu-item active">
+                    <a href="/posts" class="menu-item active" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-home"></i>
                         </span>
@@ -55,7 +55,7 @@
                             Home
                         </h3>
                     </a>
-                    <a href="" class="menu-item">
+                    <a href="/music/songs" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-music"></i>
                         </span>
@@ -63,19 +63,11 @@
                             Find Songs
                         </h3>
                     </a>
-                    <a href="" class="menu-item">
-                        <span>
-                            <i class="uil uil-analytics"></i>
-                        </span>
-                        <h3>
-                            Analytics
-                        </h3>
-                    </a>
                         
                     <h1 class="settings-header-left">
                         Settings
                     </h1>
-                    <a href="" class="menu-item">
+                    <a href="" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-setting"></i>
                         </span>
@@ -83,7 +75,7 @@
                             Settings
                         </h3>
                     </a>
-                    <a href="" class="menu-item">
+                    <a href="" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-sign-out-alt"></i>
                         </span>
@@ -135,5 +127,23 @@
             </div>
         </div>
     </main>
+
+    <script>
+    function searchOnEnter(event) {
+        if (event.key === 'Enter') {
+            // Get the user input
+            let userInput = document.getElementById('searchInput').value;
+
+            // Replace spaces with '%20' in the query
+            let query = userInput.replace(/ /g, '%20');
+
+            // Call the GET request
+            let newLink = '/music/search?user=' + query;
+            console.log(newLink);
+            window.location.href = '/music/search?piece=' + query;
+        }
+    };
+
+    </script>
 </body>
 </html>

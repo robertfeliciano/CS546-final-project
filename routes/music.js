@@ -25,7 +25,7 @@ router
         const all_songs = await musicData.getAllSongs();
         if (fromPostman(req.headers['user-agent']))
           return res.json({songs: all_songs});
-        return res.render('music', {music: all_songs});
+        return res.render('music/musicList', {music: all_songs});
       } catch(e) {
         return res.status(500).render("error",{error: "Internal Server Error", problem: e, link:`/music/`});
       }
@@ -99,7 +99,7 @@ router
         };
         if (fromPostman(req.headers['user-agent']))
           return res.json(meta);
-        return res.render('musicPiece', meta);
+        return res.render('music/musicPiece', meta);
       } catch(e) {
         return res.status(500).render("error",{error: `No piece with id ${req.params.id} found`, link:`/music/`});
       }

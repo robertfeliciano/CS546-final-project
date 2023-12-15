@@ -3,6 +3,7 @@ const router = Router();
 import {postsData, usersData} from '../data/index.js';
 import * as validation from '../validation.js';
 import {fromPostman} from "../helpers.js";
+import xss from 'xss';
 
 
 // ALL ROUTES REQUIRE USER TO BE LOGGED IN
@@ -170,7 +171,9 @@ router
 
   .patch(async (req, res) => {
     // PATCH /:id/edit modifies the rating/content of a specific post (only if the user owns it)
-
+    for (let key of Object.keys(req.body)) {
+      req.body[key] = xss(req.body[key])
+    }
     let {rating, content} = req.body;
     if (!rating)
       return res.status(400).render("../views/error.handlebars",{error: 'must provide a rating!', link:`/posts/`});

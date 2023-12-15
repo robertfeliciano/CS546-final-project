@@ -3,6 +3,7 @@ import * as val  from '../validation.js';
 import {musicData, postsData} from '../data/index.js'
 import {fromPostman} from "../helpers.js";
 const router = Router();
+import xss from 'xss';
 
 router
     .route('/')
@@ -109,6 +110,9 @@ router
         req.params.id = val.checkId(req.params.id, "music id");
       } catch(e) {
         return res.status(400).render("../views/error.handlebars",{error: e, link:`/music/`});
+      }
+      for (let key of Object.keys(req.body)) {
+        req.body[key] = xss(req.body[key])
       }
       let formInput = req.body;
       if (!formInput)

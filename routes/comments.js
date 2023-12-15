@@ -2,6 +2,7 @@ import {Router} from 'express';
 const router = Router();
 import { commentsData } from '../data/index.js';
 import * as validation from '../validation.js';
+import xss from 'xss';
 
 
 // ALL ROUTES REQUIRE USER TO BE LOGGED IN
@@ -22,7 +23,7 @@ router
       // user_id = validation.checkId(req.session.user._id, 'User ID');
       req.params.id = validation.checkId(req.params.id, 'Post ID');
 
-      req.body.content = validation.checkString(req.body.content, 'Comment Content');
+      req.body.content = validation.checkString(xss(req.body.content), 'Comment Content');
     } catch (e) {
       return res.status(400).render("../views/error.handlebars",{error: e, link:`/posts/`});
     }

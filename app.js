@@ -40,9 +40,7 @@ app.use(
         name: 'Jukeboxd',
         secret: 'some secret string!',
         saveUninitialized: false,
-        resave: false,
-        // // TODO: REMOVE THIS
-        // user: true
+        resave: false
     })
 )
 

@@ -312,6 +312,10 @@ main .container .left .profile {
     margin-bottom: 1rem;
 }
 
+.middle .feed .post-1 .rating .stars i {
+    color: var(--color-primary);
+}
+
 .middle .feed .post-1 .music {
     width: 100%;
     display: flex;

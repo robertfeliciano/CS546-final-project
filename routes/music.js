@@ -24,8 +24,8 @@ router
       try {
         const all_songs = await musicData.getAllSongs();
         if (fromPostman(req.headers['user-agent']))
-          return res.json({music: all_songs});
-        return res.render('music', {userInfo: req.session.user, music: all_songs});
+          return res.json({songs: all_songs});
+        return res.render('music/musicList', {music: all_songs});
       } catch(e) {
         return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
       }

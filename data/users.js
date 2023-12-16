@@ -660,4 +660,4 @@ export const getLikedPostsFromUserId = async (userId) => {
     return likedPosts;
 }
 // console.log(await getLikedPostsFromUserId('657ceae06d66b79009b45de3'));
-console.log(await getFollowing('657dd1dde3ba67bd632a3119'));
+// console.log(await getFollowing('657dd1dde3ba67bd632a3119'));

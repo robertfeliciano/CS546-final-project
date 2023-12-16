@@ -48,7 +48,7 @@ export const checkBio = (bio) => {
 
 export const checkProfilePic = async (pfp) => {
   pfp = pfp.trim();
-  await fs.readdir('./assets/photos', (err, files) => {
+  await fs.readdir('./public/pics', (err, files) => {
     if (err) throw `Could not read from available profile pictures... Try again soon!`;
     if (!files.includes(pfp)) throw `Please select an available option!`;
     return pfp;

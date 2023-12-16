@@ -27,7 +27,7 @@
 <div class="middle">
     <div class="feed">
         {{#each posts}}  
-          <div class="post-1">
+          <div class="post-1" onclick="redirectToPost('{{_id}}')">
             <div class="top">
                 <div class="user">
                     <div class="profile-photo">
@@ -95,6 +95,13 @@
     function redirectToMusic(musicId) {
         // Use JavaScript to navigate to the desired URL
         window.location.href = `/music/${musicId}`;
+    }
+</script>
+
+<script>
+    function redirectToPost(postId) {
+        // Use JavaScript to navigate to the desired URL
+        window.location.href = `/posts/${postId}`;
     }
 </script>
 

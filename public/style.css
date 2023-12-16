@@ -284,6 +284,7 @@ main .container .left .profile {
     font-size: 0.85rem;
     line-height: 1.5;
     width: 100%;
+    cursor: pointer;
 }
 
 .middle .feed .post-1 .top {
@@ -323,6 +324,7 @@ main .container .left .profile {
     padding: 0.4rem var(--card-padding);
     border-radius: var(--border-radius);
     cursor: pointer;
+    z-index: 1;
 }
 
 .middle .feed .post-1 .music .vinyl {

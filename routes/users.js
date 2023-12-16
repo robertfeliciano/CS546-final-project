@@ -165,6 +165,7 @@ router
         try {
             // if (!req.session.user) res.render('/login');
             // let user_id = validation.checkId(req.session.user._id, 'User ID');
+            //TODO need to put xss in users routes
             req.params.id = validation.checkId(req.params.id, 'User Page ID');
             req.body.userBio = validation.checkBio(req.body.userBio);
             const curr_user_id = req.session.user._id;

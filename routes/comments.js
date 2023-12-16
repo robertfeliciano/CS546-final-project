@@ -3,6 +3,7 @@ const router = Router();
 import { commentsData } from '../data/index.js';
 import * as validation from '../validation.js';
 import xss from 'xss';
+import {fromPostman} from "../helpers.js";
 
 
 // ALL ROUTES REQUIRE USER TO BE LOGGED IN
@@ -29,12 +30,13 @@ router
     }
 
     try {
-      const comment = await commentsData.createComment(req.params.id, req.params.user._id, req.body.content, new Date());
+      const comment = await commentsData.createComment(req.params.id, req.session.user._id, req.body.content, new Date());
       if (comment === undefined)
         return res.status(500).render("error",{error: "Internal Service Error", link:`/posts/${req.params.id}`});
       // redirect to GET /comments/:new_comment_id to view the comment you made
       res.redirect(`/comments/${comment._id}`);
     } catch (e) {
+      console.log(e);
       res.status(500).render("error",{error: e, link:`/posts/${req.params.id}`});
     }
   })
@@ -58,6 +60,8 @@ router
       const commenterId = comment.user_id;
       const user_id = req.session.user._id;
       let ownComment = commenterId.equals(user_id);
+      if (fromPostman(req.headers['user-agent']))
+        return res.json({comment: comment, ownComment: ownComment})
       res.render('comments/single', {comment: comment, ownComment: ownComment});
 
     } catch (e) {

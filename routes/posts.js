@@ -184,7 +184,7 @@ router
       // const user_id = validation.checkId(req.session.user._id, 'User ID');
       req.params.id = validation.checkId(req.params.id, 'Post ID');
       rating = validation.checkRating(rating, 'rating');
-      content = validation.checkString(content, 'content');     
+      content = validation.checkString(content, 'content');
     } catch (e) {
       return res.status(400).render("error",{error: e, link:`/posts/`});
     }
@@ -206,7 +206,8 @@ router
       const editedPost = await postsData.editPostContent(req.params.id, rating, content);
       if (editedPost === undefined)
         return res.status(500).render("error",{error: "Internal Server Error", link:`/posts/`});
-      return res.json({post: editedPost, ownPost: true, alreadyLiked: alreadyLiked});
+      if (fromPostman(req.headers['user-agent']))
+        return res.json({post: editedPost, ownPost: true, alreadyLiked: alreadyLiked});
       res.render('posts/single', {post: editedPost, ownPost: true, alreadyLiked: alreadyLiked});
     }
     catch (e) {

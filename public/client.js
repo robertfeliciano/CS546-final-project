@@ -27,7 +27,7 @@ const checkPass = (pass, varName) => {
   return pass;
 }
 
-const confirmPass = (original, varName, confirmed) => {
+const checkConfirm = (original, varName, confirmed) => {
   if (original.trim() !== confirmed.trim()) throw `${varName} must match.`;
   return confirmed;
 }
@@ -40,11 +40,10 @@ const checkBio = (bio, varName) => {
 
 const checkProfilePic = async (pfp, varName) => {
   pfp = pfp.trim();
-  fs.readdir('./assets/photos', (err, files) => {
-    if (err) throw `Could not read from available profile pictures... Try again soon.`;
-    if (!files.includes(pfp)) throw `Please select an available option.`;
-    return pfp;
-  })
+	const pfps = ['assets/photos/music_notes.jpg', 'assets/photos/happy_cat.jpg', 'assets/photos/cool_dog.jpg', 'assets/photos/kanye.jpg'];
+	if (!pfps.includes(pfp))
+		throw `${varName} must be a valid profile picture`;
+	return pfp;
 }
 
 const checkString = (strVal, varName) => {
@@ -64,46 +63,48 @@ const checkRating = (intVal, varName) => {
     return intVal;
 }
 
-function displayError(input, message) {
-	const errorMessage = `<p class="error-message">${message}</p>`;
-	$(input).after(errorMessage);
-}
-
-function clearErrors() {
-	$('p.'+$(this).attr('error-message')).remove();
+function addError(message) {
+	$('#error').append($(`<p class="error-message">${message}</p>`));
 }
 
 // meta error checking
 // TODO change so it uses hidden
 // TODO change so errors say the name (update checkers ^)
 function checkErrors(meta) {
-	clearErrors();
+	$('#error').hide();
+	$('#error').empty();
 
-	// check empty values
+	// check for missing fields
 	let anyErrors = false;
 	meta.forEach(([id, name, checker, id2]) => {
 		const value = $(id).val();
 		if (!value) {
-			displayError(id, `${name} is required.`);
-			anyMissing = true;
+			addError(`${name} is required.`);
+			anyErrors = true;
 		}
 	});
 
-	if (anyErrors)
+	// stop if missing fields found
+	if (anyErrors) {
+		$('#error').show();
 		return true;
+	}
 
-	// check specific errors
+	// check for specific errors
 	meta.forEach(([id, name, checker, id2]) => {
 		const value = $(id).val();
 		const value2 = id2 ? $(id2).val() : null;
 		try {
 			checker(value, name, value2)
 		} catch (e) {
-			displayError(id, e.message ?? e);
+			addError(e.message ?? e);
 			anyErrors = true;
 		};
 	});
 
+	// return and possibly show errors
+	if (anyErrors)
+		$('#error').show();
 	return anyErrors;
 }
 
@@ -115,7 +116,6 @@ function checkErrors(meta) {
 
 $(document).ready(function () {
 	$('#music-search').keypress(function (event) {
-		console.log($(this).val());
 		if (event.which === 13) {
 			// ignore if empty
 			const searchVal = $('#music-search').val();
@@ -160,7 +160,7 @@ $(document).ready(function () {
 	$('#login-form').submit(function (event) {
 		const meta = [
 			['#emailAddressInput', 'Email Address', checkEmail],
-			['#passwordInput', 'Password', checkPassword]
+			['#passwordInput', 'Password', checkPass]
 		];
 		if (checkErrors(meta))
 			event.preventDefault();
@@ -168,10 +168,10 @@ $(document).ready(function () {
 
 	$('#registration-form').submit(function (event) {
 		const meta = [
-			['#usernameInput', 'Username', checkUsername],
+			['#userNameInput', 'Username', checkUsername],
 			['#emailAddressInput', 'Email Address', checkEmail],
-			['#passwordInput', 'Password', checkPassword],
-			['#confirmPasswordInput', 'Confirm Password', checkConfirmPass, '#passwordInput'],
+			['#passwordInput', 'Password', checkPass],
+			['#confirmPasswordInput', 'Confirm Password', checkConfirm, '#passwordInput'],
 			['#bioInput', 'Bio', checkBio],
 			['#profilePic', 'Profile Picture', checkProfilePic],
 		];

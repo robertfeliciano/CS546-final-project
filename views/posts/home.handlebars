@@ -55,8 +55,8 @@
                     <i class="uil uil-star five star"></i>
                 </div>
             </div>
-            <div class="music">
-                <img src="./assets/vinyl.webp" alt="vinyl" class="vinyl">
+            <div class="music" onclick="redirectToMusic('{{music_id}}')">
+                <img src="../../public/pics/vinyl.webp" alt="vinyl" class="vinyl">
                 <div class="music-song">
                     <h3 class="song">{{piecename}}</h3>
                     <h4 class="artist">Artist Name</h4>
@@ -123,4 +123,9 @@
     </div>
 </div>
 
-
+<script>
+    function redirectToMusic(musicId) {
+        // Use JavaScript to navigate to the desired URL
+        window.location.href = `/music/${musicId}`;
+    }
+</script>

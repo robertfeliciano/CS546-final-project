@@ -11,7 +11,7 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
-            <h2 class="logo"> 
+            <h2 class="logo" onclick="redirectToHome()"> 
                 Jukeboxd.
             </h2>
             <div class="search-bar">
@@ -159,6 +159,12 @@
             }
         });
     });
+    </script>
+    <script>
+        function redirectToHome() {
+            // Use JavaScript to navigate to the desired URL
+            window.location.href = `/home`;
+        }
     </script>
 </body>
 </html>

@@ -58,7 +58,7 @@ router
           let curr_user_id = req.session.user._id;
           let owner = curr_user_id.equals(req.params.id);
           if (fromPostman(req.headers['user-agent']))
-            return res.json({user: user, posts: userPosts, likes: likedPosts, owner: owner});
+            return res.json({userInfo: req.session.user, user: user, posts: userPosts, likes: likedPosts, owner: owner});
           // TODO pass in whether or not current user follows the user by :id
           // this determines whether or not to render a follow button
           // if they are NOT the same user and they DO NOT follow:

@@ -224,7 +224,8 @@ export const getAllPostsFromFollowing = async (userId) => {
             }
         }, {
             '$set': {
-                'username': '$userInfo.username'
+                'username': '$userInfo.username',
+                'profilePicture': '$userInfo.profilePicture'
             }
         }, {
             '$lookup': {

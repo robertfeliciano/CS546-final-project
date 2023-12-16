@@ -13,16 +13,22 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
-            <h2 class="logo" onclick="redirectToHome()">
+            <h2 class="clickable logo" onclick="redirectToHome()">
                 Jukeboxd.
             </h2>
             <div class="search-bar">
                 <i class="uil uil-search"></i>
-                <input id="searchInput" type="search" placeholder="Search for a song or album......" onkeydown="searchOnEnter(event)">
+                <input id="searchInput"
+                       type="search"
+                       placeholder="Search for a song or album......"
+                       aria-label="search for music"
+                       onkeydown="searchOnEnter(event)">
             </div>
             <div class="profile-tr">
                 <div class="profile-photo">
-                    <img src="/public/pics/{{userInfo.profilePicture}}" alt="profile picture">
+                    <a href="/users/{{userInfo._id}}">
+                        <img src="/public/pics/{{userInfo.profilePicture}}" alt="profile picture">
+                    </a>
                 </div>
             </div>
         </div>
@@ -34,7 +40,7 @@
         <div class="container">
             <!-------------------------- Left Sidebar -------------------------->
             <div class="left">
-                <a class="profile">
+                <a class="profile" href="/users/{{userInfo._id}}">
                     <div class="profile-photo">
                         <img src="/public/pics/{{userInfo.profilePicture}}" alt="profile picture">
                     </div>
@@ -62,11 +68,7 @@
                             Find Music
                         </h3>
                     </a>
-                        
-<!--                    <h1 class="settings-header-left">-->
-<!--                        Edit Profile-->
-<!--                    </h1>-->
-                    <a href="" class="menu-item" onclick="toggleActiveClass(this)">
+                    <a href="/users/{{userInfo._id}}/edit" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-setting"></i>
                         </span>
@@ -74,7 +76,7 @@
                             Edit Profile
                         </h3>
                     </a>
-                    <a href="" class="menu-item" onclick="toggleActiveClass(this)">
+                    <a href="/logout" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-sign-out-alt"></i>
                         </span>
@@ -103,22 +105,14 @@
                     <!-- Friends (will be dynamically populated) -->
                     <div id="friends-container">
                         {{#each userInfo.following}}
-                            <div class="friend">
+                            <a href="/users/{{this._id}}" class="friend">
                                 <div class="profile-photo">
                                     <img src="/public/pics/{{this.profilePicture}}" alt="profile picture">
                                 </div>
                                 <div class="friend-body">
                                     <h5>{{this.username}}</h5>
                                 </div>
-                            </div>
-<!--                            <div class="friend">-->
-<!--                                <div class="profile-photo">-->
-<!--                                    <img src="../../public/pics/profpic.png" alt="profile picture">-->
-<!--                                </div>-->
-<!--                                <div class="friend-body">-->
-<!--                                    <h5>blah</h5>-->
-<!--                                </div>-->
-<!--                            </div>-->
+                            </a>
                         {{/each}}
 
                     </div>
@@ -129,35 +123,21 @@
 
 
     <script>
-        function searchOnEnter(event) {
+        const searchOnEnter = (event) => {
             if (event.key === 'Enter') {
-                // Get the user input
                 let userInput = document.getElementById('searchInput').value;
 
-                // Replace spaces with '%20' in the query
                 let query = userInput.replace(/ /g, '%20');
 
-                // Call the GET request
                 let newLink = '/music/search?user=' + query;
                 console.log(newLink);
                 window.location.href = '/music/search?piece=' + query;
             }
-        };
-        function getUserFollowing(user) {
-            // Assuming req.session.user contains the user ID
-            console.log("here")
-            // Make a GET request to /users/:id/following
-            $.get(`/users/${user}/following`, function (data) {
-                // Assuming data is an array of friends, update the page as needed
-                console.log('User friends:', data);
-                // Update the page with the list of friends, e.g., append to a friend list container
-        });
         }
 
     </script>
     <script>
-        function redirectToHome() {
-            // Use JavaScript to navigate to the desired URL
+        const redirectToHome = () => {
             window.location.href = `/home`;
         }
     </script>

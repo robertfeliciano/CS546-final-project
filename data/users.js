@@ -16,12 +16,11 @@ export const createUser = async (
     bio,
     profilePicture
 ) => {
-
     username = val.checkUsername(username);
     email = val.checkEmail(email);
     rawPassword = val.checkPass(rawPassword);
     bio = val.checkBio(bio);
-    profilePicture = val.checkProfilePic(profilePicture);
+    profilePicture = await val.checkProfilePic(profilePicture);
 
 
     const hashed = await bcrypt.hash(rawPassword, saltRounds);
@@ -387,7 +386,8 @@ export const loginUser = async (emailAddress, password) => {
             _id: new ObjectId(user._id),
             username: user.username,
             email: user.email,
-            following: following_list
+            following: following_list,
+            profilePicture: user.profilePicture
         };
     else
         throw `Either the email address or password is invalid`;

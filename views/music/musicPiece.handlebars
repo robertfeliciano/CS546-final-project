@@ -28,12 +28,16 @@
     </div>
     
     <div class="make-post">
-        <form action="/music/{{_id}}" method="POST">
+        <form action="/music/{{id}}" method="POST">
             <label for="content">
                 Content:
             </label>
             <textarea name="content" id="content" placeholder="What's on your mind?">{{post.contents}}</textarea>
             <input type="hidden" name="piece_id" value="{{_id}}">
+            <label for="rating">
+                Rating:
+            </label>
+            <input type="number" name="rating" id="rating" min="1" max="5" value="1">
             <button type="submit">Post</button>
         </form>
     </div>

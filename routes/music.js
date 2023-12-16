@@ -153,7 +153,6 @@ router
             return res.json(inserted);
         }
       } catch(e) {
-        console.log(e);
         return res.status(500).render("error",{error: "Internal Server Error", link:`/music/${req.params.id}`});
       }
     });

@@ -125,7 +125,7 @@ const checkUsername = (name, varName) => {
 
     // Attach click event using jQuery
     $('#following-link').click(function () {
-        const userId = user._id; // Adjust the property according to your user object
+        const userId = '{{user._id}}'; // Adjust the property according to your user object
         getUserFollowing(userId);
     });
     

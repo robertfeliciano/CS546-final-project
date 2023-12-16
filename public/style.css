@@ -289,8 +289,6 @@ main .container .left .profile {
 .middle .feed .post-1 .top {
     display: flex;
     justify-content: space-between;
-    
-    
 }
 
 .middle .feed .post-1 .top .user {

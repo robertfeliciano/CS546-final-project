@@ -116,8 +116,9 @@ export const checkName = (name, which) => {
 
 export const checkRating = (intVal, varName) => {
     if (!intVal) throw `Error: You must supply a ${varName}!`;
+    if (isNaN(+intVal)) throw `Error: ${varName} must be an integer!`;
+    intVal = +intVal;
     if (typeof intVal !== 'number') throw `Error: ${varName} must be a number!`;
-    if (!Number.isInteger(intVal)) throw `Error: ${varName} must be an integer!`;
     if (intVal < 0 || intVal > 5) throw `Error: ${varName} must be a positive integer between 0 and 5!`;
     return intVal;
 }

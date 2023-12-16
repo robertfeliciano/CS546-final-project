@@ -12,7 +12,7 @@ router
         const all_music = await musicData.getAllMusic();
         if (fromPostman(req.headers['user-agent']))
           return res.json({music: all_music});
-        return res.render('music', {userInfo: req.session.user, music: all_music});
+        return res.render('music/musicList', {userInfo: req.session.user, music: all_music});
       } catch(e) {
         return res.status(500).json({error: "Internal Server Error", problem: e});
       }
@@ -25,7 +25,7 @@ router
         const all_songs = await musicData.getAllSongs();
         if (fromPostman(req.headers['user-agent']))
           return res.json({songs: all_songs});
-        return res.render('music/musicList', {music: all_songs});
+        return res.render('music/musicList', {userInfo: req.session.user, music: all_songs});
       } catch(e) {
         return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
       }
@@ -39,7 +39,7 @@ router
         const all_albums = await musicData.getAllAlbums();
         if (fromPostman(req.headers['user-agent']))
           return res.json({music: all_albums});
-        return res.render('music', {userInfo: req.session.user, music: all_albums});
+        return res.render('music/musicList', {userInfo: req.session.user, music: all_albums});
       } catch (e) {
         return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
       }

@@ -8,7 +8,7 @@ const router = Router();
 router
   .route('/')
   .get(async (req, res) => {
-    res.render('login');
+    res.render('login-register/login', {layout: 'external'});
   })
   .post(async (req, res) => {
     //code here for POST

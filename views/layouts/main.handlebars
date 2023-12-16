@@ -6,6 +6,8 @@
     <title>Jukeboxd</title>
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
     <link rel="stylesheet" href="../../public/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+	<script src="/public/client.js"></script>
 </head>
 <body>
     <!-- Navbar -->
@@ -101,64 +103,45 @@
                     </div>
                     <!-- Categories -->
                     <div class="category">
-                        <h6 class="active"> Following </h6>
-                        <h6> Followers </h6>
+                        <h6 id="following-link" class="active">Following</h6>
+                        <h6>Followers</h6>
                     </div>
                     <!-- Friends (will be dynamically populated) -->
                     <div id="friends-container"></div>
                 </div>
+                <p>{{ user._id }}</p>
+                <p>dhjed</p>
             </div>
         </div>
     </main>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script>
-    function searchOnEnter(event) {
-        if (event.key === 'Enter') {
-            // Get the user input
-            let userInput = document.getElementById('searchInput').value;
+        function searchOnEnter(event) {
+            if (event.key === 'Enter') {
+                // Get the user input
+                let userInput = document.getElementById('searchInput').value;
 
-            // Replace spaces with '%20' in the query
-            let query = userInput.replace(/ /g, '%20');
+                // Replace spaces with '%20' in the query
+                let query = userInput.replace(/ /g, '%20');
 
-            // Call the GET request
-            let newLink = '/music/search?user=' + query;
-            console.log(newLink);
-            window.location.href = '/music/search?piece=' + query;
-        }
-    };
-
-    $(document).ready(function () {
-        // Make an AJAX request to fetch the following data
-        $.ajax({
-            url: '/users/following', // Adjust the URL based on your server route
-            type: 'GET',
-            success: function (data) {
-                // Assuming data is an array of following users
-                var friendsContainer = $('#friends-container');
-
-                // Iterate through the data and append friend elements to the container
-                data.forEach(function (friend) {
-                    var friendElement = `
-                        <div class="friend">
-                            <div class="profile-photo">
-                                <img src="${friend.profilePic}" alt="profile picture">
-                            </div>
-                            <div class="friend-body">
-                                <h5>${friend.name}</h5>
-                                <p>Following</p>
-                            </div>
-                        </div>
-                    `;
-                    friendsContainer.append(friendElement);
-                });
-            },
-            error: function (error) {
-                console.error('Error fetching data:', error);
+                // Call the GET request
+                let newLink = '/music/search?user=' + query;
+                console.log(newLink);
+                window.location.href = '/music/search?piece=' + query;
             }
+        };
+        function getUserFollowing(user) {
+            // Assuming req.session.user contains the user ID
+            console.log("here")
+            // Make a GET request to /users/:id/following
+            $.get(`/users/${user}/following`, function (data) {
+                // Assuming data is an array of friends, update the page as needed
+                console.log('User friends:', data);
+                // Update the page with the list of friends, e.g., append to a friend list container
         });
-    });
+        }
+
     </script>
     <script>
         function redirectToHome() {

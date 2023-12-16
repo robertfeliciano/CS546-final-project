@@ -111,6 +111,12 @@ app.use('/', (req, res, next) => {
 app.engine('handlebars', exphbs.engine({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null; // Pass user information to views
+  next();
+});
+
+
 configRoutes(app);
 app.listen(3000, () => {
     console.log("Jukeboxd is up and running!");

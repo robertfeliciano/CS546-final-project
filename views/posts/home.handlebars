@@ -124,18 +124,15 @@
 </div>
 
 <script>
-    function redirectToMusic(musicId) {
-        // Use JavaScript to navigate to the desired URL
+    const redirectToMusic = (musicId) => {
         window.location.href = `/music/${musicId}`;
     }
 </script>
 
 <script>
-  // Function to change the fill color
-  function changeFillColor(color) {
+  const changeFillColor = (color) => {
     document.getElementById('heartPath').style.fill = color;
   }
 
-  // Example: Change fill color to red
   changeFillColor('red');
 </script>

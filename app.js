@@ -55,7 +55,7 @@ app.use('/', (req, res, next) => {
     _id: new ObjectId('657caadec144a28ead429013'),
     email: 'user1@example.com',
     username: "user1",
-    following: []
+    following: ['657caae5c144a28ead429014']
   }
   next();
 });

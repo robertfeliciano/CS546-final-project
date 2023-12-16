@@ -1,0 +1,34 @@
+<div>
+    <h1>Register</h1>
+    {{#if error}}
+        <p id="routes-error">{{error}}</p>
+    {{/if}}
+    <div id="error" class="error" hidden>I'm an error. I will change through Client-Side JS</div>
+    <main>
+        <form action="/register" method="POST" id="registration-form">
+            <label for="userNameInput" id="userNameLabel">Username:</label>
+            <input type="text" id = "userNameInput" name="userNameInput" placeholder="Username" class="full-width-input">
+            <label for="emailAddressInput" id="emailLabel">Email Address:</label>
+            <input type="email" id = "emailAddressInput" name="emailAddressInput" placeholder="Email" class="full-width-input">
+            <label for="passwordInput" id="passLabel">Password:</label>
+            <input type="password" id = "passwordInput" name="passwordInput" placeholder="Password" class="full-width-input">
+            <label for="confirmPasswordInput" id="confirmPassLabel">Confirm Password:</label>
+            <input type="password" id = "confirmPasswordInput" name="confirmPasswordInput" placeholder="Confirm Password" class="full-width-input">
+            <label for="bioInput" id="bioLabel">Bio:</label>
+            <input type="text" id = "bioInput" name="bioInput" placeholder="Bio" class="full-width-input">
+            <label for="profilePic">Select Profile Picture:</label>
+            <select id="profilePic" name="profilePic">
+                <option value="assets/photos/cool_dog.jpg">Cool Dog</option>
+                <option value="assets/photos/happy_cat.jpg">Happy Cat</option>
+                <option value="assets/photos/kanye.jpg">Ye</option>
+                <option value="assets/photos/music_notes.jpg">Music Notes</option>
+            </select>
+            <label for="submitInput" id="submitInput">Submit:</label>
+            <input type="submit" id="submitInput" name="submitRegister" placeholder="Submit" class="full-width-input">
+        </form>
+        <a href="http://localhost:3000/login">Already have an account? Click here to log-in</a>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+		integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+	<script src="../public/js/client_side_validation.js"></script>
+</div>

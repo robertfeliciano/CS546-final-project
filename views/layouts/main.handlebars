@@ -13,12 +13,12 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
-            <h2 class="logo"> 
-                Juxeboxd.
+            <h2 class="logo" onclick="redirectToHome()"> 
+                Jukeboxd.
             </h2>
             <div class="search-bar">
                 <i class="uil uil-search"></i>
-                <input id="music-search" type="search" placeholder="Search for a song or album......">
+                <input id="searchInput" type="search" placeholder="Search for a song or album......" onkeydown="searchOnEnter(event)">
             </div>
             <div class="profile-tr">
                 <div class="profile-photo">
@@ -49,7 +49,7 @@
                     <h1 class="explore-header-left">
                         Explore Panel
                     </h1>
-                    <a href="" class="menu-item active">
+                    <a href="/posts" class="menu-item active" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-home"></i>
                         </span>
@@ -57,7 +57,7 @@
                             Home
                         </h3>
                     </a>
-                    <a href="" class="menu-item">
+                    <a href="/music/songs" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-music"></i>
                         </span>
@@ -65,19 +65,11 @@
                             Find Songs
                         </h3>
                     </a>
-                    <a href="" class="menu-item">
-                        <span>
-                            <i class="uil uil-analytics"></i>
-                        </span>
-                        <h3>
-                            Analytics
-                        </h3>
-                    </a>
                         
                     <h1 class="settings-header-left">
                         Settings
                     </h1>
-                    <a href="" class="menu-item">
+                    <a href="" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-setting"></i>
                         </span>
@@ -85,7 +77,7 @@
                             Settings
                         </h3>
                     </a>
-                    <a href="" class="menu-item">
+                    <a href="" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-sign-out-alt"></i>
                         </span>
@@ -111,31 +103,51 @@
                     </div>
                     <!-- Categories -->
                     <div class="category">
-                        <h6 class="active"> Following </h6>
-                        <h6> Followers </h6>
+                        <h6 id="following-link" class="active">Following</h6>
+                        <h6>Followers</h6>
                     </div>
-                    <!-- Friends -->
-                    <div class="friend">
-                        <div class="profile-photo">
-                            <img src="../../public/pics/profpic.png" alt="profile picture">
-                        </div>
-                        <div class="friend-body">
-                            <h5> Grace Hopper </h5>
-                            <p> Following </p>
-                        </div>
-                    </div>
-                    <div class="friend">
-                        <div class="profile-photo">
-                            <img src="../../public/pics/profpic.png" alt="profile picture">
-                        </div>
-                        <div class="friend-body">
-                            <h5> Alan Turing </h5>
-                            <p> Following </p>
-                        </div>
-                    </div>
+                    <!-- Friends (will be dynamically populated) -->
+                    <div id="friends-container"></div>
                 </div>
+                <p>{{ user._id }}</p>
+                <p>dhjed</p>
             </div>
         </div>
     </main>
+
+
+    <script>
+        function searchOnEnter(event) {
+            if (event.key === 'Enter') {
+                // Get the user input
+                let userInput = document.getElementById('searchInput').value;
+
+                // Replace spaces with '%20' in the query
+                let query = userInput.replace(/ /g, '%20');
+
+                // Call the GET request
+                let newLink = '/music/search?user=' + query;
+                console.log(newLink);
+                window.location.href = '/music/search?piece=' + query;
+            }
+        };
+        function getUserFollowing(user) {
+            // Assuming req.session.user contains the user ID
+            console.log("here")
+            // Make a GET request to /users/:id/following
+            $.get(`/users/${user}/following`, function (data) {
+                // Assuming data is an array of friends, update the page as needed
+                console.log('User friends:', data);
+                // Update the page with the list of friends, e.g., append to a friend list container
+        });
+        }
+
+    </script>
+    <script>
+        function redirectToHome() {
+            // Use JavaScript to navigate to the desired URL
+            window.location.href = `/home`;
+        }
+    </script>
 </body>
 </html>

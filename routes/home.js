@@ -18,12 +18,9 @@ router
             // SORT BASED ON DATE-TIME OF POST, MOST RECENT COMES FIRST
             following_posts = following_posts.sort((a, b) => b.date.getTime() - a.date.getTime());
             if (fromPostman(req.headers['user-agent']))
-                return res.json({posts: following_posts});
+                return res.json({userInfo: req.session.user, posts: following_posts});
             else
-                //render temp html
-                // return res.render('<h1>hello</h1>');
-                
-                return res.render('posts/all', req.session.user);
+                return res.render('posts/all', {userInfo: req.session.user, posts: following_posts});
         } catch(e) {
             return res.status(500).json({error: "Internal Server Error", problem: e});
         }

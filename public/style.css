@@ -312,6 +312,10 @@ main .container .left .profile {
     margin-bottom: 1rem;
 }
 
+.middle .feed .post-1 .rating .stars i {
+    color: var(--color-primary);
+}
+
 .middle .feed .post-1 .music {
     width: 100%;
     display: flex;
@@ -515,3 +519,82 @@ main .container .right {
 .right .friends .friend p {
     font-size: 0.8rem;
 }
+
+/* ======================================================= ERROR =======================================================*/
+
+.error-container {
+    font-family: 'Arial', sans-serif;
+    font-size: 10px;
+    text-align: center;
+    width: 70%; /* Set the width to 70% of the viewport */
+    background: linear-gradient(to bottom, #5fb31b, #ecf0f1);
+    max-width: 600px;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    position: relative;
+    border: 10px solid transparent; /*2*/
+    border-image: linear-gradient(to left, #ffffff, #3a2fda, #ffffff, #3a2fda) 30; 
+  }
+  
+  .error-header {
+    margin: 0 auto 20px;
+    display: block;
+    color: #3a2fda;
+    background-color: #ffffff;
+    border-radius: 20px;
+    max-width: 200px;
+    text-align: center;
+  }
+  
+  .error-message {
+    margin: 0 auto 20px;
+    max-width: 400px;
+    padding: 20px;
+    background-color: rgba(58, 47, 218, 0.6);
+    border-radius: 20px;
+    color: #ffffff;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .error-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .error-detail {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+  
+  .error-image {
+    width: 50%; /* Adjust the width to your preference (e.g., 80% of the container width) */
+    max-height: 200px;
+    margin-top: 20px;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .error-go-back {
+    margin: 0 auto 20px;
+    display: block;
+    margin-top: 20px;
+    color: #3498db;
+    text-decoration: none;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #fff;
+    background-color: rgba(58, 47, 218, 0.6);
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    max-width: 200px;
+  }
+  
+  .error-go-back:hover {
+    text-decoration: underline;
+    color: #ffffff;
+  }

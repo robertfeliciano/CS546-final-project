@@ -598,3 +598,13 @@ main .container .right {
     text-decoration: underline;
     color: #ffffff;
   }
+
+
+/* ===================================================== ROBERT =====================================================*/
+.h2.clickable {
+    cursor: pointer !important;
+}
+
+.h2.clickable:hover {
+    cursor: pointer !important;
+}

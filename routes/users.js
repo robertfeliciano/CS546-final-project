@@ -64,7 +64,7 @@ router
           // display follow button
           // if they are NOT the same user and they DO follow:
           // display UNfollow button
-          res.render('users/single', {user: user, posts: userPosts, likes: likedPosts, owner: owner})
+          res.render('users/userSingle', {user: user, posts: userPosts, likes: likedPosts, owner: owner})
         } catch (e) {
           res.status(404).json({error: e});
         }

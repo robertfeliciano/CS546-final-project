@@ -1,4 +1,126 @@
-<h1>hello
-    dhud
-    dehu
-</h1>
+<!-- vars 
+<section>
+  <h1>Posts</h1>
+  {{#each posts}}  
+    <article class="post">
+      <h2>{{username}}</h2>
+      <p>{{date}}</p>
+      <p>{{content}}</p>
+      <p>{{rating}}</p>
+      <p>{{piecename}}</p>
+    </article>
+  {{/each}}
+</section>
+-->
+
+<!-- TODO: 
+  - fix profile pics
+  - rating stars
+  - song name/artist
+  - link make post
+  - link like + comment
+  - link profile
+  - link load more comments
+-->
+
+<!-------------------------- Middle Stream -------------------------->
+<div class="middle">
+    <div class="feed">
+        {{#each posts}}  
+          <div class="post-1">
+            <div class="top">
+                <div class="user">
+                    <div class="profile-photo">
+                        <img src="../../public/pics/profpic.png" alt="profile picture">
+                    </div>
+                    <div class="info">
+                        <h3>{{username}}</h3>
+                        <small>{{date}}</small>
+                    </div>
+
+                </div>
+            </div>
+            <div class="content">
+                <p>
+                    {{content}}
+                </p>
+            </div>
+            <div class="rating">
+                <h4>Rating: </h4>
+                <div class="stars">
+                    <i class="uil uil-star one-star"></i>
+                    <i class="uil uil-star two-star"></i>
+                    <i class="uil uil-star three-star"></i>
+                    <i class="uil uil-star four-star"></i>
+                    <i class="uil uil-star five star"></i>
+                </div>
+            </div>
+            <div class="music">
+                <img src="./assets/vinyl.webp" alt="vinyl" class="vinyl">
+                <div class="music-song">
+                    <h3 class="song">{{piecename}}</h3>
+                    <h4 class="artist">Artist Name</h4>
+                </div>
+            </div>
+            <div class="interaction-buttons">
+                <span><i class="uil uil-heart"></i></span>
+                <span><i class="uil uil-comment-alt"></i></span>
+            </div>
+            <div class="liked-by">
+                <span><img src="./assets/profpic.png" alt="vinyl"/></span>
+                <span><img src="./assets/johnpic.png" alt="vinyl"/></span>
+                <p>Liked by Patrick Hill and 10 others</p>
+            </div>
+            <div class="comments">
+                <h2 class="comment-head">Comments</h2>
+                <div class="comment">
+                    <i class="uil uil-corner-down-right"></i>
+                    <div class="comment-no-arrow">
+                        <div class="poster-content">
+                            <div class="profile-photo">
+                                <img src="./assets/profpic.png" alt="profile picture">
+                            </div>
+                            <h4>John Doe</h4>
+                        </div>
+                        <div class="comment-content">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="comment">
+                    <i class="uil uil-corner-down-right"></i>
+                    <div class="comment-no-arrow">
+                        <div class="poster-content">
+                            <div class="profile-photo">
+                                <img src="./assets/profpic.png" alt="profile picture">
+                            </div>
+                            <h4>John Doe</h4>
+                        </div>
+                        <div class="comment-content">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="comment">
+                    <i class="uil uil-corner-down-right"></i>
+                    <div class="comment-no-arrow">
+                        <div class="poster-content">
+                            <div class="profile-photo">
+                                <img src="./assets/profpic.png" alt="profile picture">
+                            </div>
+                            <h4>John Doe</h4>
+                        </div>
+                        <div class="comment-content">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="load-comments">Load more comments</h4>
+            </div>
+          </div>
+        {{/each}}
+    </div>
+</div>
+
+

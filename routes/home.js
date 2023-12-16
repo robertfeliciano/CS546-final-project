@@ -21,9 +21,9 @@ router
                 return res.json({posts: following_posts});
             else
                 //render temp html
-                return res.render('<h1>hello</h1>');
-                
-                return res.render('posts/home', req.session.user);
+                // return res.render('<h1>hello</h1>');
+                console.log(req.session.user);
+                return res.render('posts/home', { user: req.session.user , posts: following_posts});
         } catch(e) {
             return res.status(500).json({error: "Internal Server Error", problem: e});
         }

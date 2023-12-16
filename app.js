@@ -48,13 +48,12 @@ app.use(
 // MIDDLEWARE FOR TESTING WITH POSTMAN
 app.use('/', (req, res, next) => {
   console.log(`${req.method}\t${req.originalUrl}`);
-  if (fromPostman(req.headers['user-agent']))
-    req.session.user = {
-      _id: new ObjectId('657c7ce52ecab94e7ade612b'),
-      email: 'coolguy87@example.com',
-      username: "coolguy87",
-      following: []
-    }
+  req.session.user = {
+    _id: new ObjectId('657caadec144a28ead429013'),
+    email: 'user1@example.com',
+    username: "user1",
+    following: ['657caae5c144a28ead429014', '657caaeac144a28ead429015']
+  }
   next();
 });
 

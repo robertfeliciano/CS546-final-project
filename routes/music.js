@@ -12,7 +12,7 @@ router
         const all_music = await musicData.getAllMusic();
         if (fromPostman(req.headers['user-agent']))
           return res.json({music: all_music});
-        return res.render('music', {music: all_music});
+        return res.render('music', {userInfo: req.session.user, music: all_music});
       } catch(e) {
         return res.status(500).json({error: "Internal Server Error", problem: e});
       }
@@ -27,7 +27,7 @@ router
           return res.json({songs: all_songs});
         return res.render('music/musicList', {music: all_songs});
       } catch(e) {
-        return res.status(500).render("error",{error: "Internal Server Error", problem: e, link:`/music/`});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
       }
     });
 
@@ -38,10 +38,10 @@ router
       try {
         const all_albums = await musicData.getAllAlbums();
         if (fromPostman(req.headers['user-agent']))
-          return res.json({albums: all_albums});
-        return res.render('music', {music: all_albums});
+          return res.json({music: all_albums});
+        return res.render('music', {userInfo: req.session.user, music: all_albums});
       } catch (e) {
-        return res.status(500).render("error",{error: "Internal Server Error", problem: e, link:`/music/`});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
       }
     });
 
@@ -70,9 +70,26 @@ router
       // albums and songs could potentially be empty, thats fine
       // we just want to display nothing then.
       const [albums, songs] = await musicData.fuzzyFindMusic(query);
+      let albumsEmpty =  false, songsEmpty = false;
+      if (albums.length === 0)
+        albumsEmpty = true;
+      if (songs.length === 0)
+        songsEmpty = true;
       if (fromPostman(req.headers['user-agent']))
-        return res.json({albums: albums, songs: songs});
-      return res.render('music/searchResult', {albums: albums, songs: songs});
+        return res.json({
+          userInfo: req.session.user,
+          albums: albums,
+          songs: songs,
+          albumsEmpty,
+          songsEmpty
+        });
+      return res.render('music/searchResult', {
+        userInfo: req.session.user,
+        albums: albums,
+        songs: songs,
+        albumsEmpty,
+        songsEmpty
+      });
     });
 
 router
@@ -81,7 +98,7 @@ router
       try {
         req.params.id = val.checkId(req.params.id, "music id");
       } catch(e) {
-        return res.status(400).render("error",{error: e, link:`/music/`});
+        return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/music/`});
       }
       try {
         const piece = await musicData.getMusicById(req.params.id);
@@ -98,10 +115,17 @@ router
           songs: piece.songs
         };
         if (fromPostman(req.headers['user-agent']))
-          return res.json(meta);
-        return res.render('music/musicPiece', meta);
+          return res.json({
+            userInfo: req.session.user,
+            musicInfo: meta});
+        return res.render('musicPiece', {
+          userInfo: req.session.user,
+          musicInfo: meta});
       } catch(e) {
-        return res.status(500).render("error",{error: `No piece with id ${req.params.id} found`, link:`/music/`});
+        return res.status(500).render("error",{
+          userInfo: req.session.user,
+          error: `No piece with id ${req.params.id} found`,
+          link:`/music/`});
       }
     })
     .post(async (req, res) => {
@@ -109,14 +133,14 @@ router
       try{
         req.params.id = val.checkId(req.params.id, "music id");
       } catch(e) {
-        return res.status(400).render("error",{error: e, link:`/music/`});
+        return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/music/`});
       }
       for (let key of Object.keys(req.body)) {
         req.body[key] = xss(req.body[key])
       }
       let formInput = req.body;
       if (!formInput)
-        return res.status(400).render("error",{error: "Must provide form input.", link:`/music/${req.params.id}`});
+        return res.status(400).render("error",{userInfo: req.session.user, error: "Must provide form input.", link:`/music/${req.params.id}`});
       let missingFields = [];
       if (!formInput.rating)
         missingFields.push('Rating');
@@ -124,18 +148,18 @@ router
         missingFields.push('Post content');
       if (missingFields.length > 0) {
         if (fromPostman(req.headers['user-agent']))
-          return res.status(400).render("error",{error: `Missing Field(s): ${missingFields.toString()}`, link:`/music/${req.params.id}`});
+          return res.status(400).json({userInfo: req.session.user, error: `Missing Field(s): ${missingFields.toString()}`, link:`/music/${req.params.id}`});
         else
-          return res.status(400).render("error",{error: `Missing Field(s): ${missingFields.toString()}`, link:`/music/${req.params.id}`});
+          return res.status(400).render("error",{userInfo: req.session.user, error: `Missing Field(s): ${missingFields.toString()}`, link:`/music/${req.params.id}`});
       }
       try {
         formInput.rating = val.checkRating(formInput.rating, 'Music rating');
         formInput.content = val.checkString(formInput.content, 'Post content');
       } catch(e) {
         if (fromPostman(req.headers['user-agent']))
-          return res.status(400).render("error",{error: e, link:`/music/${req.params.id}`});
+          return res.status(400).json({userInfo: req.session.user, error: e, link:`/music/${req.params.id}`});
         else
-          return res.status(400).render("error",{error: e, link:`/music/${req.params.id}`});
+          return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/music/${req.params.id}`});
       }
       try {
         const date = new Date();
@@ -150,10 +174,10 @@ router
           if (fromPostman(req.headers['user-agent']))
             return res.json(inserted);
           else
-            return res.json(inserted);
+            return res.redirect(`/music/${req.params.id}`);
         }
       } catch(e) {
-        return res.status(500).render("error",{error: "Internal Server Error", link:`/music/${req.params.id}`});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/music/${req.params.id}`});
       }
     });
 

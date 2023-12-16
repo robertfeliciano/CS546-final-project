@@ -27,7 +27,7 @@ router
       if (posts === undefined)
         return res.status(500).json({error: "Internal Server Error"});
       if (fromPostman(req.headers['user-agent'])) return res.json({posts: posts});
-      res.render('posts/all', {posts: posts});
+      res.render('posts/all', {userInfo: req.session.user, posts: posts});
     } catch (e) {
       res.status(404).json({error: e});
     }
@@ -44,18 +44,29 @@ router
       // user_id = validation.checkId(req.session.user._id, 'User ID');
       req.params.id = validation.checkId(req.params.id, 'Post ID');
     } catch (e) {
-      return res.status(400).render("error",{error: e, link:`/posts/`});
+      return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
     }
     try {
       const post = await postsData.getPostById(req.params.id);
       const alreadyLiked = await usersData.alreadyLikedPost(req.session.user._id, req.params.id);
       const ownPost = await usersData.userOwnsPost(req.session.user._id, req.params.id);
+      const postComments = await postsData.getCommentDetailsFromPost(req.params.id);
       if (alreadyLiked === undefined || ownPost === undefined)
-        return res.status(500).render("error",{error: "Internal Server Error", link:`/posts/`});
-      if (fromPostman(req.headers['user-agent'])) return res.json( {post: post, ownPost: ownPost, alreadyLiked: alreadyLiked});
-      res.render('posts/single', {post: post, ownPost: ownPost, alreadyLiked: alreadyLiked});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/posts/`});
+      if (fromPostman(req.headers['user-agent']))
+        return res.json( {userInfo: req.session.user,
+          post: post,
+          comments: postComments,
+          ownPost: ownPost,
+          alreadyLiked: alreadyLiked});
+
+      res.render('posts/single', {userInfo: req.session.user,
+        post: post,
+        comments: postComments,
+        ownPost: ownPost,
+        alreadyLiked: alreadyLiked});
     } catch (e) {
-      res.status(404).render("error",{error: e, link:`/posts/`});
+      res.status(404).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
     }
 
   })
@@ -69,7 +80,7 @@ router
       // user_id = validation.checkId(req.session.user._id, 'User ID');
       req.params.id = validation.checkId(req.params.id, 'Post ID');
     } catch (e) {
-      return res.status(400).render("error",{error: e, link:`/posts/`});
+      return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
     }
     let alreadyLiked;
     let ownPost;
@@ -77,26 +88,27 @@ router
       alreadyLiked = await usersData.alreadyLikedPost(req.session.user._id, req.params.id)
       ownPost = await usersData.userOwnsPost(req.session.user._id, req.params.id)
       if (alreadyLiked === undefined || ownPost === undefined)
-        return res.status(500).render("error",{error: "Internal Server Error", link:`/posts/`});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/posts/`});
     } catch (e) {
-      return res.status(404).render("error",{error: e, link:`/posts/`});
+      return res.status(404).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
     }
     
     try {
       if (!alreadyLiked) {
         const post = await postsData.likePost(req.params.id, req.session.user._id);
         if (post === undefined)
-          return res.status(500).render("error",{error: "Internal Server Error", link:`/posts/`});
+          return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/posts/`});
         if (fromPostman(req.headers['user-agent'])) return res.json({post: post, ownPost: ownPost, alreadyLiked: true});
-        res.render('posts/single', {post: post, ownPost: ownPost, alreadyLiked: true});
+        // res.render('posts/single', {userInfo: req.session.user, post: post, ownPost: ownPost, alreadyLiked: true});
+        return res.redirect(`/posts/${req.params.id}`);
       }
       else {
-        return res.status(400).render("error",{error: "Cannot like a post you already liked!", link:`/posts/${req.params.id}`});
+        return res.status(400).render("error",{userInfo: req.session.user, error: "Cannot like a post you already liked!", link:`/posts/${req.params.id}`});
       }
     } catch (e) {
       let status = e[0];
       let message = e[1];
-      res.status(status).render("error",{error: message, link:`/posts/`});
+      res.status(status).render("error",{userInfo: req.session.user, error: message, link:`/posts/`});
     }
     
   })
@@ -110,29 +122,29 @@ router
       // user_id = validation.checkId(req.session.user._id, 'User ID');
       req.params.id = validation.checkId(req.params.id, 'Post ID');
     } catch (e) {
-      return res.status(400).render("error",{error: e, link:`/posts/`});
+      return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
     }
     try {
       const ownPost = await usersData.userOwnsPost(req.session.user._id, req.params.id)
       if (ownPost === undefined)
-        return res.status(500).render("error",{error: "Internal Server Error", link:`/posts/`});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/posts/`});
       if (!ownPost) {
-        return res.status(403).render("error",{error: "You do not have permission to delete this post.", link:`/posts/`});
+        return res.status(403).render("error",{userInfo: req.session.user, error: "You do not have permission to delete this post.", link:`/posts/`});
       }
     } catch (e) {
-      return res.status(404).render("error",{error: e, link:`/posts/`});
+      return res.status(404).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
     }
 
     try{
       const deletedPost = await postsData.removePost(req.params.id, req.session.user._id);
       if (deletedPost === undefined)
-        return res.status(500).render("error",{error: "Internal Server Error", link:`/posts/`});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/posts/`});
       if (fromPostman(req.headers['user-agent'])) return res.json({deleted: deletedPost});
       res.redirect('/posts');
     } catch (e) {
       let status = e[0];
       let message = e[1];
-      res.status(status).render("error",{error: message, link:`/posts/`});
+      res.status(status).render("error",{userInfo: req.session.user, error: message, link:`/posts/`});
     }
   });
 
@@ -148,23 +160,24 @@ router
       // user_id = validation.checkId(req.session.user._id, 'User ID');
       req.params.id = validation.checkId(req.params.id, 'Post ID');
     } catch (e) {
-      return res.status(400).render("error",{error: e, link:`/posts/`});
-    }    
+      return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
+    }
 
     try {
       const ownPost = await usersData.userOwnsPost(req.session.user._id, req.params.id)
       if (ownPost === undefined)
-        return res.status(500).render("error",{error: "Internal Server Error", link:`/posts/`});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/posts/`});
       if (!ownPost) {
-        return res.status(403).render("error",{error: "You do not have permission to edit this post.", link:`/posts/`});
+        return res.status(403).render("error",{userInfo: req.session.user, error: "You do not have permission to edit this post.", link:`/posts/`});
       }
       const post = await postsData.getPostById(req.params.id);
       if (post === undefined)
-        return res.status(500).render("error",{error: "Internal Server Error", link:`/posts/`});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/posts/`});
       if (fromPostman(req.headers['user-agent'])) return res.json({post: post});
-      res.render('posts/edit', {post: post});
+
+      res.render('posts/edit', {userInfo: req.session.user, post: post});
     } catch (e) {
-      return res.status(404).render("error",{error: e, link:`/posts/`});
+      return res.status(404).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
     }
   })
 
@@ -176,17 +189,17 @@ router
     }
     let {rating, content} = req.body;
     if (!rating)
-      return res.status(400).render("error",{error: 'must provide a rating!', link:`/posts/`});
+      return res.status(400).render("error",{userInfo: req.session.user, error: 'must provide a rating!', link:`/posts/`});
     if (!content)
-      return res.status(400).render("error",{error: 'must provide post content!', link:`/posts/`});
+      return res.status(400).render("error",{userInfo: req.session.user, error: 'must provide post content!', link:`/posts/`});
     try {
       // if (!req.session.user) res.render('/login');
       // const user_id = validation.checkId(req.session.user._id, 'User ID');
       req.params.id = validation.checkId(req.params.id, 'Post ID');
       rating = validation.checkRating(rating, 'rating');
-      content = validation.checkString(content, 'content');     
+      content = validation.checkString(content, 'content');
     } catch (e) {
-      return res.status(400).render("error",{error: e, link:`/posts/`});
+      return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
     }
 
     let alreadyLiked;
@@ -194,25 +207,27 @@ router
       const ownPost = await usersData.userOwnsPost(req.session.user._id, req.params.id)
       alreadyLiked = await usersData.alreadyLikedPost(req.session.user._id, req.params.id)
       if (ownPost === undefined || alreadyLiked === undefined)
-        return res.status(500).render("error",{error: "Internal Server Error", link:`/posts/`});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/posts/`});
       if (!ownPost) {
-        return res.status(403).render("error",{error: "You do not have permission to edit this post.", link:`/posts/`});
+        return res.status(403).render("error",{userInfo: req.session.user, error: "You do not have permission to edit this post.", link:`/posts/`});
       }
     } catch (e) {
-      return res.status(404).render("error",{error: e, link:`/posts/`});
+      return res.status(404).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
     }
 
     try {
       const editedPost = await postsData.editPostContent(req.params.id, rating, content);
       if (editedPost === undefined)
-        return res.status(500).render("error",{error: "Internal Server Error", link:`/posts/`});
-      return res.json({post: editedPost, ownPost: true, alreadyLiked: alreadyLiked});
-      res.render('posts/single', {post: editedPost, ownPost: true, alreadyLiked: alreadyLiked});
+        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/posts/`});
+      if (fromPostman(req.headers['user-agent']))
+        return res.json({post: editedPost, ownPost: true, alreadyLiked: alreadyLiked});
+      return res.redirect(`/posts/${req.params.id}`);
+      // res.render('posts/single', {userInfo: req.session.user, post: editedPost, ownPost: true, alreadyLiked: alreadyLiked});
     }
     catch (e) {
       let status = e[0];
       let message = e[1];
-      res.status(status).render("error",{error: message, link:`/posts/`});
+      res.status(status).render("error",{userInfo: req.session.user, error: message, link:`/posts/`});
     }
   });
 

@@ -1,0 +1,19 @@
+<div class="middle">
+    <h1>Recommendations</h1>
+    <div class="post-1">
+        <h2>Recommended Albums</h2>
+        ({{#each albums}})
+            <div class="post-1">
+                <img src="public/pics/vinyl.webp" alt="vinyl">
+                <h3>{{name}}</h3>
+            </div>
+        ({{/each}})
+        <h2>Recommended Songs</h2>
+        ({{#each songs}})
+            <div class="music-cell">
+                <img src="public/pics/vinyl.webp" alt="vinyl">
+                <h3>{{name}}</h3>
+            </div>
+        ({{/each}})
+    </div>
+</div>

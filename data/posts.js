@@ -373,7 +373,7 @@ export const removePost = async (postId, deleterId) => {
     for (let liker_id of post.likes){
         const updatedUserLikes = await userCollection.findOneAndUpdate(
             {_id: new ObjectId(liker_id)},
-            {$pull: {liked_posts: new ObjectId(postId)}},
+            {$pull: {likedPosts: new ObjectId(postId)}},
             {returnDocument: 'after'}
         )
         if (!updatedUserLikes)
@@ -449,7 +449,7 @@ export const unlikePost = async (postId, unlikerId) => {
 
     const updatedInfo = await postsCollection.findOneAndUpdate(
         {_id: new ObjectId(postId)},
-        {pull: {likes: new ObjectId(unlikerId)}},
+        {$pull: {likes: new ObjectId(unlikerId)}},
         {returnDocument: 'after'}
     );
 
@@ -460,7 +460,7 @@ export const unlikePost = async (postId, unlikerId) => {
     const userCollection  = await users();
     const userUpdatedInfo = await userCollection.findOneAndUpdate(
         {_id: new ObjectId(unlikerId)},
-        {pull: {likedPosts: new ObjectId(postId)}},
+        {$pull: {likedPosts: new ObjectId(postId)}},
         {returnDocument: 'after'}
     );
 

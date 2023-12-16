@@ -118,7 +118,7 @@ router
           return res.json({
             userInfo: req.session.user,
             musicInfo: meta});
-        return res.render('musicPiece', {
+        return res.render('music/musicPiece', {
           userInfo: req.session.user,
           musicInfo: meta});
       } catch(e) {

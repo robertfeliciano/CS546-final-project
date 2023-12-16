@@ -2,6 +2,7 @@ import {Router} from 'express';
 import {usersData} from '../data/index.js';
 import * as validation  from '../validation.js';
 import {fromPostman} from "../helpers.js";
+import xss from 'xss';
 
 const router = Router();
 
@@ -32,7 +33,7 @@ router
             const isEmpty = users.length === 0;
             if (fromPostman(req.headers['user-agent']))
               res.json({users: users});
-            return res.render('users/search', {users: users, empty: isEmpty});
+            return res.render('users/search', {userInfo: req.session.user, users: users, empty: isEmpty});
         } catch(e){
             return res.status(404).json({error: e})
         }
@@ -64,7 +65,7 @@ router
           // display follow button
           // if they are NOT the same user and they DO follow:
           // display UNfollow button
-          res.render('users/single', {user: user, posts: userPosts, likes: likedPosts, owner: owner})
+          res.render('users/single', {userInfo: req.session.user, user: user, posts: userPosts, likes: likedPosts, owner: owner})
         } catch (e) {
           res.status(404).json({error: e});
         }
@@ -112,7 +113,7 @@ router.route('/:id/followers').get(async (req, res) => {
         const followerList = await usersData.getFollowing(req.params.id);
         if (fromPostman(req.headers['user-agent']))
           return res.json({followers: followerList});
-        return res.render('users/followers', {users: followerList});
+        return res.render('users/followers', {userInfo: req.session.user, users: followerList});
     } catch(e) {
         return res.status(404).json({error: e});
     }
@@ -130,7 +131,7 @@ router.route('/:id/following').get(async (req, res) => {
         const followingList = await usersData.getFollowing(req.params.id);
         if (fromPostman(req.headers['user-agent']))
           return res.json({following: followingList});
-        return res.render('users/following', {users: followingList});
+        return res.render('users/following', {userInfo: req.session.user, users: followingList});
     } catch(e) {
         return res.status(404).json({error: e});
     }
@@ -155,17 +156,17 @@ router
             const user = await usersData.getUserById(req.params.id);
             if (fromPostman(req.headers['user-agent']))
               return res.json({user:user});
-            return res.render('users/edit', {user: user});
+            return res.render('users/edit', {userInfo: req.session.user, user: user});
         } catch(e) {
             return res.status(404).json({error: e});
         }
     })
     .patch(async (req, res) => {
         //code here for PATCH
+        req.body.userBio = xss(req.body.userBio);
         try {
             // if (!req.session.user) res.render('/login');
             // let user_id = validation.checkId(req.session.user._id, 'User ID');
-            //TODO need to put xss in users routes
             req.params.id = validation.checkId(req.params.id, 'User Page ID');
             req.body.userBio = validation.checkBio(req.body.userBio);
             const curr_user_id = req.session.user._id;
@@ -179,8 +180,8 @@ router
             const updatedUser = await usersData.updateUserBio(req.params.id, req.body.userBio);
             if (fromPostman(req.headers['user-agent']))
               return res.json({user: updatedUser, owner: true});
-            // TODO maybe redirect to /users/:id instead of just rendering....
-            return res.render('users/single', {user: updatedUser, owner: true});
+            return res.redirect(`/users/${req.params.id}`);
+            // return res.render('users/single', {userInfo: req.session.user, user: updatedUser, owner: true});
         } catch(e) {
             return res.status(404).json({error: e});
         }

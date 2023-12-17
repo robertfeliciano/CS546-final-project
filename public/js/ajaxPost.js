@@ -3,6 +3,7 @@
     let postButton = $('#postButton'),
     allPosts = $('#all-posts')
     postButton.on('click', function (event) {
+        console.log('Ajax post button clicked')
         let currentUrl = window.location.pathname
         let musicId = currentUrl.split('/music')[1]
         let requestConfig = {

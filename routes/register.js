@@ -26,7 +26,7 @@ router
     if (!formInput.profilePictureInput) missingFields.push('Profile Picture');
 
     if (missingFields.length > 0) {
-      return res.status(400).render('register', {
+      return res.status(400).render('login-register/register', {
         title: 'Register',
         hasErrors: true,
         error: `Missing field(s): ${missingFields.join(', ')}`
@@ -41,11 +41,7 @@ router
       formInput.bioInput = val.checkBio(formInput.bioInput);
       formInput.profilePictureInput = val.checkProfilePic(formInput.profilePictureInput);
     } catch (e) {
-      return res.status(400).render('register', {
-        title: 'Register',
-        hasErrors: true,
-        error: e
-      })
+      return res.status(400).render("error/error",{userInfo: req.session.user, error: e, link:`/register/`});
     }
 
     try {
@@ -57,18 +53,18 @@ router
             formInput.profilePictureInput
         );
         if (inserted) {
-          return res.status(200).redirect('/login');
+          return res.status(200).redirect('login-register/login');
         }
         else {
-          return res.status(500).render('register', { error: 'Internal Server Error' });
+          return res.status(500).render('error/error', { error: 'Internal Server Error', link:'/register/' });
         } 
     }
     catch (e) {
         if (e === 'Internal Server Error') {
-          return res.status(500).render('register', { error: e });
+          return res.status(500).render('error/error', { error: e, link:'/register/' });
         }
         else {
-          return res.status(400).render('register', { error: e });
+          return res.status(400).render('error/error', { error: e, link:'/register/' });
         }
     }
 

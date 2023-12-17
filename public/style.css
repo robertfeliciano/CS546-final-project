@@ -564,7 +564,7 @@ main .container .right {
     font-size: 10px;
     text-align: center;
     width: 70%; /* Set the width to 70% of the viewport */
-    background: linear-gradient(to bottom, #5fb31b, #ecf0f1);
+    background: linear-gradient(to bottom, #c6c9c4, #ecf0f1);
     max-width: 600px;
     padding: 30px;
     background-color: rgba(255, 255, 255, 0.9);

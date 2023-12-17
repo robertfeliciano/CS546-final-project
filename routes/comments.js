@@ -40,9 +40,9 @@ router
       if (comment === undefined)
         return res.status(500).render("error/error",{userInfo: req.session.user, error: "Internal Service Error", link:`/posts/${req.params.id}`});
       // redirect to GET /comments/:new_comment_id to view the comment you made
-      res.redirect(`/comments/${comment._id}`);
+      return res.redirect(`/posts/${req.params.id}`);
     } catch (e) {
-      res.status(500).render("error/error",{userInfo: req.session.user, error: e, link:`/posts/${req.params.id}`});
+      return res.status(500).render("error/error",{userInfo: req.session.user, error: e, link:`/posts/${req.params.id}`});
     }
   })
   .get(async (req, res) => {

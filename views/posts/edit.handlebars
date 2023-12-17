@@ -1,3 +1,19 @@
 <div class="middle">
-    <h1>this is where you edit</h1>
+    <div class="feed">
+        <div class="post-1-non-click">
+            <form action="/posts/{{post._id}}/edit" method="POST">
+                <label for="content">
+                    Content:
+                </label>
+                <textarea name="content" id="content" placeholder="What's on your mind?"></textarea>
+                <input id="content-input" type="hidden" name="piece_id" value="{{_id}}">
+                <label for="rating">
+                    Rating:
+                </label>
+                <input type="number" name="rating" id="rating" min="1" max="5" value="1">
+                <button type="submit" id="post-button">Update</button>
+                <input name="_method" id="_method" hidden aria-label="hiddenhackymethod" value="PATCH">
+            </form>
+        </div>
+    </div>
 </div>

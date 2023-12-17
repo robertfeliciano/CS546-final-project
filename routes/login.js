@@ -42,18 +42,20 @@ router
     try {
       const user = await loginUser(formInput.emailAddressInput, formInput.passwordInput);
       if (user) {
+        
           req.session.user = {
-              id: user._id,
+              _id: user._id,
               username: user.username,
               emailAddress: user.email,
-              following: user.following
+              following: user.following,
+              profilePicture: user.profilePicture
           };
           return res.status(200).redirect('/home');
       } else {
-          return res.status(400).render("error/error",{userInfo: req.session.user, error: "Invalid username or password.", link:`/login/`});
+          return res.status(400).render('login-register/login', { error: 'Invalid email address and/or password', layout: 'external' });
       }
     } catch (e) {
-        return res.status(400).render("error/error",{userInfo: req.session.user, error: e, link:`/login/`});
+        return res.status(400).render('login-register/login', { error: e, layout: 'external' });
     }
 
   });

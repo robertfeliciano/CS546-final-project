@@ -54,80 +54,80 @@ app.use(
 
 // MIDDLEWARE FOR TESTING WITH POSTMAN
 // REMOVE LATER
-app.use('/', (req, res, next) => {
-  console.log(`${req.method}\t${req.originalUrl}`);
-  // if (fromPostman(req.headers['user-agent']))
-  //TODO obviously remove this.....
-  req.session.user = {
-    _id: new ObjectId('657f320b4012f2a0bdf157f1'),
-    email: 'coolguy87@example.com',
-    username: "coolguy87",
-    following: [
-      {
-        _id: new ObjectId('657f1c2b30c072dff4c24668'),
-        username: 'codingmaster',
-        profilePicture: 'happy_cat.jpg'
-      },
-      {
-        _id: new ObjectId('657f1c2030c072dff4c24666'),
-        username: 'user1',
-        profilePicture: 'cool_dog.jpg'
-      }
-    ],
-    profilePicture: "happy_cat.jpg"
-  }
-  next();
-});
+// app.use('/', (req, res, next) => {
+//   console.log(`${req.method}\t${req.originalUrl}`);
+//   // if (fromPostman(req.headers['user-agent']))
+//   //TODO obviously remove this.....
+//   req.session.user = {
+//     _id: new ObjectId('657e355807d1fca40bb1b18c'),
+//     email: 'coolguy87@example.com',
+//     username: "coolguy87",
+//     following: [
+//       {
+//         _id: new ObjectId('657e355807d1fca40bb1b18d'),
+//         username: 'codingmaster',
+//         profilePicture: 'kanye.jpg'
+//       },
+//       {
+//         _id: new ObjectId('657e355807d1fca40bb1b18b'),
+//         username: 'user1',
+//         profilePicture: 'cool_dog.jpg'
+//       }
+//     ],
+//     profilePicture: "happy_cat.jpg"
+//   }
+//   next();
+// });
 
 // MIDDLEWARE FOR USER AUTH
-// app.get('/', (req, res, next) => {
-//     const user = req.session.user;
-//     // const ts = new Date().toUTCString();
-//     // const usertype = user === undefined ? "Non-Authenticated User" : "Authenticated User";
-//     // console.log(`[${ts}]: ${req.method} ${req.originalUrl} (${usertype})`)
-//
-//     const authenticated = user !== undefined;
-//
-//     if (authenticated)
-//         return res.redirect('/posts');
-//
-//     if (req.originalUrl === '/login' || req.originalUrl === '/register')
-//         return next();
-//     else
-//         return res.redirect('/login');
-//
-// });
+app.get('/', (req, res, next) => {
+    const user = req.session.user;
+    // const ts = new Date().toUTCString();
+    // const usertype = user === undefined ? "Non-Authenticated User" : "Authenticated User";
+    // console.log(`[${ts}]: ${req.method} ${req.originalUrl} (${usertype})`)
 
-// app.get('/login', (req, res, next) => {
-//     // if (req.method !== 'GET') return next();
-//     const user = req.session.user;
-//     const authenticated = user !== undefined;
-//     if (authenticated)
-//         return res.redirect('/posts');
-//     next();
-// });
+    const authenticated = user !== undefined;
 
+    if (authenticated)
+        return res.redirect('/home');
 
-// app.get('/register', (req, res, next) => {
-//     // if (req.method !== 'GET') return next();
-//     const user = req.session.user;
-//     const authenticated = user !== undefined;
-//     if (authenticated)
-//         return res.redirect('/posts');
-//     next();
-// });
+    if (req.originalUrl === '/login' || req.originalUrl === '/register')
+        return next();
+    else
+        return res.redirect('/login');
+
+});
+
+app.get('/login', (req, res, next) => {
+    // if (req.method !== 'GET') return next();
+    const user = req.session.user;
+    const authenticated = user !== undefined;
+    if (authenticated)
+        return res.redirect('/home');
+    next();
+});
 
 
-// app.get('/logout', (req, res, next) => {
-//     // if (req.method !== 'GET') return next();
-//     const user = req.session.user;
-//     const authenticated = user !== undefined;
-//
-//     if (!authenticated)
-//         return res.redirect('/login');
-//
-//     next();
-// });
+app.get('/register', (req, res, next) => {
+    // if (req.method !== 'GET') return next();
+    const user = req.session.user;
+    const authenticated = user !== undefined;
+    if (authenticated)
+        return res.redirect('/home');
+    next();
+});
+
+
+app.get('/logout', (req, res, next) => {
+    // if (req.method !== 'GET') return next();
+    const user = req.session.user;
+    const authenticated = user !== undefined;
+
+    if (!authenticated)
+        return res.redirect('/login');
+
+    next();
+});
 
 
 app.engine('handlebars', exphbs.engine({defaultLayout: 'main'}));

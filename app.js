@@ -52,17 +52,17 @@ app.use('/', (req, res, next) => {
   // if (fromPostman(req.headers['user-agent']))
   //TODO obviously remove this.....
   req.session.user = {
-    _id: new ObjectId('657e56fa86b8b1c2b5022e6a'),
+    _id: new ObjectId('657eeec483bf89071b151b9b'),
     email: 'coolguy87@example.com',
     username: "coolguy87",
     following: [
       {
-        _id: new ObjectId('657e45a1ad15cf40e40a8749'),
+        _id: new ObjectId('657eeec883bf89071b151b9c'),
         username: 'codingmaster',
         profilePicture: 'happy_cat.jpg'
       },
       {
-        _id: new ObjectId('657e4598ad15cf40e40a8747'),
+        _id: new ObjectId('657eeebf83bf89071b151b9a'),
         username: 'user1',
         profilePicture: 'happy_cat.jpg'
       }

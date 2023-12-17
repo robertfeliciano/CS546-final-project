@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    console.log("GOT HERE!!!")
+    // console.log("GOT HERE!!!")
     let postButton = $('#post-form'),
     allPosts = $('#feed'),
     content = $('#content'),
@@ -8,7 +8,7 @@ $(document).ready(function () {
 		let pfp = $('.profile-photo img').attr('src');
 
     postButton.submit(function (event) {
-        console.log("GOT HERE TOO!!!")
+        // console.log("GOT HERE TOO!!!")
         event.preventDefault();
 
         let newContent = content.val();
@@ -26,7 +26,7 @@ $(document).ready(function () {
                 })
             } 
             $.ajax(requestConfig).then(function (responseMessage) {
-                let postEl = `<div class="post-1">
+                let postEl = `<div class="post-1" onclick="redirectToPost(${responseMessage._id})">
                 <div class="top">
                     <div class="user">
 												<div class="profile-photo">

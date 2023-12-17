@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {loginUser} from '../data/users.js';
-import * as validation from '../validation.js';
+import * as val from '../validation.js';
 import xss from 'xss';
 
 const router = Router();
@@ -36,7 +36,10 @@ router
       formInput.emailAddressInput = val.checkEmail(formInput.emailAddressInput);
       formInput.passwordInput = val.checkPass(formInput.passwordInput);
     } catch (e) {
-      return res.status(400).render("error/error",{userInfo: req.session.user, error: "Invalid username or password submission.", link:`/login/`});
+      return res.status(400).render('login-register/login',{
+        layout: 'external',
+        error: "Invalid email or password submission."
+      });
     }
 
     try {

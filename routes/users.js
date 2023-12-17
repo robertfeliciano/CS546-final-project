@@ -3,6 +3,7 @@ import {usersData} from '../data/index.js';
 import * as validation  from '../validation.js';
 import {fromPostman} from "../helpers.js";
 import xss from 'xss';
+import {ObjectId} from "mongodb";
 
 const router = Router();
 
@@ -54,7 +55,7 @@ router
         try {
           const user = await usersData.getUserById(req.params.id);
           const userPosts = await usersData.getPostsFromUserId(req.params.id);
-          let curr_user_id = req.session.user._id;
+          let curr_user_id = new ObjectId(req.session.user._id);
           let owner = curr_user_id.equals(req.params.id);
           if (fromPostman(req.headers['user-agent']))
             return res.json({userInfo: req.session.user, user: user, posts: userPosts, owner: owner});

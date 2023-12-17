@@ -1,4 +1,16 @@
+<!--res.render('users/userSingle', {userInfo: req.session.user, user: user, posts: userPosts, likes: likedPosts, owner: owner})-->
 
-<div class="user-details">
-    <h2>{{user}}</h2>
+<div class="middle">
+    <div class="feed">
+        <h3>{{user}}</h3>
+        <h3>
+            {{#if owner}}
+                <a href="/users/edit">Edit Profile</a>
+            {{else}}
+                <button id="follow-unfollow-button">
+                    Follow
+                </button>
+            {{/if}}
+        </h3>
+    </div>
 </div>

@@ -58,7 +58,7 @@
                                 {{content}}
                             </p>
                         </div>
-                        <div class="music" onclick="redirectToMusic('{{post.music_id}}')">
+                        <div class="music">
                             <img src="../../public/pics/vinyl.webp" alt="vinyl" class="vinyl">
                             <div class="music-song">
                                 <h3 class="song">{{piecename}}</h3>
@@ -69,7 +69,7 @@
                     </div>
                 {{/each}}
             {{else}}
-                <h3>No posts yet!</h3>
+                <h4>No posts yet!</h4>
             {{/if}}
         </div>
     </div>

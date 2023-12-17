@@ -9,6 +9,13 @@ import exphbs from 'express-handlebars';
 import {dbConnection} from "./config/mongoConnection.js";
 import {fromPostman} from "./helpers.js";
 import {ObjectId} from "mongodb";
+import handlebars from 'handlebars';
+
+handlebars.registerHelper('concat', function() {
+  const args = Array.prototype.slice.call(arguments, 0, -1);
+
+  return args.join('');
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -59,11 +66,11 @@ app.use('/', (req, res, next) => {
       {
         _id: new ObjectId('657f1c2b30c072dff4c24668'),
         username: 'codingmaster',
-        profilePicture: 'kanye.jpg'
+        profilePicture: 'happy_cat.jpg'
       },
       {
-        _id: new ObjectId('657f320b4012f2a0bdf157f1'),
-        username: 'coolguy87',
+        _id: new ObjectId('657f1c2030c072dff4c24666'),
+        username: 'user1',
         profilePicture: 'cool_dog.jpg'
       }
     ],

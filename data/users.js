@@ -376,7 +376,7 @@ export const loginUser = async (emailAddress, password) => {
     password = val.checkPass(password);
 
     const db = await users();
-    const user = await db.findOne({emailAddress: emailAddress.toLowerCase()});
+    const user = await db.findOne({email: emailAddress.toLowerCase()});
     if (user === null) throw `Either the email address or password is invalid`;
     
     const following_list = await getFollowing(user._id);

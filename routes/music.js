@@ -27,7 +27,7 @@ router
           return res.json({songs: all_songs});
         return res.render('music/musicList', {userInfo: req.session.user, music: all_songs});
       } catch(e) {
-        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
+        return res.status(500).render("error/error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
       }
     });
 
@@ -41,7 +41,7 @@ router
           return res.json({music: all_albums});
         return res.render('music/musicList', {userInfo: req.session.user, music: all_albums});
       } catch (e) {
-        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
+        return res.status(500).render("error/error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
       }
     });
 
@@ -100,7 +100,7 @@ router
       try {
         req.params.id = val.checkId(req.params.id, "music id");
       } catch(e) {
-        return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/music/`});
+        return res.status(400).render("error/error",{userInfo: req.session.user, error: e, link:`/music/`});
       }
       try {
         const piece = await musicData.getMusicById(req.params.id);
@@ -125,7 +125,7 @@ router
           userInfo: req.session.user,
           musicInfo: meta});
       } catch(e) {
-        return res.status(500).render("error",{
+        return res.status(500).render("error/error",{
           userInfo: req.session.user,
           error: `No piece with id ${req.params.id} found`,
           link:`/music/`});
@@ -136,14 +136,14 @@ router
       try{
         req.params.id = val.checkId(req.params.id, "music id");
       } catch(e) {
-        return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/music/`});
+        return res.status(400).render("error/error",{userInfo: req.session.user, error: e, link:`/music/`});
       }
       for (let key of Object.keys(req.body)) {
         req.body[key] = xss(req.body[key])
       }
       let formInput = req.body;
       if (!formInput)
-        return res.status(400).render("error",{userInfo: req.session.user, error: "Must provide form input.", link:`/music/${req.params.id}`});
+        return res.status(400).render("error/error",{userInfo: req.session.user, error: "Must provide form input.", link:`/music/${req.params.id}`});
       let missingFields = [];
       if (!formInput.rating)
         missingFields.push('Rating');
@@ -153,7 +153,7 @@ router
         if (fromPostman(req.headers['user-agent']))
           return res.status(400).json({userInfo: req.session.user, error: `Missing Field(s): ${missingFields.toString()}`, link:`/music/${req.params.id}`});
         else
-          return res.status(400).render("error",{userInfo: req.session.user, error: `Missing Field(s): ${missingFields.toString()}`, link:`/music/${req.params.id}`});
+          return res.status(400).render("error/error",{userInfo: req.session.user, error: `Missing Field(s): ${missingFields.toString()}`, link:`/music/${req.params.id}`});
       }
       try {
         formInput.rating = val.checkRating(formInput.rating, 'Music rating');
@@ -162,14 +162,14 @@ router
         if (fromPostman(req.headers['user-agent']))
           return res.status(400).json({userInfo: req.session.user, error: e, link:`/music/${req.params.id}`});
         else
-          return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/music/${req.params.id}`});
+          return res.status(400).render("error/error",{userInfo: req.session.user, error: e, link:`/music/${req.params.id}`});
       }
       try {
         const alreadyPosted = await postsData.userAlreadyPosted(req.params.id, req.session.user._id);
         if (alreadyPosted)
           throw [409, `User ${req.session.user._id} has already posted under ${req.params.id}`];
       } catch(e) {
-        return res.status(e[0]).render('error', {userInfo: req.session.user, error: e[1], link: `/music/${req.params.id}`});
+        return res.status(e[0]).render('error/error', {userInfo: req.session.user, error: e[1], link: `/music/${req.params.id}`});
       }
       try {
         const date = new Date();
@@ -190,7 +190,7 @@ router
           throw `Did not insert into db...`
         }
       } catch(e) {
-        return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/music/${req.params.id}`});
+        return res.status(500).render("error/error",{userInfo: req.session.user, error: "Internal Server Error", link:`/music/${req.params.id}`});
       }
     });
 

@@ -4,6 +4,6 @@
       <p class="error-title">Looks like someone juked the box too hard, here's what went wrong:</p>
       <p class="error-detail">{{error}}</p>
     </div>
-    <img src="assets/photos/rain.jpg" alt="Rain Image" class="error-image">
-    <a class="error-go-back" href={{link}}>Go Back</a>
+    <img src="public/pics/rain.jpg" alt="Rain Image" class="error-image">
+    <a class="error-go-back" href={{#concat "http://localhost:3000" link}}{{/concat}}>Go Back</a>
 </div>

@@ -1,68 +1,86 @@
-<!-- FILEPATH: /Users/sabahnaveed/CS546/final-repo/CS546-final-project/views/music/musicPiece.handlebars -->
 
 <div class="middle">
     <div class="reg">
         <h3>
-            Name: {{name}}
+            Song: {{musicInfo.name}}
         </h3>
         <h3>
-            Artist: {{artist}}
+            Artist: {{musicInfo.artist}}
         </h3>
         <h3>
-            Rating: {{total_stars}}
+            Genre: {{musicInfo.genre}}
         </h3>
         <h3>
-            Genre: {{genre}}
+            Average Rating: {{musicInfo.avg}}
         </h3>
 
-        <ul>
-            {{#each posts}}
-                <!--TODO: fix-->
-                <li>
-                    <a href="/posts/{{_id}}">
-                        {{title}}
-                    </a>
-                </li>
-            {{/each}}
-        </ul>
     </div>
     
     <div class="make-post">
-        <form action="/music/{{id}}" method="POST">
+        <form method="POST" id="post-form">
             <label for="content">
                 Content:
             </label>
-            <textarea name="content" id="content" placeholder="What's on your mind?">{{post.contents}}</textarea>
-            <input type="hidden" name="piece_id" value="{{_id}}">
+            <textarea name="content" id="content" placeholder="What's on your mind?"></textarea>
+            <input id="content-input" type="hidden" name="piece_id" value="{{_id}}">
             <label for="rating">
                 Rating:
             </label>
             <input type="number" name="rating" id="rating" min="1" max="5" value="1">
-            <button type="submit">Post</button>
+            <button type="submit" id="post-button">Post</button>
         </form>
+    </div>
+
+    <br>
+    <div>
+        <div class="middle">
+            <div id="feed" class="feed">
+                {{#each musicInfo.posts}}
+                    <div class="post-1" onclick="redirectToPost('{{_id}}')">
+                        <div class="top">
+                            <div class="user">
+                                <div class="profile-photo">
+                                    {{#if profilePicture.length }}
+                                        <img src="../../public/pics/{{profilePicture}}" alt="profile picture">
+                                    {{else}}
+                                        <img src="../../public/pics/defaultprofpic.jpeg" alt="profile picture">
+                                    {{/if}}
+                                </div>
+                                <div class="info">
+                                    <h3><a href="/users/{{user_id}}">{{username}}</a></h3>
+                                    <small>{{date}}</small>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="content">
+                            <p>
+                                {{content}}
+                            </p>
+                        </div>
+                        <div class="rating">
+                            <h4>Rating: {{rating}}/5</h4>
+        <!--                    <div class="stars">-->
+        <!--                        <i class="uil uil-star one-star fill"></i>-->
+        <!--                        <i class="uil uil-star two-star"></i>-->
+        <!--                        <i class="uil uil-star three-star"></i>-->
+        <!--                        <i class="uil uil-star four-star"></i>-->
+        <!--                        <i class="uil uil-star five star"></i>-->
+        <!--                    </div>-->
+                        </div>
+<!--                        <div class="music" onclick="redirectToMusic('{{music_id}}')">-->
+<!--                            <img src="../../public/pics/vinyl.webp" alt="vinyl" class="vinyl">-->
+<!--                            <div class="music-song">-->
+<!--                            </div>-->
+<!--                        </div>-->
+                        <div class="interaction-buttons">
+                            <span><i class="uil uil-heart"></i></span>
+                            <span><i class="uil uil-comment-alt"></i></span>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
     </div>
 </div>
 
-
-<!--  
-<script>
-    $.ajax({
-        url: '/posts',
-        type: 'GET',
-        success: function (data) {
-            console.log(data);
-            var posts = data.posts;
-            var list = $('ul');
-            for (var i = 0; i < posts.length; i++) {
-                var post = posts[i];
-                var listItem = $('<li></li>');
-                var link = $('<a></a>');
-                link.attr('href', '/posts/' + post._id);
-                link.text(post.title);
-                listItem.append(link);
-                list.append(listItem);
-            }
-        }
-    });
-</script>
--->

@@ -33,7 +33,7 @@ router
             const isEmpty = users.length === 0;
             if (fromPostman(req.headers['user-agent']))
               res.json({users: users});
-            return res.render('users/search', {userInfo: req.session.user, users: users, empty: isEmpty});
+            return res.render('users/searchResult', {userInfo: req.session.user, users: users, empty: isEmpty});
         } catch(e){
             return res.status(404).render("error",{error: e, link:`/home/`});
         }
@@ -54,18 +54,17 @@ router
         try {
           const user = await usersData.getUserById(req.params.id);
           const userPosts = await usersData.getPostsFromUserId(req.params.id);
-          const likedPosts = await usersData.getLikedPostsFromUserId(req.params.id);
           let curr_user_id = req.session.user._id;
           let owner = curr_user_id.equals(req.params.id);
           if (fromPostman(req.headers['user-agent']))
-            return res.json({user: user, posts: userPosts, likes: likedPosts, owner: owner});
+            return res.json({userInfo: req.session.user, user: user, posts: userPosts, owner: owner});
           // TODO pass in whether or not current user follows the user by :id
           // this determines whether or not to render a follow button
           // if they are NOT the same user and they DO NOT follow:
           // display follow button
           // if they are NOT the same user and they DO follow:
           // display UNfollow button
-          res.render('users/userSingle', {userInfo: req.session.user, user: user, posts: userPosts, likes: likedPosts, owner: owner})
+          res.render('users/userSingle', {userInfo: req.session.user, user: user, posts: userPosts, owner: owner})
         } catch (e) {
           res.status(404).render("error",{error: e, link:`/home/`});
         }
@@ -118,6 +117,30 @@ router.route('/:id/followers').get(async (req, res) => {
         return res.status(404).render("error",{error: e, link:`/home/${req.params.id}`});
     }
 });
+
+router.route('/:id/likes').get(async (req, res) => {
+  //code here for GET
+  try {
+    // if (!req.session.user) res.render('/login');
+    req.params.id = validation.checkId(req.params.id, 'User ID');
+  } catch (e) {
+    return res.status(400).render("error",{error: e, link:`/home/`});
+  }
+
+  try {
+    const likedPosts = await usersData.getLikedPostsFromUserId(req.params.id);
+    const user = await usersData.getUserById(req.params.id);
+    if (fromPostman(req.headers['user-agent']))
+      return res.json({posts: likedPosts});
+    return res.render('posts/all', {
+      userInfo: req.session.user,
+      posts: likedPosts,
+      subfeed: true,
+      feedname: `${user.username}'s likes`});
+  } catch(e) {
+    return res.status(404).render("error",{error: e, link:`/home/${req.params.id}`});
+  }
+})
 
 router.route('/:id/following').get(async (req, res) => {
     //code here for GET

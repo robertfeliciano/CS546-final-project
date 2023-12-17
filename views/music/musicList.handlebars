@@ -1,13 +1,16 @@
 <div class="middle">
-    <div class="reg">
+    <div class="feed">
         {{#each music}}
-            <h1>------------------------</h1>
-            <div class="song">
-                <a href="/music/{{_id}}">click here</a>
-                <h3>{{name}}</h3>
-                <p>{{artist}}</p>
-                <p>{{genre}}</p>
+            <div class="post-1-music-list">
+                <img src="../../public/pics/vinyl.webp" alt="vinyl" class="vinyl">
+                <div class="music-content">
+                    <a href="/music/{{_id}}"><h3>{{name}}</h3></a>
+                    <p>{{artist}}</p>
+                    <p>{{genre}}</p>
+                </div>
+                
             </div>
+            
         {{/each}}
     </div>
 </div>

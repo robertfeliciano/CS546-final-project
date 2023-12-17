@@ -1,0 +1,12 @@
+<div class="middle">
+    <div class="feed">
+        <div class="post-1-non-click">
+            <form action="/users/{{user._id}}/edit" method="POST">
+                <label for="userBio">Bio:</label>
+                <textarea id="userBio" name="userBio">{{user.bio}}</textarea>
+                <button type="submit">Update Bio</button>
+                <input name="_method" id="_method" hidden aria-label="hiddenhackymethod" value="PATCH">
+            </form>
+        </div>
+    </div>
+</div>

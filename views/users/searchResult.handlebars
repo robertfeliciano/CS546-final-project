@@ -1,0 +1,15 @@
+<div class="middle">
+    <div class="reg">
+        {{#each users}}
+            <h1>-------------------</h1>
+            <div class="reg">
+<!--                lowkey wanna put pfp here...-->
+<!--                <img src="/public/pics/vinyl.webp" alt="vinyl">-->
+                <a href="/users/{{_id}}">{{username}}</a>
+                <br>
+                <small>{{bio}}</small>
+            </div>
+            <h1>-------------------</h1>
+        {{/each}}
+    </div>
+</div>

@@ -216,6 +216,11 @@ export const getPostsForMusic = async (musicId) => {
           '$arrayElemAt': [
             '$userInfo.username', 0
           ]
+        },
+        'profilePicture': {
+          '$arrayElemAt': [
+            '$userInfo.profilePicture', 0
+          ]
         }
       }
     }, {

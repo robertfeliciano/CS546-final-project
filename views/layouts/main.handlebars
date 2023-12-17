@@ -6,23 +6,31 @@
     <title>Jukeboxd</title>
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
     <link rel="stylesheet" href="/public/style.css">
-		<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-		<script src="/public/client.js"></script>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
-            <h2 class="logo" onclick="redirectToHome()"> 
-                Jukeboxd.
+            <h2 class="clickable-logo" onclick="redirectToHome()">
+                <img src="../../public/pics/jukeboxdLogo.png" alt="logo" class="logo-img">
             </h2>
             <div class="search-bar">
                 <i class="uil uil-search"></i>
-                <input id="searchInput" type="search" placeholder="Search for a song or album......" onkeydown="searchOnEnter(event)">
+                <input id="searchInput"
+                       type="search"
+                       {{#if query.length}}
+                            value="{{query}}"
+                       {{else}}
+                            placeholder="Search for a song or album......"
+                       {{/if}}
+                       aria-label="search for music">
+<!--                       onkeydown="handleSearch(event)">-->
             </div>
             <div class="profile-tr">
                 <div class="profile-photo">
-                    <img src="../../public/pics/profpic.png" alt="profile picture">
+                    <a href="/users/{{userInfo._id}}">
+                        <img src="/public/pics/{{userInfo.profilePicture}}" alt="profile picture">
+                    </a>
                 </div>
             </div>
         </div>
@@ -34,22 +42,19 @@
         <div class="container">
             <!-------------------------- Left Sidebar -------------------------->
             <div class="left">
-                <a class="profile">
+                <a class="profile" href="/users/{{userInfo._id}}">
                     <div class="profile-photo">
-                        <img src="../../public/pics/profpic.png" alt="profile picture">
+                        <img src="/public/pics/{{userInfo.profilePicture}}" alt="profile picture">
                     </div>
                     <div class="handle">
-                        <h4>Patrick Hill</h4>
-                        <p class="text-muted">
-                            @graffixnyc
-                        </p>
+                        <h4>{{userInfo.username}}</h4>
                     </div>
                 </a>
                 <div class="sidebar">
                     <h1 class="explore-header-left">
                         Explore Panel
                     </h1>
-                    <a href="/posts" class="menu-item active" onclick="toggleActiveClass(this)">
+                    <a href="/home" class="menu-item active" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-home"></i>
                         </span>
@@ -57,27 +62,23 @@
                             Home
                         </h3>
                     </a>
-                    <a href="/music/songs" class="menu-item" onclick="toggleActiveClass(this)">
+                    <a href="/music" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-music"></i>
                         </span>
                         <h3>
-                            Find Songs
+                            All Music
                         </h3>
                     </a>
-                        
-                    <h1 class="settings-header-left">
-                        Settings
-                    </h1>
-                    <a href="" class="menu-item" onclick="toggleActiveClass(this)">
+                    <a href="/posts" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
-                            <i class="uil uil-setting"></i>
+                            <i class="uil uil-globe"></i>
                         </span>
                         <h3>
-                            Settings
+                            Global Posts
                         </h3>
                     </a>
-                    <a href="" class="menu-item" onclick="toggleActiveClass(this)">
+                    <a href="/logout" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-sign-out-alt"></i>
                         </span>
@@ -93,61 +94,60 @@
             <!-------------------------- Right Sidebar -------------------------->
             <div class="right">
                 <div class="friends">
-                    <div class="heading">
-                        <h4>Friends</h4>
-                    </div>
                     <!-- Search Bar -->
                     <div class="search-bar">
                         <i class="uil uil-search"></i>
-                        <input type="search" placeholder="Search for a friend..." id="friend-search">
+<!--                        <label for="user-search">search...</label>-->
+                        <input type="search" id="user-search" placeholder="search for a user..." aria-label="search for a user...">
                     </div>
                     <!-- Categories -->
                     <div class="category">
                         <h6 id="following-link" class="active">Following</h6>
-                        <h6>Followers</h6>
                     </div>
                     <!-- Friends (will be dynamically populated) -->
-                    <div id="friends-container"></div>
+                    <div id="friends-container">
+                        {{#each userInfo.following}}
+                            <a href="/users/{{this._id}}" class="friend">
+                                <div class="profile-photo">
+                                    <img src="/public/pics/{{this.profilePicture}}" alt="profile picture">
+                                </div>
+                                <div class="friend-body">
+                                    <h5>{{this.username}}</h5>
+                                </div>
+                            </a>
+                        {{/each}}
+                    </div>
                 </div>
-                <p>{{ user._id }}</p>
-                <p>dhjed</p>
             </div>
         </div>
     </main>
 
 
     <script>
-        function searchOnEnter(event) {
-            if (event.key === 'Enter') {
-                // Get the user input
-                let userInput = document.getElementById('searchInput').value;
-
-                // Replace spaces with '%20' in the query
-                let query = userInput.replace(/ /g, '%20');
-
-                // Call the GET request
-                let newLink = '/music/search?user=' + query;
-                console.log(newLink);
-                window.location.href = '/music/search?piece=' + query;
+        function handleSearch(event) {
+            if (event.key === "Enter") {
+                const userInput = document.getElementById('searchInput').value;
+                const encodedInput = encodeURIComponent(userInput);
+                window.location.href = `/music/search?piece=${encodedInput}`;
             }
-        };
-        function getUserFollowing(user) {
-            // Assuming req.session.user contains the user ID
-            console.log("here")
-            // Make a GET request to /users/:id/following
-            $.get(`/users/${user}/following`, function (data) {
-                // Assuming data is an array of friends, update the page as needed
-                console.log('User friends:', data);
-                // Update the page with the list of friends, e.g., append to a friend list container
-        });
         }
-
+        // register my callback thingy to be triggered
+        document.getElementById('searchInput').addEventListener('keydown', handleSearch);
     </script>
     <script>
-        function redirectToHome() {
-            // Use JavaScript to navigate to the desired URL
+        const redirectToHome = () => {
             window.location.href = `/home`;
         }
     </script>
+
+    <script>
+        const redirectToPost = (postId) => {
+            window.location.href = `/posts/${postId}`;
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="/public/client.js"></script>
+    <script src="/public/js/ajaxPost.js"></script>
 </body>
 </html>

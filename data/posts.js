@@ -1,6 +1,7 @@
 import {posts, users, music, comments} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import * as val from '../validation.js';
+import {postsData} from "./index.js";
 
 
 export const createPost = async (
@@ -16,6 +17,15 @@ export const createPost = async (
     user_id = val.checkId(user_id, 'user id');
     content = val.checkString(content, 'post content');
     date = val.checkDate(date);
+
+    let alreadyPosted = false;
+    try {
+        alreadyPosted = await postsData.userAlreadyPosted(music_id, user_id);
+    } catch(e) {
+        throw e[1]
+    }
+    if (alreadyPosted)
+        throw `User ${user_id} has already posted under ${music_id}}`;
 
     let newPost = {
         music_id:music_id,
@@ -89,7 +99,8 @@ export const getAllPosts = async () => {
             }
         }, {
             '$set': {
-                'username': '$userInfo.username'
+                'username': '$userInfo.username',
+                'profilePicture': '$userInfo.profilePicture'
             }
         }, {
             '$lookup': {
@@ -104,11 +115,12 @@ export const getAllPosts = async () => {
                     '$arrayElemAt': [
                         '$musicInfo', 0
                     ]
-                }
+                },
             }
         }, {
             '$set': {
-                'piecename': '$musicInfo.name'
+                'piecename': '$musicInfo.name',
+                'artist': '$musicInfo.artist'
             }
         }, {
             '$project': {
@@ -160,6 +172,11 @@ export const getPostById = async (postId) => {
                 'username': {
                     '$arrayElemAt': [
                         '$userInfo.username', 0
+                    ]
+                },
+                'profilePicture': {
+                    '$arrayElemAt': [
+                        '$userInfo.profilePicture', 0
                     ]
                 },
                 'piecename': {
@@ -216,15 +233,16 @@ export const getAllPostsFromFollowing = async (userId) => {
             }
         }, {
             '$set': {
-                'userInfo': {
+                'username': {
                     '$arrayElemAt': [
-                        '$userInfo', 0
+                        '$userInfo.username', 0
+                    ]
+                },
+                'profilePicture': {
+                    '$arrayElemAt': [
+                        '$userInfo.profilePicture', 0
                     ]
                 }
-            }
-        }, {
-            '$set': {
-                'username': '$userInfo.username'
             }
         }, {
             '$lookup': {
@@ -258,6 +276,35 @@ export const getAllPostsFromFollowing = async (userId) => {
         throw `Could not get posts from followed users.`;
 
     return postsFound;
+}
+
+export const userAlreadyPosted = async (musicId, userId) => {
+    try {
+        musicId = val.checkId(musicId, 'music id');
+        userId = val.checkId(userId, 'user id');
+    } catch(e) {
+        throw [400, e];
+    }
+    const postCollection = await posts();
+    const userPostsForMusicId = await postCollection.aggregate([
+        {
+            '$match': {
+                '$and': [
+                    {
+                        'music_id': new ObjectId(musicId)
+                    }, {
+                        'user_id': new ObjectId(userId)
+                    }
+                ]
+            }
+        }
+    ]).toArray();
+    if (!userPostsForMusicId)
+        throw [404, `Could not check if user ${userId} has already posted under music ${musicId}`];
+    if (userPostsForMusicId.length === 0)
+        return false;
+    else
+        return true;
 }
 
 export const getAllPostsFromMusicId = async (musicId) => {
@@ -552,3 +599,5 @@ export const getCommentDetailsFromPost = async (postId) => {
 // console.log(await getCommentDetailsFromPost('657a270512ba1278581f8902'));
 // console.log(await getAllPosts());
 // console.log(await getCommentDetailsFromPost('657a270512ba1278581f88fb'));
+// console.log(await userAlreadyPosted('657e0676341e54d23d7152fb', '657e064c341e54d23d7152f1'));
+

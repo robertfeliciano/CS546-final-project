@@ -16,12 +16,11 @@ export const createUser = async (
     bio,
     profilePicture
 ) => {
-
     username = val.checkUsername(username);
     email = val.checkEmail(email);
     rawPassword = val.checkPass(rawPassword);
     bio = val.checkBio(bio);
-    profilePicture = val.checkProfilePic(profilePicture);
+    profilePicture = await val.checkProfilePic(profilePicture);
 
 
     const hashed = await bcrypt.hash(rawPassword, saltRounds);
@@ -387,7 +386,8 @@ export const loginUser = async (emailAddress, password) => {
             _id: new ObjectId(user._id),
             username: user.username,
             email: user.email,
-            following: following_list
+            following: following_list,
+            profilePicture: user.profilePicture
         };
     else
         throw `Either the email address or password is invalid`;
@@ -486,7 +486,8 @@ export const getFollowing = async (userId) => {
             }
         }, {
             '$project': {
-                'username': 1
+                'username': 1,
+                'profilePicture': 1
             }
         }
     ]).toArray();
@@ -615,16 +616,12 @@ export const getLikedPostsFromUserId = async (userId) => {
                 'as': 'postInfo'
             }
         }, {
-            '$set': {
-                'postInfo': {
+            '$replaceRoot': {
+                'newRoot': {
                     '$arrayElemAt': [
                         '$postInfo', 0
                     ]
                 }
-            }
-        }, {
-            '$replaceRoot': {
-                'newRoot': '$postInfo'
             }
         }, {
             '$lookup': {
@@ -643,12 +640,37 @@ export const getLikedPostsFromUserId = async (userId) => {
             }
         }, {
             '$set': {
-                'piecename': '$musicInfo.name'
+                'piecename': '$musicInfo.name',
+                'artist': '$musicInfo.artist',
             }
         }, {
             '$project': {
                 'musicInfo': 0,
                 'comments': 0
+            }
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'user_id',
+                'foreignField': '_id',
+                'as': 'userInfo'
+            }
+        }, {
+            '$set': {
+                'username': {
+                    '$arrayElemAt': [
+                        '$userInfo.username', 0
+                    ]
+                },
+                'profilePicture': {
+                    '$arrayElemAt': [
+                        '$userInfo.profilePicture', 0
+                    ]
+                }
+            }
+        }, {
+            '$project': {
+                'userInfo': 0
             }
         }
     ]).toArray();
@@ -659,4 +681,6 @@ export const getLikedPostsFromUserId = async (userId) => {
     return likedPosts;
 }
 // console.log(await getLikedPostsFromUserId('657ceae06d66b79009b45de3'));
-// console.log(await getFollowing('657d03289396c7ec2ed230e5'));
+// console.log(await getFollowing('657dd1dde3ba67bd632a3119'));
+
+// console.log(await getRecommendations('657f1c2530c072dff4c24667'));

@@ -4,7 +4,7 @@ export const users = [
     "email": "user1@example.com",
     "password": "Pass1234%",
     "bio": "Just a regular user who loves music.",
-    "profilePicture": "happy_cat.jpg"
+    "profilePicture": "cool_dog.jpg"
   },
   {
     "username": "coolguy87",
@@ -18,21 +18,21 @@ export const users = [
     "email": "code@example.com",
     "password": "code%43Pass",
     "bio": "Passionate about coding and coding tunes.",
-    "profilePicture": "happy_cat.jpg"
+    "profilePicture": "kanye.jpg"
   },
   {
     "username": "bookworm23",
     "email": "booklover@example.com",
     "password": "bookPass%123",
     "bio": "In love with books and music!",
-    "profilePicture": "happy_cat.jpg"
+    "profilePicture": "music_notes.jpg"
   },
   {
     "username": "traveler123",
     "email": "travel@example.com",
     "password": "travel33*Pass",
     "bio": "Exploring the world with a playlist in hand.",
-    "profilePicture": "happy_cat.jpg"
+    "profilePicture": "profpic.png"
   },
   {
     "username": "fitnessfanatic",
@@ -46,21 +46,21 @@ export const users = [
     "email": "musiclover@example.com",
     "password": "musicPa81$ss",
     "bio": "All about that music life.",
-    "profilePicture": "happy_cat.jpg"
+    "profilePicture": "cool_dog.jpg"
   },
   {
     "username": "photographer22",
     "email": "photo@example.com",
     "password": "p$hotoPass12",
     "bio": "Capturing moments through the lens with a melody.",
-    "profilePicture": "happy_cat.jpg"
+    "profilePicture": "profpic.png"
   },
   {
     "username": "foodie88",
     "email": "foodlover@example.com",
     "password": "foodie%12Pass",
     "bio": "Exploring the culinary world with a symphony of flavors.",
-    "profilePicture": "happy_cat.jpg"
+    "profilePicture": "johnpic.png"
   },
   {
     "username": "gamerpro99",

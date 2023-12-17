@@ -1,6 +1,61 @@
+<!--res.render('users/userSingle', {userInfo: req.session.user, user: user, posts: userPosts, likes: likedPosts, owner: owner})-->
 
-<div class="user-details">
-    <h2>{{songName}}</h2>
-    <h3>by {{artistName}}</h3>
-    <p>Average Rating: {{averageRating}}</p>
+<div class="middle">
+    <div class="feed">
+        <div class="post-1-non-click">
+            <div class="user-card">
+                <img src="../../public/pics/banner.png" alt="profile banner" class="banner">
+                <div class="profile-photo-container">
+                    <div class="profile-photo-single-user">
+                        <img src="/public/pics/{{user.profilePicture}}" alt="profile picture">
+                    </div>
+                </div>
+                <div class="user-body">
+                    <h3 class="username">{{user.username}}</h3>
+                    <p>{{user.bio}}</p>
+                    <div class="following-followers">
+                        <a href="/users/{{user._id}}/following">{{user.following.length}} Following</a>
+                        <a href="/users/{{user._id}}/followers">{{user.followers.length}} Followers</a>
+                    </div>
+                </div>
+
+                <div class="edit-follow">
+                    {{#if owner}}
+                        <a href="/users/{{user._id}}/edit">Edit Profile</a>
+                    {{else}}
+                        <form id="followForm" action="/users/{{userId}}/follow" method="PATCH">
+                            <button type="submit" id="followButton">
+                                {{#if isFollowing}}
+                                    Unfollow
+                                {{else}}
+                                    Follow
+                                {{/if}}
+                            </button>
+                        </form>
+                    {{/if}}
+                </div>
+
+                <div class="likes-button">
+                    <button onclick=""redirectToLiked('{{user._id}}')"">Show Liked Posts</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    document.getElementById('followForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formAction = isFollowing ? `/users/{{userId}}/unfollow` : `/users/{{userId}}/follow`;
+        this.action = formAction;
+
+        this.submit();
+    });
+</script>
+
+<script>
+    const redirectToLiked = (userId) => {
+        window.location.href = `/users/${userId}/likes`;
+    }
+</script>

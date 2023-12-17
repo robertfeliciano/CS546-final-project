@@ -25,16 +25,16 @@
 
 <!-------------------------- Middle Stream -------------------------->
 <div class="middle">
+    {{#if subfield}}
+        <h2>{{feedname}}</h2>
+    {{/if}}
     <div class="feed">
         {{#each posts}}  
           <div class="post-1" onclick="redirectToPost('{{_id}}')">
             <div class="top">
                 <div class="user">
                     <div class="profile-photo">
-                        <img src="../../public/pics/defaultprofpic.jpeg" alt="profile picture">
-                        <!--
-                            do the if else for profile pics once they get added to /posts
-                        -->
+                        <img src="/public/pics/{{profilePicture}}" alt="profile picture">
                     </div>
                     <div class="info">
                         <h3>{{username}}</h3>
@@ -109,12 +109,6 @@
 <script>
     const redirectToMusic = (musicId) => {
         window.location.href = `/music/${musicId}`;
-    }
-</script>
-
-<script>
-    const redirectToPost = (postId) => {
-        window.location.href = `/posts/${postId}`;
     }
 </script>
 

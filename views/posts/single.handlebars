@@ -5,11 +5,7 @@
             <div class="top">
                 <div class="user">
                     <div class="profile-photo">
-                        {{#if profilePicture.length }}
-                            <img src="../../public/pics/{{profilePicture}}" alt="profile picture">
-                        {{else}}
-                            <img src="../../public/pics/defaultprofpic.jpeg" alt="profile picture">
-                        {{/if}}
+                        <img src="/public/pics/{{post.profilePicture}}" alt="profile picture">
                     </div>
                     <div class="info">
                         <h3>{{post.username}}</h3>

@@ -18,7 +18,7 @@
     </div>
     
     <div class="make-post">
-        <form action="/music/{{id}}" method="POST">
+        <form method="POST" id="post-form">
             <label for="content">
                 Content:
             </label>
@@ -28,7 +28,7 @@
                 Rating:
             </label>
             <input type="number" name="rating" id="rating" min="1" max="5" value="1">
-            <button type="submit">Post</button>
+            <button type="submit" id="post-button">Post</button>
         </form>
     </div>
 

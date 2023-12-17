@@ -1,9 +1,11 @@
-(function ($) {
+$(document).ready(function () {
     console.log("GOT HERE!!!")
     let postButton = $('#post-form'),
     allPosts = $('#feed'),
-    content = $('#content-input'),
+    content = $('#content'),
     rating = $('#rating')
+
+		let pfp = $('.profile-photo img').attr('src');
 
     postButton.submit(function (event) {
         console.log("GOT HERE TOO!!!")
@@ -12,10 +14,11 @@
         let newContent = content.val();
         let newRating = rating.val();
 
+				console.log(newContent, newRating);
         if (newContent && newRating) {
             let requestConfig = {
                 method: 'POST',
-                url: `/music/${musicId}`,
+                url: window.location.href,
                 contentType: 'application/json',
                 data: JSON.stringify({
                     content: newContent,
@@ -23,11 +26,12 @@
                 })
             } 
             $.ajax(requestConfig).then(function (responseMessage) {
-                console.log("Made it in ajax, here's the msg:")
-                console.log(responseMessage)
                 let postEl = `<div class="post-1">
                 <div class="top">
                     <div class="user">
+												<div class="profile-photo">
+													<img src="${pfp}" alt="profile-picture">
+												</div>
                         <div class="info">
                             <h3><a href="/users/${responseMessage.user_id}">${responseMessage.username}</a></h3>
                             <small>${responseMessage.date}</small>
@@ -48,7 +52,7 @@
                     <span><i class="uil uil-comment-alt"></i></span>
                 </div>
             </div>`
-                allPosts.append(postEl)
+                allPosts.prepend(postEl)
                 content.val('');
                 rating.val('');
                 content.focus();
@@ -56,4 +60,5 @@
         }
         return false;
     })
-})(window.jQuery);
+});
+

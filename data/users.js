@@ -616,16 +616,12 @@ export const getLikedPostsFromUserId = async (userId) => {
                 'as': 'postInfo'
             }
         }, {
-            '$set': {
-                'postInfo': {
+            '$replaceRoot': {
+                'newRoot': {
                     '$arrayElemAt': [
                         '$postInfo', 0
                     ]
                 }
-            }
-        }, {
-            '$replaceRoot': {
-                'newRoot': '$postInfo'
             }
         }, {
             '$lookup': {
@@ -644,12 +640,37 @@ export const getLikedPostsFromUserId = async (userId) => {
             }
         }, {
             '$set': {
-                'piecename': '$musicInfo.name'
+                'piecename': '$musicInfo.name',
+                'artist': '$musicInfo.artist',
             }
         }, {
             '$project': {
                 'musicInfo': 0,
                 'comments': 0
+            }
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'user_id',
+                'foreignField': '_id',
+                'as': 'userInfo'
+            }
+        }, {
+            '$set': {
+                'username': {
+                    '$arrayElemAt': [
+                        '$userInfo.username', 0
+                    ]
+                },
+                'profilePicture': {
+                    '$arrayElemAt': [
+                        '$userInfo.profilePicture', 0
+                    ]
+                }
+            }
+        }, {
+            '$project': {
+                'userInfo': 0
             }
         }
     ]).toArray();

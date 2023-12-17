@@ -1,6 +1,7 @@
-(function ($) {
+$(document).ready(function ($) {
     updateButtonState();
     $('#likeButton').on('click', function () {
+        console.log('clicked')
         let isLiked = $('#likeButton').text() === 'Liked'
         if (isLiked) {
             return

@@ -1,6 +1,7 @@
 import {comments, posts, users} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import * as val from '../validation.js';
+import {commentsData} from "./index.js";
 
 export const createComment = async (
     post_id,
@@ -13,6 +14,15 @@ export const createComment = async (
     user_id = val.checkId(user_id, "user id");
     content = val.checkString(content, "comment content");
     date = val.checkDate(date);
+
+    let alreadyCommented = false;
+    try {
+        alreadyCommented = await commentsData.userAlreadyCommented(post_id, user_id);
+    } catch(e){
+        throw e[1];
+    }
+    if (alreadyCommented)
+        throw `User ${user_id} has already commented under ${post_id}`;
 
     let newComment = {
         post_id:post_id,
@@ -129,3 +139,35 @@ export const removeComment = async (commentId, deleterId) => {
 
     return {deleted: true};
 }
+
+export const userAlreadyCommented = async (postId, userId) => {
+    try {
+        postId = val.checkId(postId);
+        userId = val.checkId(userId);
+    } catch(e) {
+        throw [400, e];
+    }
+    const commentCollection = await comments();
+    const userCommentsForPostId = await commentCollection.aggregate([
+        {
+            '$match': {
+                '$and': [
+                    {
+                        'post_id': new ObjectId(postId)
+                    }, {
+                        'user_id': new ObjectId(userId)
+                    }
+                ]
+            }
+        }
+    ]).toArray();
+    if (!userCommentsForPostId)
+        throw [404, `Could not check if user ${userId} has already commented under post ${postId}`];
+    if (userCommentsForPostId.length === 0)
+        return false;
+    else
+        return true;
+}
+
+// console.log(await userAlreadyCommented('657e0676341e54d23d715316', '657e0669341e54d23d7152f7'));
+// console.log(await userAlreadyCommented('657e0676341e54d23d715316', '657e066d341e54d23d7152f8'));

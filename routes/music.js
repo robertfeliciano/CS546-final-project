@@ -178,11 +178,12 @@ router
             formInput.content,
             date
         );
+        console.log(inserted)
         if (inserted) {
           if (fromPostman(req.headers['user-agent']))
             return res.json(inserted);
           else
-            return res.redirect(`/music/${req.params.id}`);
+            return res.json(inserted);
         }
         else {
           throw `Did not insert into db...`

@@ -19,19 +19,25 @@ router
     let { emailAddressInput, passwordInput } = req.body;
 
     // Check if all fields are supplied
-    
-    emailAddressInput = validation.checkEmail(emailAddressInput);
-    passwordInput = validation.checkPass(passwordInput);
-
+    // TODO put in try-catch
+    try {
+      emailAddressInput = validation.checkEmail(emailAddressInput);
+      passwordInput = validation.checkPass(passwordInput);
+    }
+    catch (e) {
+      return res.status(400).render('login-register/login', { error: e, layout: 'external' }); 
+    }
+  
     try {
       const user = await loginUser(emailAddressInput, passwordInput);
       if (user) {
         
           req.session.user = {
-              id: user._id,
+              _id: user._id,
               username: user.username,
               emailAddress: user.email,
-              following: user.following
+              following: user.following,
+              profilePicture: user.profilePicture
           };
           return res.status(200).redirect('/home');
       } else {

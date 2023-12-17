@@ -379,9 +379,7 @@ export const loginUser = async (emailAddress, password) => {
     const user = await db.findOne({email: emailAddress.trim().toLowerCase()});
     if (user === null) throw `Either the email address or password is invalid`;
     const following_list = await getFollowing(user._id);
-    console.log(password, user.hashedPassword)
     let comp = await bcrypt.compare(password, user.hashedPassword);
-    console.log(comp)
     if (comp){
         return {
             _id: new ObjectId(user._id),

@@ -19,8 +19,8 @@
                 <input id="searchInput"
                        type="search"
                        placeholder="Search for a song or album......"
-                       aria-label="search for music"
-                       onkeydown="searchOnEnter(event)">
+                       aria-label="search for music">
+<!--                       onkeydown="handleSearch(event)">-->
             </div>
             <div class="profile-tr">
                 <div class="profile-photo">
@@ -66,14 +66,14 @@
                             Find Music
                         </h3>
                     </a>
-                    <a href="/users/{{userInfo._id}}/edit" class="menu-item" onclick="toggleActiveClass(this)">
-                        <span>
-                            <i class="uil uil-setting"></i>
-                        </span>
-                        <h3>
-                            Edit Profile
-                        </h3>
-                    </a>
+<!--                    <a href="/users/{{userInfo._id}}/edit" class="menu-item" onclick="toggleActiveClass(this)">-->
+<!--                        <span>-->
+<!--                            <i class="uil uil-setting"></i>-->
+<!--                        </span>-->
+<!--                        <h3>-->
+<!--                            Edit Profile-->
+<!--                        </h3>-->
+<!--                    </a>-->
                     <a href="/logout" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-sign-out-alt"></i>
@@ -112,7 +112,6 @@
                                 </div>
                             </a>
                         {{/each}}
-
                     </div>
                 </div>
             </div>
@@ -121,18 +120,15 @@
 
 
     <script>
-        const searchOnEnter = (event) => {
-            if (event.key === 'Enter') {
-                let userInput = document.getElementById('searchInput').value;
-
-                let query = userInput.replace(/ /g, '%20');
-
-                let newLink = '/music/search?user=' + query;
-                console.log(newLink);
-                window.location.href = '/music/search?piece=' + query;
+        function handleSearch(event) {
+            if (event.key === "Enter") {
+                const userInput = document.getElementById('searchInput').value;
+                const encodedInput = encodeURIComponent(userInput);
+                window.location.href = `/music/search?piece=${encodedInput}`;
             }
         }
-
+        // register my callback thingy to be triggered
+        document.getElementById('searchInput').addEventListener('keydown', handleSearch);
     </script>
     <script>
         const redirectToHome = () => {

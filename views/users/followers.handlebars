@@ -1,5 +1,17 @@
 <div class="middle">
-    {{#each users}}
-        <h1>-------------</h1>
-        <p>{{username}}</p>
+    <h2>Followers:</h2>
+    <div class="friends">
+        <div id="friends-container">
+            {{#each users}}
+                <a href="/users/{{this._id}}" class="friend">
+                    <div class="profile-photo">
+                        <img src="/public/pics/{{this.profilePicture}}" alt="profile picture">
+                    </div>
+                    <div class="friend-body">
+                        <h5>{{this.username}}</h5>
+                    </div>
+                </a>
+            {{/each}}
+        </div>
+    </div>
 </div>

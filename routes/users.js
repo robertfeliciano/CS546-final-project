@@ -33,7 +33,7 @@ router
             const isEmpty = users.length === 0;
             if (fromPostman(req.headers['user-agent']))
               res.json({users: users});
-            return res.render('users/search', {userInfo: req.session.user, users: users, empty: isEmpty});
+            return res.render('users/searchResult', {userInfo: req.session.user, users: users, empty: isEmpty});
         } catch(e){
             return res.status(404).render("error",{error: e, link:`/home/`});
         }

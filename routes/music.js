@@ -162,6 +162,13 @@ router
           return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/music/${req.params.id}`});
       }
       try {
+        const alreadyPosted = await postsData.userAlreadyPosted(req.params.id, req.session.user._id);
+        if (alreadyPosted)
+          throw [409, `User ${req.session.user._id} has already posted under ${req.params.id}`];
+      } catch(e) {
+        return res.status(e[0]).render('error', {userInfo: req.session.user, error: e[1], link: `/music/${req.params.id}`});
+      }
+      try {
         const date = new Date();
         const inserted = await postsData.createPost(
             req.params.id,

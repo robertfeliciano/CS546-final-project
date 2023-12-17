@@ -779,3 +779,15 @@ main .container .right {
 .friends-container a {
     margin-top: 1rem;
 }
+
+/* =================================================== MUSIC RESUTS ===================================================*/
+.middle .feed .post-1 .reg {
+    display: flex;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.middle .feed .post-1 .reg img {
+    width: 3rem;
+    height: 3rem;
+}

@@ -1,8 +1,7 @@
 $(document).ready(function ($) {
     updateButtonState();
     $('#likeButton').on('click', function () {
-        console.log('clicked')
-        let isLiked = $('#likeButton').text() === 'Liked'
+        let isLiked = $('#likeButton').find('.likeIcon').children().attr('id') === 'heart-fill';
         if (isLiked) {
             return
         }
@@ -20,9 +19,8 @@ $(document).ready(function ($) {
     })
 
     function updateButtonState() {
-        let buttonText = $('#likeButton').text()
-        let isLiked = buttonText === 'Liked'
-
-        $('#likeButton').text(isLiked ? 'Liked' : 'Like')
+        let isLiked = $('#likeButton').find('.likeIcon').children().attr('id') === 'heart-fill';
+        let newId = isLiked ? 'heart' : 'heart-fill';
+        $('#likeButton').find('.likeIcon').children().attr('id', newId);
     }
 })(window.jQuery);

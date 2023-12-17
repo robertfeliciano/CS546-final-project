@@ -759,3 +759,23 @@ main .container .right {
 .post-1-music-list .music-content a:hover {
     text-decoration: underline;
 }
+
+/* =================================================== FOLLOWING LIST ===================================================*/
+.friend-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.friend-cell:first-child {
+    margin-top: 0;
+}
+
+.friend-cell .friend-body{
+    font-size: large;
+}
+
+.friends-container a {
+    margin-top: 1rem;
+}

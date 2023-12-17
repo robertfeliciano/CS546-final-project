@@ -21,22 +21,45 @@
                         <a href="/users/{{user._id}}/following">{{user.following.length}} Following</a>
                         <a href="/users/{{user._id}}/followers">{{user.followers.length}} Followers</a>
                     </div>
-                    
                 </div>
 
-                <h3>
+                <div class="edit-follow">
                     {{#if owner}}
-                        <a href="/users/edit">Edit Profile</a>
+                        <a href="/users/{{user._id}}/edit">Edit Profile</a>
                     {{else}}
-                        <button id="follow-unfollow-button">
-                            Follow
-                        </button>
+                        <form id="followForm" action="/users/{{userId}}/follow" method="PATCH">
+                            <button type="submit" id="followButton">
+                                {{#if isFollowing}}
+                                    Unfollow
+                                {{else}}
+                                    Follow
+                                {{/if}}
+                            </button>
+                        </form>
                     {{/if}}
-                </h3>
-            </div>
-            
+                </div>
 
+                <div class="likes-button">
+                    <button onclick=""redirectToLiked('{{user._id}}')"">Show Liked Posts</button>
+                </div>
+            </div>
         </div>
-        
     </div>
 </div>
+
+<script>
+    document.getElementById('followForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formAction = isFollowing ? `/users/{{userId}}/unfollow` : `/users/{{userId}}/follow`;
+        this.action = formAction;
+
+        this.submit();
+    });
+</script>
+
+<script>
+    const redirectToLiked = (userId) => {
+        window.location.href = `/users/${userId}/likes`;
+    }
+</script>

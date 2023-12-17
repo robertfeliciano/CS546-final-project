@@ -102,7 +102,8 @@ router
       }
       try {
         const piece = await musicData.getMusicById(req.params.id);
-        const avg = piece.total_stars/piece.total_ratings;
+        let avg = piece.total_stars/piece.total_ratings;
+        if (isNaN(avg)) avg = "Not rated yet!";
         const musicPosts = await musicData.getPostsForMusic(req.params.id)
         const meta = {
           id: piece._id,

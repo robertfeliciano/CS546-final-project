@@ -2,15 +2,37 @@
 
 <div class="middle">
     <div class="feed">
-        <h3>{{user}}</h3>
-        <h3>
-            {{#if owner}}
-                <a href="/users/edit">Edit Profile</a>
-            {{else}}
-                <button id="follow-unfollow-button">
-                    Follow
-                </button>
-            {{/if}}
-        </h3>
+        <div class="post-1-non-click">
+            <div class="user-card">
+                <img src="../../public/pics/banner.png" alt="profile banner" class="banner">
+                <div class="profile-photo-container">
+                    <div class="profile-photo-single-user">
+                        <img src="../../public/pics/happy_cat.jpg" alt="profile picture" class="profile-picture">
+                    </div>
+                </div>
+                <div class="user-body">
+                    <h3 class="username">{{user.username}}</h3>
+                    <p>{{user.bio}}</p>
+                    <div class="following-followers">
+                        <a href="/users/{{user._id}}/following">{{user.following.length}} Following</a>
+                        <a href="/users/{{user._id}}/followers">{{user.followers.length}} Followers</a>
+                    </div>
+                    
+                </div>
+
+                <h3>
+                    {{#if owner}}
+                        <a href="/users/edit">Edit Profile</a>
+                    {{else}}
+                        <button id="follow-unfollow-button">
+                            Follow
+                        </button>
+                    {{/if}}
+                </h3>
+            </div>
+            
+
+        </div>
+        
     </div>
 </div>

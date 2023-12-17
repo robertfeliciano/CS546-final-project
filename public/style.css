@@ -3,7 +3,7 @@
 /* CSS Variables */
 :root {
     --color-white: rgb(255, 255, 255);
-    --color-light: rgb(240, 238, 246);
+    --color-light: #f0eef6;
     --color-grey: rgb(158, 152, 179);
     --color-dark-grey: rgb(76, 74, 85);
     --color-primary: rgb(68, 28, 227);
@@ -19,8 +19,8 @@
     --search-padding: 0.6rem 1rem;
     --card-padding: 1rem;
 
-    --sticky-top-left: 5.4rem;
-    --sticky-top-right: -18rem;
+    --sticky-top-left: 7rem;
+    --sticky-top-right: 7rem;
     --sticky-top: 0rem;
 }
 
@@ -133,10 +133,20 @@ nav .container {
     color: var(--color-grey)
 }
 
+nav .container .clickable-logo {
+    cursor: pointer;
+}
+
+nav .container .clickable-logo img {
+    width: 6rem;
+    overflow: hidden;
+    margin-left: 2rem;
+}
+
 /* ======================================================= MAIN =======================================================*/
 main {
     position: relative;
-    top: 5.4rem;
+    margin-top: 7rem;
 }
 
 main .container {
@@ -145,7 +155,6 @@ main .container {
     column-gap: 2rem;
     position: relative;
 }
-
 /* LEFT */
 main .container .left {
     height: max-content;
@@ -163,9 +172,17 @@ main .container .left .profile {
     width: 100%;
 }
 
+/* RIGHT */
+main .container .right {
+    height: max-content;
+    position: sticky;
+    top: var(--sticky-top-right)
+
+}
+
 /* ======================================================= SIDEBAR =======================================================*/
 .left .sidebar {
-    margin-top: 1rem;
+    margin-top: 2rem;
     background-color: var(--color-white);
     border-radius: var(--card-border-radius);
 }
@@ -252,6 +269,93 @@ main .container .left .profile {
 
 }
 
+/* ======================================================= RIGHT =======================================================*/
+
+main .container .right {
+    height: max-content;
+    position: sticky;
+    top: var(--sticky-top-right)
+}
+
+.right .friends {
+    position: relative;
+    background: var(--color-white);
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+}
+
+.right .friends .heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.right .friends i {
+    font-size: 1.4rem;
+}
+
+.right .friends .search-bar {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.right .friends .category {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+/*on hover of .category*/
+.right .friends .category h6:hover {
+    background-color: var(--color-light);
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    cursor: pointer;
+}
+
+
+.right .friends .category h6 {
+    width: 100%;
+    text-align: center;
+    border-bottom: 4px solid var(--color-light);
+    padding-bottom: 0.5rem;
+    font-size: 0.85rem;
+    padding-top: 0.5rem;
+}
+
+.right .friends .category .active {
+    border-color: var(--color-primary);
+    background-color: var(--color-light);
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+.right .friends .friend {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: start;
+    transition: all 0.3s ease;
+}
+
+.right .friends .friend:hover {
+    background-color: var(--color-light);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+
+.right .friends .friend:last-child {
+    margin: 0;
+}
+
+.right .friends .friend p {
+    font-size: 0.8rem;
+}
+
 /* ======================================================= MIDDLE =======================================================*/
 .middle .make-post{
     width: 100%;
@@ -276,6 +380,10 @@ main .container .left .profile {
 }
 
 /* ======================================================= FEED =======================================================*/
+.middle .feed:first-child {
+    margin-top: 0rem;
+}
+
 .middle .feed .post-1 {
     background: var(--color-white);
     border-radius: var(--card-border-radius);
@@ -285,6 +393,19 @@ main .container .left .profile {
     line-height: 1.5;
     width: 100%;
     cursor: pointer;
+}
+
+
+
+
+.middle .feed .post-1-non-click {
+    background: var(--color-white);
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    width: 100%;
 }
 
 .middle .feed .post-1 .top {
@@ -434,91 +555,7 @@ main .container .left .profile {
     }
 }
 
-/* ======================================================= RIGHT =======================================================*/
 
-main .container .right {
-    height: max-content;
-    position: sticky;
-    top: var(--sticky-top-right)
-}
-
-.right .friends {
-    background: var(--color-white);
-    border-radius: var(--card-border-radius);
-    padding: var(--card-padding);
-}
-
-.right .friends .heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-}
-
-.right .friends i {
-    font-size: 1.4rem;
-}
-
-.right .friends .search-bar {
-    display: flex;
-    margin-bottom: 1rem;
-}
-
-.right .friends .category {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-}
-
-/*on hover of .category*/
-.right .friends .category h6:hover {
-    background-color: var(--color-light);
-    border-top-left-radius: 0.5rem;
-    border-top-right-radius: 0.5rem;
-    cursor: pointer;
-}
-
-
-.right .friends .category h6 {
-    width: 100%;
-    text-align: center;
-    border-bottom: 4px solid var(--color-light);
-    padding-bottom: 0.5rem;
-    font-size: 0.85rem;
-    padding-top: 0.5rem;
-}
-
-.right .friends .category .active {
-    border-color: var(--color-primary);
-    background-color: var(--color-light);
-    border-top-left-radius: 0.5rem;
-    border-top-right-radius: 0.5rem;
-}
-
-.right .friends .friend {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    align-items: start;
-    transition: all 0.3s ease;
-}
-
-.right .friends .friend:hover {
-    background-color: var(--color-light);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-
-.right .friends .friend:last-child {
-    margin: 0;
-}
-
-.right .friends .friend p {
-    font-size: 0.8rem;
-}
 
 /* ======================================================= ERROR =======================================================*/
 
@@ -571,7 +608,7 @@ main .container .right {
   }
   
   .error-image {
-    width: 50%; /* Adjust the width to your preference (e.g., 80% of the container width) */
+    width: 50%; 
     max-height: 200px;
     margin-top: 20px;
     border-radius: 8px;
@@ -607,4 +644,94 @@ main .container .right {
 
 .h2.clickable:hover {
     cursor: pointer !important;
+}
+
+/* =================================================== PROFILE PAGE ===================================================*/
+/*
+.profile-photo-single-user {
+    width: 5rem;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    margin-top: -2.5rem;
+    margin-left: 1rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-primary); 
+} 
+
+.profile-photo-single-user img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: relative;
+}
+*/
+
+.user-card {
+    position: relative;
+}
+
+.banner {
+    align-items: center;
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+}
+
+.profile-photo-container {
+    position: absolute;
+    /*top: 50%;*/
+    left: 1rem; 
+    transform: translateY(-50%);
+}
+
+.profile-photo-single-user {
+    width: 5rem;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 2px solid var(--color-white); 
+    transition: all 0.5s ease;
+}
+
+.profile-photo-single-user:hover {
+    border: 2px solid var(--color-primary); 
+    transition: all 0.5s ease;
+}
+
+.profile-photo-single-user img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: relative;
+}
+
+.user-body {
+    margin-top: 3rem;
+    margin-left: 1rem;
+}
+
+.user-body .username {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.user-body .following-followers {
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+    margin-top: 0.5rem;
+    color: var(--color-dark-grey);
+}
+.user-body .following-followers a {
+    color: var(--color-dark-grey);
+
+}
+.user-body .following-followers a:visited {
+    color: var(--color-dark-grey);
+}
+
+
+.user-body .following-followers a:hover {
+    text-decoration: underline;
 }

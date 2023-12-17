@@ -445,7 +445,7 @@ main .container .right {
     padding: 0.4rem var(--card-padding);
     border-radius: var(--border-radius);
     cursor: pointer;
-    z-index: 1;
+    z-index: 2;
 }
 
 .middle .feed .post-1 .music .vinyl {
@@ -730,7 +730,6 @@ main .container .right {
 .user-body .following-followers a:visited {
     color: var(--color-dark-grey);
 }
-
 
 .user-body .following-followers a:hover {
     text-decoration: underline;

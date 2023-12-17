@@ -27,7 +27,7 @@ router
       if (posts === undefined)
         return res.status(500).json({error: "Internal Server Error"});
       if (fromPostman(req.headers['user-agent'])) return res.json({posts: posts});
-      res.render('posts/all', {userInfo: req.session.user, posts: posts});
+      res.render('posts/all', {userInfo: req.session.user, posts: posts, subfeed: true, feedname: "Global Posts"});
     } catch (e) {
       res.status(404).json({error: e});
     }

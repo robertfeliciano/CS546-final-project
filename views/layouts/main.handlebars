@@ -18,7 +18,11 @@
                 <i class="uil uil-search"></i>
                 <input id="searchInput"
                        type="search"
-                       placeholder="Search for a song or album......"
+                       {{#if query.length}}
+                            value="{{query}}"
+                       {{else}}
+                            placeholder="Search for a song or album......"
+                       {{/if}}
                        aria-label="search for music">
 <!--                       onkeydown="handleSearch(event)">-->
             </div>
@@ -74,14 +78,6 @@
                             Global Posts
                         </h3>
                     </a>
-<!--                    <a href="/users/{{userInfo._id}}/edit" class="menu-item" onclick="toggleActiveClass(this)">-->
-<!--                        <span>-->
-<!--                            <i class="uil uil-setting"></i>-->
-<!--                        </span>-->
-<!--                        <h3>-->
-<!--                            Edit Profile-->
-<!--                        </h3>-->
-<!--                    </a>-->
                     <a href="/logout" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-sign-out-alt"></i>

@@ -24,7 +24,7 @@ router
                   userInfo: req.session.user,
                   posts: following_posts,
                   subfeed: true,
-                  feedname: 'Likes'});
+                  feedname: 'Home'});
         } catch(e) {
             return res.status(500).json({error: "Internal Server Error", problem: e});
         }

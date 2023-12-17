@@ -81,14 +81,16 @@ router
           albums: albums,
           songs: songs,
           albumsEmpty,
-          songsEmpty
+          songsEmpty,
+          query: query
         });
       return res.render('music/searchResult', {
         userInfo: req.session.user,
         albums: albums,
         songs: songs,
         albumsEmpty,
-        songsEmpty
+        songsEmpty,
+        query: query
       });
     });
 

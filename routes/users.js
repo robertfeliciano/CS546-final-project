@@ -129,9 +129,14 @@ router.route('/:id/likes').get(async (req, res) => {
 
   try {
     const likedPosts = await usersData.getLikedPostsFromUserId(req.params.id);
+    const user = await usersData.getUserById(req.params.id);
     if (fromPostman(req.headers['user-agent']))
       return res.json({posts: likedPosts});
-    return res.render('posts/all', {userInfo: req.session.user, posts: likedPosts, subfeed: true, feedname: 'Likes'});
+    return res.render('posts/all', {
+      userInfo: req.session.user,
+      posts: likedPosts,
+      subfeed: true,
+      feedname: `${user.username}'s likes`});
   } catch(e) {
     return res.status(404).render("error",{error: e, link:`/home/${req.params.id}`});
   }

@@ -61,6 +61,7 @@ app.use('/', (req, res, next) => {
         username: 'codingmaster',
         profilePicture: 'kanye.jpg'
       },
+      {
         _id: new ObjectId('657f1c2030c072dff4c24666'),
         username: 'user1',
         profilePicture: 'cool_dog.jpg'

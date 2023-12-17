@@ -18,26 +18,26 @@
     </div>
     
     <div class="make-post">
-        <form action="/music/{{id}}" method="POST">
+        <form method="POST" id="post-form">
             <label for="content">
                 Content:
             </label>
             <textarea name="content" id="content" placeholder="What's on your mind?"></textarea>
-            <input type="hidden" name="piece_id" value="{{_id}}">
+            <input id="content-input" type="hidden" name="piece_id" value="{{_id}}">
             <label for="rating">
                 Rating:
             </label>
             <input type="number" name="rating" id="rating" min="1" max="5" value="1">
-            <button type="submit">Post</button>
+            <button type="submit" id="post-button">Post</button>
         </form>
     </div>
 
     <br>
     <div>
         <div class="middle">
-            <div class="feed">
+            <div id="feed" class="feed">
                 {{#each musicInfo.posts}}
-                    <div class="post-1">
+                    <div class="post-1" onclick="redirectToPost('{{_id}}')">
                         <div class="top">
                             <div class="user">
                                 <div class="profile-photo">

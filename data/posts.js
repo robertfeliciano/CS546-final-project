@@ -99,7 +99,8 @@ export const getAllPosts = async () => {
             }
         }, {
             '$set': {
-                'username': '$userInfo.username'
+                'username': '$userInfo.username',
+                'profilePicture': '$userInfo.profilePicture'
             }
         }, {
             '$lookup': {
@@ -173,6 +174,11 @@ export const getPostById = async (postId) => {
                         '$userInfo.username', 0
                     ]
                 },
+                'profilePicture': {
+                    '$arrayElemAt': [
+                        '$userInfo.profilePicture', 0
+                    ]
+                },
                 'piecename': {
                     '$arrayElemAt': [
                         '$musicInfo.name', 0
@@ -227,16 +233,16 @@ export const getAllPostsFromFollowing = async (userId) => {
             }
         }, {
             '$set': {
-                'userInfo': {
+                'username': {
                     '$arrayElemAt': [
-                        '$userInfo', 0
+                        '$userInfo.username', 0
+                    ]
+                },
+                'profilePicture': {
+                    '$arrayElemAt': [
+                        '$userInfo.profilePicture', 0
                     ]
                 }
-            }
-        }, {
-            '$set': {
-                'username': '$userInfo.username',
-                'profilePicture': '$userInfo.profilePicture'
             }
         }, {
             '$lookup': {

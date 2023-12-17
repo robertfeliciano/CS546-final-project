@@ -20,7 +20,11 @@ router
             if (fromPostman(req.headers['user-agent']))
                 return res.json({userInfo: req.session.user, posts: following_posts});
             else
-                return res.render('posts/all', {userInfo: req.session.user, posts: following_posts});
+                return res.render('posts/all', {
+                  userInfo: req.session.user,
+                  posts: following_posts,
+                  subfeed: true,
+                  feedname: 'Likes'});
         } catch(e) {
             return res.status(500).json({error: "Internal Server Error", problem: e});
         }

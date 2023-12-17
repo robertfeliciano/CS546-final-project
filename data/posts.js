@@ -582,6 +582,11 @@ export const getCommentDetailsFromPost = async (postId) => {
                     '$arrayElemAt': [
                         '$userInfo.username', 0
                     ]
+                },
+                'profilePicture': {
+                    '$arrayElemAt': [
+                        '$userInfo.profilePicture', 0
+                    ]
                 }
             }
         }, {

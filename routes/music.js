@@ -183,6 +183,9 @@ router
           else
             return res.redirect(`/music/${req.params.id}`);
         }
+        else {
+          throw `Did not insert into db...`
+        }
       } catch(e) {
         return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/music/${req.params.id}`});
       }

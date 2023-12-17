@@ -114,11 +114,12 @@ export const getAllPosts = async () => {
                     '$arrayElemAt': [
                         '$musicInfo', 0
                     ]
-                }
+                },
             }
         }, {
             '$set': {
-                'piecename': '$musicInfo.name'
+                'piecename': '$musicInfo.name',
+                'artist': '$musicInfo.artist'
             }
         }, {
             '$project': {

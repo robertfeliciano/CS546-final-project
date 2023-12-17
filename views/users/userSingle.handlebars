@@ -7,7 +7,11 @@
                 <img src="../../public/pics/banner.png" alt="profile banner" class="banner">
                 <div class="profile-photo-container">
                     <div class="profile-photo-single-user">
-                        <img src="../../public/pics/happy_cat.jpg" alt="profile picture" class="profile-picture">
+                        {{#if profilePicture.length }}
+                            <img src="../../public/pics/{{profilePicture}}" alt="profile picture">
+                        {{else}}
+                            <img src="../../public/pics/defaultprofpic.jpeg" alt="profile picture">
+                        {{/if}}
                     </div>
                 </div>
                 <div class="user-body">

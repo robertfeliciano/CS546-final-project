@@ -734,3 +734,28 @@ main .container .right {
 .user-body .following-followers a:hover {
     text-decoration: underline;
 }
+
+/* =================================================== MUSIC LIST ===================================================*/
+
+
+.post-1-music-list{
+    background: var(--color-white);
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+}
+
+.post-1-music-list img {
+    width: 3rem;
+    height: 3rem;
+    margin-right: 1rem;
+}
+
+.post-1-music-list .music-content a:hover {
+    text-decoration: underline;
+}

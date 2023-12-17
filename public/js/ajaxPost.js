@@ -34,7 +34,7 @@ $(document).ready(function () {
 												</div>
                         <div class="info">
                             <h3><a href="/users/${responseMessage.user_id}">${responseMessage.username}</a></h3>
-                            <small>${responseMessage.date}</small>
+                            <small>${new Date(responseMessage.date).toString()}</small>
                         </div>
     
                     </div>

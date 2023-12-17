@@ -26,6 +26,7 @@ router
     try {
       const user = await loginUser(emailAddressInput, passwordInput);
       if (user) {
+        
           req.session.user = {
               id: user._id,
               username: user.username,
@@ -34,10 +35,10 @@ router
           };
           return res.status(200).redirect('/home');
       } else {
-          return res.status(400).render('login', { error: 'Invalid email address and/or password' });
+          return res.status(400).render('login-register/login', { error: 'Invalid email address and/or password', layout: 'external' });
       }
     } catch (e) {
-        return res.status(400).render('login', { error: e });
+        return res.status(400).render('login-register/login', { error: e, layout: 'external' });
     }
 
   });

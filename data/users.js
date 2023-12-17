@@ -376,12 +376,13 @@ export const loginUser = async (emailAddress, password) => {
     password = val.checkPass(password);
 
     const db = await users();
-    const user = await db.findOne({emailAddress: emailAddress.toLowerCase()});
+    const user = await db.findOne({email: emailAddress.trim().toLowerCase()});
     if (user === null) throw `Either the email address or password is invalid`;
-    
     const following_list = await getFollowing(user._id);
-    let comp = await bcrypt.compare(password, user.password);
-    if (comp)
+    console.log(password, user.hashedPassword)
+    let comp = await bcrypt.compare(password, user.hashedPassword);
+    console.log(comp)
+    if (comp){
         return {
             _id: new ObjectId(user._id),
             username: user.username,
@@ -389,6 +390,7 @@ export const loginUser = async (emailAddress, password) => {
             following: following_list,
             profilePicture: user.profilePicture
         };
+    }
     else
         throw `Either the email address or password is invalid`;
 }

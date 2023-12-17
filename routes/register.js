@@ -15,60 +15,61 @@ router
       req.body[key] = xss(req.body[key])
     }
     let formInput = req.body;
-
     // Check if all fields are supplied
     let missingFields = [];
-    if (!formInput.usernameInput) missingFields.push('Username');
+    if (!formInput.userNameInput) missingFields.push('Username');
     if (!formInput.emailAddressInput) missingFields.push('Email Address');
     if (!formInput.passwordInput) missingFields.push('Password');
     if (!formInput.confirmPasswordInput) missingFields.push('Confirm Password');
     if (!formInput.bioInput) missingFields.push('Bio');
-    if (!formInput.profilePictureInput) missingFields.push('Profile Picture');
+    if (!formInput.profilePic) missingFields.push('Profile Picture');
 
     if (missingFields.length > 0) {
-      return res.status(400).render('register', {
+      return res.status(400).render('login-register/register', {
         title: 'Register',
         hasErrors: true,
-        error: `Missing field(s): ${missingFields.join(', ')}`
+        error: `Missing field(s): ${missingFields.join(', ')}`,
+        layout: 'external'
       });
     }
 
     try {
-      formInput.usernameInput = val.checkUsername(formInput.usernameInput);
+      formInput.userNameInput = val.checkUsername(formInput.userNameInput);
       formInput.emailAddressInput = val.checkEmail(formInput.emailAddressInput);
       formInput.passwordInput = val.checkPass(formInput.passwordInput);
       formInput.confirmPasswordInput = val.confirmPass(formInput.passwordInput, formInput.confirmPasswordInput);
       formInput.bioInput = val.checkBio(formInput.bioInput);
-      formInput.profilePictureInput = val.checkProfilePic(formInput.profilePictureInput);
+      formInput.profilePic = await val.checkProfilePic(formInput.profilePic);
     } catch (e) {
-      return res.status(400).render('register', {
+      return res.status(400).render('login-register/register', {
         title: 'Register',
         hasErrors: true,
-        error: e
+        error: e,
+        layout: 'external'
       })
     }
 
     try {
         const inserted = await createUser(
-            formInput.usernameInput,
+            formInput.userNameInput,
             formInput.emailAddressInput,
             formInput.passwordInput,
             formInput.bioInput,
-            formInput.profilePictureInput
+            formInput.profilePic
         );
         if (inserted) {
           return res.status(200).redirect('/login');
         }
         else {
-          return res.status(500).render('register', { error: 'Internal Server Error' });
+          return res.status(500).render('login-register/register', { error: 'Internal Server Error', layout: 'external' });
         } 
     }
     catch (e) {
         if (e === 'Internal Server Error') {
-          return res.status(500).render('register', { error: e });
+          return res.status(500).render('login-register/register', { error: e, layout: 'external' });
         }
         else {
-          return res.status(400).render('register', { error: e });
+          return res.status(400).render('login-register/register', { error: e, layout: 'external' });
         }
     }
 

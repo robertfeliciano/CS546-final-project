@@ -1,12 +1,10 @@
 <div class="middle">
     <div class="feed">
         <div class="post-1-non-click">
-            <form action="">
-                <form action="/users/{{userId}}/edit" method="PATCH">
-                    <label for="userBio">Bio:</label>
-                    <textarea id="userBio" name="userBio">{{userBio}}</textarea>
-                    <button type="submit">Update Bio</button>
-                </form>
+            <form action="/users/{{user._id}}/edit" method="PATCH">
+                <label for="userBio">Bio:</label>
+                <textarea id="userBio" name="userBio">{{userBio}}</textarea>
+                <button type="submit">Update Bio</button>
             </form>
         </div>
     </div>

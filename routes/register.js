@@ -58,7 +58,7 @@ router
             formInput.profilePic
         );
         if (inserted) {
-          return res.status(200).redirect('/login');
+          return res.status(200).redirect('login-register/login');
         }
         else {
           return res.status(500).render('login-register/register', { error: 'Internal Server Error', layout: 'external' });

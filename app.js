@@ -9,6 +9,13 @@ import exphbs from 'express-handlebars';
 import {dbConnection} from "./config/mongoConnection.js";
 import {fromPostman} from "./helpers.js";
 import {ObjectId} from "mongodb";
+import handlebars from 'handlebars';
+
+handlebars.registerHelper('concat', function() {
+  const args = Array.prototype.slice.call(arguments, 0, -1);
+
+  return args.join('');
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

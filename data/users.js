@@ -5,6 +5,8 @@ import * as postFunctions from './posts.js';
 import * as commentFunctions from "./comments.js";
 import * as val from '../validation.js';
 import Fuse from 'fuse.js';
+import {getMusicById} from "./music.js";
+import {userAlreadyCommented} from "./comments.js";
 
 
 const saltRounds = 16;
@@ -376,7 +378,7 @@ export const loginUser = async (emailAddress, password) => {
     password = val.checkPass(password);
 
     const db = await users();
-    const user = await db.findOne({email: emailAddress.trim().toLowerCase()});
+    const user = await db.findOne({email: emailAddress.toLowerCase()});
     if (user === null) throw `Either the email address or password is invalid`;
     const following_list = await getFollowing(user._id);
     let comp = await bcrypt.compare(password, user.hashedPassword);
@@ -425,21 +427,22 @@ export const getRecommendations = async(userId) => {
 
     userId = val.checkId(userId, 'user id');
 
-    let user = await getUserById(userId)
+    let user = await getUserById(userId);
 
     const postCollection = await posts();
-    
+
     const postList = await postCollection
       .find({user_id: {$in: user.following}})
-      .toArray()
-    
+      .toArray();
+
     const userPostMusicIds = []
     for (let post of user.userPosts) {
-        let curr_post = await postFunctions.getPostById(post)
-        userPostMusicIds.push(curr_post.music_id)
+        let curr_post = await postFunctions.getPostById(post);
+        userPostMusicIds.push(curr_post.music_id);
     }
-    
-    const filteredPostList = postList.filter(post => !userPostMusicIds.includes(post.music_id))
+
+    let filteredPostList = postList.filter(post => !userPostMusicIds.includes(post.music_id));
+
 
     const musicIdFrequency = filteredPostList.reduce((map, post) => {
         const musicId = post.music_id;
@@ -452,8 +455,13 @@ export const getRecommendations = async(userId) => {
                                         .sort(
                                             (a, b) => musicIdFrequency[b] - musicIdFrequency[a]
                                         );
+    const musicRecs = await Promise.all(
+        sortedMusicIds.map(
+            async (id) => await getMusicById(new ObjectId(id))
+        )
+    );
 
-    return sortedMusicIds;
+    return musicRecs;
 
 }
 

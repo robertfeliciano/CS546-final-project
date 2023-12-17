@@ -564,7 +564,7 @@ main .container .right {
     font-size: 10px;
     text-align: center;
     width: 70%; /* Set the width to 70% of the viewport */
-    background: linear-gradient(to bottom, #5fb31b, #ecf0f1);
+    background: linear-gradient(to bottom, #c6c9c4, #ecf0f1);
     max-width: 600px;
     padding: 30px;
     background-color: rgba(255, 255, 255, 0.9);
@@ -790,4 +790,30 @@ main .container .right {
 .middle .feed .post-1 .reg img {
     width: 3rem;
     height: 3rem;
+}
+
+/*========================== rec resuts ===============================*/
+
+.post-1-recommended{
+    background: var(--color-white);
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    padding-right: 10rem;
+}
+
+.post-1-recommended img {
+    width: 3rem;
+    height: 3rem;
+    margin-right: 1rem;
+}
+
+.post-1-recommended .music-content a:hover {
+    text-decoration: underline;
 }

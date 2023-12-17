@@ -170,11 +170,12 @@ router
             formInput.content,
             date
         );
+        console.log(inserted)
         if (inserted) {
           if (fromPostman(req.headers['user-agent']))
             return res.json(inserted);
           else
-            return res.redirect(`/music/${req.params.id}`);
+            return res.json(inserted);
         }
       } catch(e) {
         return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/music/${req.params.id}`});

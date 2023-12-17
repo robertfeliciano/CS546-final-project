@@ -23,7 +23,7 @@
                     {{#if owner}}
                         <a href="/users/{{user._id}}/edit">Edit Profile</a>
                     {{else}}
-                        <form id="followForm" action="/users/{{userId}}/follow" method="PATCH">
+                        <form id="followForm" action="/users/{{userId}}/follow" method="POST">
                             <button type="submit" id="followButton">
                                 {{#if isFollowing}}
                                     Unfollow
@@ -31,6 +31,7 @@
                                     Follow
                                 {{/if}}
                             </button>
+                            <input name="_method" id="_method" hidden aria-label="hiddenhackymethod" value="PATCH">
                         </form>
                     {{/if}}
                 </div>

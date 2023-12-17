@@ -32,7 +32,7 @@
         {{#each posts}}  
           <div class="post-1" onclick="redirectToPost('{{_id}}')">
             <div class="top">
-                <div class="user">
+                <div class="user" onclick="redirectToUser('{{user_id}}'); event.stopPropagation();">
                     <div class="profile-photo">
                         <img src="/public/pics/{{profilePicture}}" alt="profile picture">
                     </div>
@@ -61,7 +61,7 @@
                 -->
                 {{rating}}
             </div>
-            <div class="music" onclick="redirectToMusic('{{music_id}}')">
+            <div class="music" onclick="redirectToMusic('{{music_id}}'); event.stopPropagation();">
                 <img src="../../public/pics/vinyl.webp" alt="vinyl" class="vinyl">
                 <div class="music-song">
                     <h3 class="song">{{piecename}} - {{artist}}</h3>
@@ -91,6 +91,12 @@
 <script>
     const redirectToMusic = (musicId) => {
         window.location.href = `/music/${musicId}`;
+    }
+</script>
+
+<script>
+    const redirectToUser = (userId) => {
+        window.location.href = `/users/${userId}`;
     }
 </script>
 

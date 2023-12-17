@@ -196,6 +196,10 @@ main .container .right {
     position: relative;
 }
 
+.left .sidebar .logout i, .left .sidebar .logout h3 {
+    color: var(--color-danger);
+}
+
 .left .sidebar .settings-header-left {
     padding-top: 5rem;
     padding-bottom: 1rem;
@@ -792,28 +796,14 @@ main .container .right {
     height: 3rem;
 }
 
-/*========================== rec resuts ===============================*/
-
-.post-1-recommended{
-    background: var(--color-white);
-    border-radius: var(--card-border-radius);
-    padding: var(--card-padding);
-    margin: 1rem 0;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    width: 100%;
-    cursor: pointer;
+/* =================================================== USER RESUTS ===================================================*/
+.middle .feed .post-1 .reg-users {
     display: flex;
-    justify-content: space-between;
-    padding-right: 10rem;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    border-bottom: 2px solid var(--color-light);
 }
 
-.post-1-recommended img {
-    width: 3rem;
-    height: 3rem;
-    margin-right: 1rem;
-}
-
-.post-1-recommended .music-content a:hover {
-    text-decoration: underline;
-}
+.middle .feed .post-1 .reg-users:last-child {
+    border-bottom: none;

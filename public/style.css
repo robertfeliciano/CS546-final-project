@@ -791,3 +791,29 @@ main .container .right {
     width: 3rem;
     height: 3rem;
 }
+
+/*========================== rec resuts ===============================*/
+
+.post-1-recommended{
+    background: var(--color-white);
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    padding-right: 10rem;
+}
+
+.post-1-recommended img {
+    width: 3rem;
+    height: 3rem;
+    margin-right: 1rem;
+}
+
+.post-1-recommended .music-content a:hover {
+    text-decoration: underline;
+}

@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import * as val  from '../validation.js';
-import {musicData, postsData} from '../data/index.js'
+import {musicData, postsData, usersData} from '../data/index.js'
 import {fromPostman} from "../helpers.js";
 const router = Router();
 import xss from 'xss';
@@ -48,7 +48,15 @@ router
 router
     .route('/recommendations')
     .get(async (req, res) => {
-      return res.json({msg: "not implemented yet!"});
+      try {
+        const musicRecs = await usersData.getRecommendations(req.session.user._id);
+        if (fromPostman(req.headers['user-agent']))
+          return res.json({musicRecs: musicRecs});
+        return res.render('music/recommendations', {userInfo: req.session.user, music: musicRecs});
+      } catch(e) {
+        return res.status(500).render('error/error', {userInfo: req.session.user, error: 'Internal Server Error', problem: e,
+          link: '/home'});
+      }
     });
 
 router

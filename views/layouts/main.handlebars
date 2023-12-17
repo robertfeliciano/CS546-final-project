@@ -54,7 +54,7 @@
                     <h1 class="explore-header-left">
                         Explore Panel
                     </h1>
-                    <a href="/home" class="menu-item active" onclick="toggleActiveClass(this)">
+                    <a href="/home" class="menu-item" onclick="toggleActiveClass(this)">
                         <span>
                             <i class="uil uil-home"></i>
                         </span>
@@ -145,6 +145,37 @@
             window.location.href = `/posts/${postId}`;
         }
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // toggle active in clas name
+            const toggleActiveClass = (element) => {
+                var menuItems = document.querySelectorAll('.menu-item');
+                menuItems.forEach(function (item) {
+                    item.classList.remove('active');
+                });
+                element.classList.add('active');
+            }
+
+            const setActiveLink = () => {
+                var currentPath = window.location.pathname;
+                var menuItems = document.querySelectorAll('.menu-item');
+                menuItems.forEach(function (item) {
+                    if (item.getAttribute('href') === currentPath) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+            setActiveLink();
+
+            var menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(function (item) {
+                item.addEventListener('click', function () {
+                    toggleActiveClass(item);
+                });
+            });
+        });
+    </script>
+
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="/public/client.js"></script>

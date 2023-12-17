@@ -81,26 +81,3 @@
     </div>
 </div>
 
-
-<!--  
-<script>
-    $.ajax({
-        url: '/posts',
-        type: 'GET',
-        success: function (data) {
-            console.log(data);
-            var posts = data.posts;
-            var list = $('ul');
-            for (var i = 0; i < posts.length; i++) {
-                var post = posts[i];
-                var listItem = $('<li></li>');
-                var link = $('<a></a>');
-                link.attr('href', '/posts/' + post._id);
-                link.text(post.title);
-                listItem.append(link);
-                list.append(listItem);
-            }
-        }
-    });
-</script>
--->

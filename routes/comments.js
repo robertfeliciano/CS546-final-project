@@ -1,6 +1,6 @@
 import {Router} from 'express';
 const router = Router();
-import { commentsData } from '../data/index.js';
+import {commentsData, postsData} from '../data/index.js';
 import * as validation from '../validation.js';
 import xss from 'xss';
 import {fromPostman} from "../helpers.js";
@@ -28,7 +28,13 @@ router
     } catch (e) {
       return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/posts/`});
     }
-
+    try {
+      const alreadyCommented = await commentsData.userAlreadyCommented(req.params.id, req.session.user._id);
+      if (alreadyCommented)
+        throw [409, `User ${req.session.user._id} has already commented under ${req.params.id}`];
+    } catch(e) {
+      return res.status(e[0]).render('error', {userInfo: req.session.user, error: e[1], link: `/posts/${req.params.id}`});
+    }
     try {
       const comment = await commentsData.createComment(req.params.id, req.session.user._id, req.body.content, new Date());
       if (comment === undefined)
@@ -36,7 +42,6 @@ router
       // redirect to GET /comments/:new_comment_id to view the comment you made
       res.redirect(`/comments/${comment._id}`);
     } catch (e) {
-      console.log(e);
       res.status(500).render("error",{userInfo: req.session.user, error: e, link:`/posts/${req.params.id}`});
     }
   })

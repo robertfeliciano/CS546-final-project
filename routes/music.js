@@ -12,7 +12,7 @@ router
         const all_music = await musicData.getAllMusic();
         if (fromPostman(req.headers['user-agent']))
           return res.json({music: all_music});
-        return res.render('music', {userInfo: req.session.user, music: all_music});
+        return res.render('music/musicList', {userInfo: req.session.user, music: all_music});
       } catch(e) {
         return res.status(500).json({error: "Internal Server Error", problem: e});
       }
@@ -25,7 +25,7 @@ router
         const all_songs = await musicData.getAllSongs();
         if (fromPostman(req.headers['user-agent']))
           return res.json({songs: all_songs});
-        return res.render('music/musicList', {music: all_songs});
+        return res.render('music/musicList', {userInfo: req.session.user, music: all_songs});
       } catch(e) {
         return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
       }
@@ -39,7 +39,7 @@ router
         const all_albums = await musicData.getAllAlbums();
         if (fromPostman(req.headers['user-agent']))
           return res.json({music: all_albums});
-        return res.render('music', {userInfo: req.session.user, music: all_albums});
+        return res.render('music/musicList', {userInfo: req.session.user, music: all_albums});
       } catch (e) {
         return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", problem: e, link:`/music/`});
       }
@@ -162,6 +162,13 @@ router
           return res.status(400).render("error",{userInfo: req.session.user, error: e, link:`/music/${req.params.id}`});
       }
       try {
+        const alreadyPosted = await postsData.userAlreadyPosted(req.params.id, req.session.user._id);
+        if (alreadyPosted)
+          throw [409, `User ${req.session.user._id} has already posted under ${req.params.id}`];
+      } catch(e) {
+        return res.status(e[0]).render('error', {userInfo: req.session.user, error: e[1], link: `/music/${req.params.id}`});
+      }
+      try {
         const date = new Date();
         const inserted = await postsData.createPost(
             req.params.id,
@@ -176,6 +183,9 @@ router
             return res.json(inserted);
           else
             return res.json(inserted);
+        }
+        else {
+          throw `Did not insert into db...`
         }
       } catch(e) {
         return res.status(500).render("error",{userInfo: req.session.user, error: "Internal Server Error", link:`/music/${req.params.id}`});

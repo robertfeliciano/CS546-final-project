@@ -57,12 +57,12 @@ app.use('/', (req, res, next) => {
     username: "coolguy87",
     following: [
       {
-        _id: new ObjectId('657dd1e2e3ba67bd632a311a'),
+        _id: new ObjectId('657e45a1ad15cf40e40a8749'),
         username: 'codingmaster',
         profilePicture: 'happy_cat.jpg'
       },
       {
-        _id: new ObjectId('657dd1d9e3ba67bd632a3118'),
+        _id: new ObjectId('657e4598ad15cf40e40a8747'),
         username: 'user1',
         profilePicture: 'happy_cat.jpg'
       }

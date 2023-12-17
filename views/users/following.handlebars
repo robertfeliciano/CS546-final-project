@@ -1,17 +1,27 @@
 <div class="middle">
     <h2>Following:</h2>
-    <div class="friends">
-        <div id="friends-container">
-            {{#each users}}
-                <a href="/users/{{this._id}}" class="friend">
-                    <div class="profile-photo">
-                        <img src="/public/pics/{{this.profilePicture}}" alt="profile picture">
-                    </div>
-                    <div class="friend-body">
-                        <h5>{{this.username}}</h5>
-                    </div>
-                </a>
-            {{/each}}
+    <div class="feed">
+        <div class="post-1">
+            <div class="friends">
+                <div id="friends-container">
+                    {{#each users}}
+                        <a href="/users/{{this._id}}" class="friend-cell">
+                            <div class="profile-photo">
+                                {{#if profilePicture.length }}
+                                    <img src="../../public/pics/{{profilePicture}}" alt="profile picture">
+                                {{else}}
+                                    <img src="../../public/pics/defaultprofpic.jpeg" alt="profile picture">
+                                {{/if}}
+                            </div>
+                            <div class="friend-body">
+                                <h5>{{this.username}}</h5>
+                            </div>
+                        </a>
+                    {{/each}}
+                </div>
+            </div>
         </div>
+        
     </div>
+    
 </div>

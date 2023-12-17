@@ -80,7 +80,11 @@
                         <div class="comment-no-arrow">
                             <div class="poster-content">
                                 <div class="profile-photo">
-                                    <img src="./assets/profpic.png" alt="profile picture">
+                                    {{#if profilePicture.length }}
+                                        <img src="../../public/pics/{{profilePicture}}" alt="profile picture">
+                                    {{else}}
+                                        <img src="../../public/pics/defaultprofpic.jpeg" alt="profile picture">
+                                    {{/if}}
                                 </div>
                                 <h4>{{username}}</h4>
                             </div>

@@ -3,25 +3,27 @@ return res.render('searchResult', {albums: albums, songs: songs});
 -->
 
 <div class="middle">
-    <div class="reg">
-        {{#each albums}}
-            <h1>-------------------</h1>
-            <div class="reg">
-                <img src="/public/pics/vinyl.webp" alt="vinyl">
-                <a href="/music/{{_id}}">{{name}}</a>
-                <h3>{{artist}}</h3>
-            </div>
-            <h1>-------------------</h1>
-        {{/each}}
+    <div class="feed">
+        <div class="post-1">
+            {{#each albums}}
+                <div class="reg">
+                    <img src="/public/pics/vinyl.webp" alt="vinyl">
+                    <div class="music-search-info">
+                        <a href="/music/{{_id}}">{{name}}</a>
+                        <h3>{{artist}}</h3>
+                    </div>
+                </div>
+            {{/each}}
 
-        {{#each songs}}
-            <h1>-------------------</h1>
-            <div class="reg">
-                <img src="/public/pics/vinyl.webp" alt="vinyl">
-                <a href="/music/{{_id}}">{{name}}</a>
-                <h3>{{artist}}</h3>
-            </div>
-            <h1>-------------------</h1>
-        {{/each}}
+            {{#each songs}}
+                <div class="reg">
+                    <img src="/public/pics/vinylSong.PNG" alt="vinyl">
+                    <div class="music-search-info">
+                        <a href="/music/{{_id}}">{{name}}</a>
+                        <h3>{{artist}}</h3>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
     </div>
 </div>

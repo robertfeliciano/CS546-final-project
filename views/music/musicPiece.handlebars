@@ -1,12 +1,11 @@
-<!-- FILEPATH: /Users/sabahnaveed/CS546/final-repo/CS546-final-project/views/music/musicPiece.handlebars -->
 
 <div class="middle">
     <div class="reg">
         <h3>
-            {{musicInfo.name}}
+            Song: {{musicInfo.name}}
         </h3>
         <h3>
-            {{musicInfo.artist}}
+            Artist: {{musicInfo.artist}}
         </h3>
         <h3>
             Genre: {{musicInfo.genre}}
@@ -41,7 +40,11 @@
                         <div class="top">
                             <div class="user">
                                 <div class="profile-photo">
-                                    <img src="/public/pics/{{profilePicture}}" alt="profile picture">
+                                    {{#if profilePicture.length }}
+                                        <img src="../../public/pics/{{profilePicture}}" alt="profile picture">
+                                    {{else}}
+                                        <img src="../../public/pics/defaultprofpic.jpeg" alt="profile picture">
+                                    {{/if}}
                                 </div>
                                 <div class="info">
                                     <h3><a href="/users/{{user_id}}">{{username}}</a></h3>

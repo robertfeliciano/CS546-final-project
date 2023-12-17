@@ -9,6 +9,13 @@ import exphbs from 'express-handlebars';
 import {dbConnection} from "./config/mongoConnection.js";
 import {fromPostman} from "./helpers.js";
 import {ObjectId} from "mongodb";
+import handlebars from 'handlebars';
+
+handlebars.registerHelper('concat', function() {
+  const args = Array.prototype.slice.call(arguments, 0, -1);
+
+  return args.join('');
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -52,19 +59,19 @@ app.use('/', (req, res, next) => {
   // if (fromPostman(req.headers['user-agent']))
   //TODO obviously remove this.....
   req.session.user = {
-    _id: new ObjectId('657f1c2530c072dff4c24667'),
+    _id: new ObjectId('657e56f286b8b1c2b5022e69'),
     email: 'coolguy87@example.com',
     username: "coolguy87",
     following: [
       {
-        _id: new ObjectId('657f1c2b30c072dff4c24668'),
+        _id: new ObjectId('657eeec883bf89071b151b9c'),
         username: 'codingmaster',
-        profilePicture: 'kanye.jpg'
+        profilePicture: 'happy_cat.jpg'
       },
       {
-        _id: new ObjectId('657f1c2030c072dff4c24666'),
+        _id: new ObjectId('657eeebf83bf89071b151b9a'),
         username: 'user1',
-        profilePicture: 'cool_dog.jpg'
+        profilePicture: 'happy_cat.jpg'
       }
     ],
     profilePicture: "happy_cat.jpg"

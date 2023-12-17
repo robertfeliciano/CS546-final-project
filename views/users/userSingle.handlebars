@@ -40,6 +40,38 @@
                 </div>
             </div>
         </div>
+        <h1>User's Posts:</h1>
+        <div class="posts">
+            {{#if posts.length}}
+                {{#each posts}}
+                    <div class="post-1" onclick="redirectToPost('{{_id}}')">
+                        <div class="top">
+                            <div class="user">
+                                <div class="info">
+                                    <h3><a href="/users/{{user_id}}">{{username}}</a></h3>
+                                    <small>{{date}}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <p>
+                                {{content}}
+                            </p>
+                        </div>
+                        <div class="music" onclick="redirectToMusic('{{post.music_id}}')">
+                            <img src="../../public/pics/vinyl.webp" alt="vinyl" class="vinyl">
+                            <div class="music-song">
+                                <h3 class="song">{{piecename}}</h3>
+                                <!--<h4 class="artist">Artist Name</h4>-->
+                            </div>
+                            <!--<h1>{{music_id}}</h1>-->
+                        </div>
+                    </div>
+                {{/each}}
+            {{else}}
+                <h3>No posts yet!</h3>
+            {{/if}}
+        </div>
     </div>
 </div>
 

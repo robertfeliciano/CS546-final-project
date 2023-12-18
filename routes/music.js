@@ -16,7 +16,7 @@ router
           return res.json({music: all_music});
         return res.render('music/musicList', {userInfo: req.session.user, music: all_music});
       } catch(e) {
-        return res.status(500).json({error: "Internal Server Error", problem: e});
+        return res.status(500).render('error/error', {userInfo: req.session.user, problem: e, link:'/home'})
       }
     });
 

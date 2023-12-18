@@ -27,7 +27,7 @@ router
                   subfeed: true,
                   feedname: 'Home'});
         } catch(e) {
-            return res.status(500).json({error: "Internal Server Error", problem: e});
+            return res.status(500).render('error/error', {userInfo: req.session.user, error: e, link:`/home/`});
         }
     });
 

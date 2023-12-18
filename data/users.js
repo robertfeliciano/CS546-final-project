@@ -184,7 +184,7 @@ export const removeUser = async (userId) => {
     }
 
     for (const comment_id of comments_to_remove) {
-        console.log(comment_id);
+        // console.log(comment_id);
         const del = await commentFunctions.removeComment(comment_id, userId);
         if (!del.deleted) throw [400, `Could not remove user, could not remove user's comments`];
     }

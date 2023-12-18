@@ -29,7 +29,8 @@ router
       return res.status(400).render('login-register/login', {
         title: 'Login',
         hasErrors: true,
-        error: `Missing field(s): ${missingFields.join(', ')}`
+        error: `Missing field(s): ${missingFields.join(', ')}`,
+        layout: 'external'
       });
     }
     

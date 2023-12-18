@@ -31,7 +31,7 @@ router
       if (fromPostman(req.headers['user-agent'])) return res.json({posts: posts});
       res.render('posts/all', {userInfo: req.session.user, posts: posts, subfeed: true, feedname: "Global Posts"});
     } catch (e) {
-      res.status(404).json({error: e});
+      res.status(404).render('error/error', {userInfo: req.session.user, problem: e, link: '/home'});
     }
   })
 

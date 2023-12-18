@@ -820,3 +820,16 @@ main .container .right {
     padding-left: 10rem;
     max-width: 400px;
 }
+
+#login-button {
+    background-color: var(--color-primary);
+    font-size: 1rem;
+    color: white;
+}
+#login-button:hover {
+    cursor: pointer;
+}
+
+.reg-log {
+    display: flex;
+}

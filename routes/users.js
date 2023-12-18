@@ -4,7 +4,6 @@ import * as validation  from '../validation.js';
 import {fromPostman} from "../helpers.js";
 import xss from 'xss';
 import {ObjectId} from "mongodb";
-import {getFollowing} from "../data/users.js";
 
 const router = Router();
 

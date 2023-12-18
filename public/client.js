@@ -3,7 +3,7 @@
 const checkUsername = (name, varName) => {
   name = name.trim();
   if (name === "") throw `${varName} must not be an empty string.`;
-  if (/\d/.test(name)) throw `${varName} must not contain numbers.`;
+  // if (/\d/.test(name)) throw `${varName} must not contain numbers.`;
   if (name.length < 2 || name.length > 25) throw `${varName} must be between 2 and 25 characters.`;
   return name;
 }

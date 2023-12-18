@@ -4,6 +4,7 @@ $(document).ready(function () {
     allPosts = $('#feed'),
     content = $('#content'),
     rating = $('#rating'),
+    pieceRating = $("#pieceRating"),
     error = $("#postingError");
 
 		let pfp = $('.profile-photo img').attr('src');
@@ -15,7 +16,7 @@ $(document).ready(function () {
         let newContent = content.val();
         let newRating = rating.val();
 
-				console.log(newContent, newRating);
+				// console.log(newContent, newRating);
         if (newContent && newRating) {
             let requestConfig = {
                 method: 'POST',
@@ -27,6 +28,7 @@ $(document).ready(function () {
                 })
             } 
             $.ajax(requestConfig).then(function (responseMessage) {
+                // console.log(responseMessage);
                 let postEl = `<div class="post-1" onclick="redirectToPost('${responseMessage._id}')">
                 <div class="top">
                     <div class="user">
@@ -57,6 +59,7 @@ $(document).ready(function () {
                 content.val('');
                 rating.val('');
                 content.focus();
+                pieceRating.text(`Average Rating: ${responseMessage.avg}`);
             }).catch((_) => {
                 event.preventDefault();
                 error.show();

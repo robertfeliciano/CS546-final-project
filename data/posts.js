@@ -406,7 +406,14 @@ export const removePost = async (postId, deleterId) => {
     const musicCollection = await music();
     const songUpdatedInfo = await musicCollection.findOneAndUpdate(
         {_id: music_id},
-        {$pull: {posts: post_id_to_remove}},
+        {
+            $pull: { posts: post_id_to_remove },
+            $inc:
+                {
+                    total_stars: -post.rating,
+                    total_ratings: -1
+                }
+        },
         {returnDocument: 'after'}
     );
     if (!songUpdatedInfo)
@@ -528,7 +535,7 @@ export const editPostContent = async (postId, newRating, newContent) => {
     newContent = val.checkString(newContent, "post content");
 
     const postCollection = await posts();
-    // const originalPost = postCollection.findOne({_id: new ObjectId(postId)});
+    const originalPost = await postCollection.findOne({_id: new ObjectId(postId)});
 
     const updatedInfo = await postCollection.findOneAndUpdate(
         {_id: new ObjectId(postId)},
@@ -538,6 +545,20 @@ export const editPostContent = async (postId, newRating, newContent) => {
 
     if (!updatedInfo)
         throw [404, 'Could not edit post successfully!'];
+
+    const star_diff = newRating - originalPost.rating;
+
+    const musicCollection = await music();
+    const songUpdatedInfo = await musicCollection.findOneAndUpdate(
+        {_id: new ObjectId(originalPost.music_id)},
+        {
+            $inc: {total_stars: star_diff}
+        },
+        {returnDocument: 'after'}
+    );
+
+    if (!songUpdatedInfo)
+        throw [404, `Could not update rating information for the song.`];
 
     return updatedInfo;
 }

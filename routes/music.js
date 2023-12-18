@@ -185,6 +185,8 @@ router
             formInput.content,
             date
         );
+        const piece = await musicData.getMusicById(req.params.id);
+        inserted['avg'] = piece.total_stars/piece.total_ratings;
         if (inserted) {
           if (fromPostman(req.headers['user-agent']))
             return res.json(inserted);

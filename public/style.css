@@ -807,3 +807,16 @@ main .container .right {
 
 .middle .feed .post-1 .reg-users:last-child {
     border-bottom: none;
+}
+.login-register-form .full-width-input {
+    padding-left: 1rem;
+    display: block;
+    min-height: 3em;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.login-register-form {
+    padding-left: 10rem;
+    max-width: 400px;
+}

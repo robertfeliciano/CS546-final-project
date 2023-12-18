@@ -5,12 +5,14 @@
     {{/if}}
     <div id="error" class="error" hidden>I'm an error. I will change through Client-Side JS</div>
     <main>
-        <form action="/login" method="POST" id="login-form">
+        <form action="/login" method="POST" id="login-form" class="login-register-form">
             <label for="emailAddressInput" id="emailLabel">Email Address:</label>
             <input type="email" id = "emailAddressInput" name="emailAddressInput" placeholder="Email" class="full-width-input">
+            <br>
             <label for="passwordInput" id="passLabel">Password:</label>
             <input type="password" id = "passwordInput" name="passwordInput" placeholder="Password" class="full-width-input">
-            <button type="submit" id="login-button">Login</button>
+            <br>
+            <button type="submit" id="login-button" class="full-width-input">Login</button>
         </form>
         <a href="/register">Click here to register!</a>
     </main>

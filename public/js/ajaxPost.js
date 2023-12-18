@@ -3,7 +3,8 @@ $(document).ready(function () {
     let postButton = $('#post-form'),
     allPosts = $('#feed'),
     content = $('#content'),
-    rating = $('#rating')
+    rating = $('#rating'),
+    error = $("#postingError");
 
 		let pfp = $('.profile-photo img').attr('src');
 
@@ -56,6 +57,10 @@ $(document).ready(function () {
                 content.val('');
                 rating.val('');
                 content.focus();
+            }).catch((_) => {
+                event.preventDefault();
+                error.show();
+                error.html("User has already posted for this piece of music!");
             })
         }
         return false;

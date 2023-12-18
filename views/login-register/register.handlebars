@@ -5,17 +5,22 @@
     {{/if}}
     <div id="error" class="error" hidden>I'm an error. I will change through Client-Side JS</div>
     <main>
-        <form action="/register" method="POST" id="registration-form">
+        <form action="/register" method="POST" id="registration-form" class="login-register-form">
             <label for="userNameInput" id="userNameLabel">Username:</label>
             <input type="text" id = "userNameInput" name="userNameInput" placeholder="Username" class="full-width-input">
+            <br>
             <label for="emailAddressInput" id="emailLabel">Email Address:</label>
             <input id = "emailAddressInput" name="emailAddressInput" placeholder="Email" class="full-width-input">
+            <br>
             <label for="passwordInput" id="passLabel">Password:</label>
             <input type="password" id = "passwordInput" name="passwordInput" placeholder="Password" class="full-width-input">
+            <br>
             <label for="confirmPasswordInput" id="confirmPassLabel">Confirm Password:</label>
             <input type="password" id = "confirmPasswordInput" name="confirmPasswordInput" placeholder="Confirm Password" class="full-width-input">
+            <br>
             <label for="bioInput" id="bioLabel">Bio:</label>
             <input type="text" id = "bioInput" name="bioInput" placeholder="Bio" class="full-width-input">
+            <br>
             <label for="profilePic">Select Profile Picture:</label>
             <select id="profilePic" name="profilePic">
                 <option value="cool_dog.jpg">Cool Dog</option>
@@ -23,7 +28,8 @@
                 <option value="kanye.jpg">Ye</option>
                 <option value="music_notes.jpg">Music Notes</option>
             </select>
-            <button type="submit" id="submit-button">Submit</button>
+            <br>
+            <button type="submit" id="submit-button" class="full-width-input">Submit</button>
         </form>
         <a href="/login">Already have an account? Click here to log-in</a>
     </main>

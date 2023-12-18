@@ -8,5 +8,5 @@ Please run, `npm i`.
 Then, seed the database by running `npm run seed`!
 
 ### How to run
-We are not ready for that just yet
+To run run `npm start` and click the localhost link printed to terminal to get to Jukeboxd!
 

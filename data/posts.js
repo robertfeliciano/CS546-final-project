@@ -376,7 +376,12 @@ export const removePost = async (postId, deleterId) => {
     }
 
     const postsCollection = await posts();
-    let post = await getPostById(postId);
+    let post;
+    try {
+        post = await getPostById(postId);
+    } catch(e) {
+        throw [400, e];
+    }
     const post_id_to_remove = new ObjectId(postId);
     const music_id = new ObjectId(post.music_id);
     const user_id = new ObjectId(post.user_id);

@@ -10,6 +10,7 @@ const router = Router();
 router
     .route('/')
     .get(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
         // req.session.user = {_id: '65778e7ebfbd20eee0371d87'};
         try {
             let following_posts = await postsData.getAllPostsFromFollowing(

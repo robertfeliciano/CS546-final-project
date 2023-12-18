@@ -22,17 +22,29 @@
                 <div class="edit-follow">
                     {{#if owner}}
                         <a href="/users/{{user._id}}/edit">Edit Profile</a>
-                    {{else}}
-                        <form id="followForm" action="/users/{{userId}}/follow" method="POST">
-                            <button type="submit" id="followButton">
-                                {{#if isFollowing}}
-                                    Unfollow
-                                {{else}}
-                                    Follow
-                                {{/if}}
+                        <br>
+                        <form id="deleteForm" action="/users/{{user._id}}" method="POST">
+                            <button type="submit" id="deleteButton">
+                                Delete Account
                             </button>
-                            <input name="_method" id="_method" hidden aria-label="hiddenhackymethod" value="PATCH">
+                            <input name="_method" id="_method" hidden aria-label="delete_account" value="DELETE">
                         </form>
+                    {{else}}
+                        {{#if isFollowing}}
+                            <form id="unfollowForm" action="/users/{{user._id}}/unfollow" method="POST">
+                                <button type="submit" id="unfollowButton">
+                                    Unfollow
+                                </button>
+                                <input name="_method" id="_method" hidden aria-label="unfollow_account" value="PATCH">
+                            </form>
+                        {{else}}
+                            <form id="followForm" action="/users/{{user._id}}/follow" method="POST">
+                                <button type="submit" id="followButton">
+                                    Follow
+                                </button>
+                                <input name="_method" id="_method" hidden aria-label="follow_account" value="PATCH">
+                            </form>
+                        {{/if}}
                     {{/if}}
                 </div>
 
@@ -75,17 +87,6 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.getElementById('followForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        const formAction = isFollowing ? `/users/{{userId}}/unfollow` : `/users/{{userId}}/follow`;
-        this.action = formAction;
-
-        this.submit();
-    });
-</script>
 
 <script>
     const redirectToLiked = (userId) => {

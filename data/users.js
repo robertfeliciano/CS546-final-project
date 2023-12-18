@@ -183,18 +183,19 @@ export const removeUser = async (userId) => {
         if (!unliked) throw [400, `Could not remove user fully; could not remove user like from a likedPost`];
     }
 
+    for (const comment_id of comments_to_remove) {
+        console.log(comment_id);
+        const del = await commentFunctions.removeComment(comment_id, userId);
+        if (!del.deleted) throw [400, `Could not remove user, could not remove user's comments`];
+    }
+    // console.log('removed user comments');
+
     for (const post_id of posts_to_remove) {
         // this takes care of removing each post from the song it was posted under
         const del = await postFunctions.removePost(post_id, userId);
         if (!del.deleted) throw [400 `Could not remove user, could not remove user's posts`]
     }
-    console.log('removed user posts');
-
-    for (const comment_id of comments_to_remove) {
-        const del = await commentFunctions.removeComment(comment_id, userId);
-        if (!del.deleted) throw [400, `Could not remove user, could not remove user's comments`];
-    }
-    console.log('removed user comments');
+    // console.log('removed user posts');
 
     // finally... we delete the user
     const deletionInfo = await userCollection.findOneAndDelete({
@@ -533,7 +534,8 @@ export const getFollowers = async (userId) => {
             }
         }, {
             '$project': {
-                'username': 1
+                'username': 1,
+                'profilePicture':1
             }
         }
     ]).toArray();

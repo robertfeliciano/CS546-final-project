@@ -4,6 +4,7 @@ import {postsData, usersData} from '../data/index.js';
 import * as validation from '../validation.js';
 import {fromPostman} from "../helpers.js";
 import xss from 'xss';
+import {ObjectId} from "mongodb";
 
 
 // ALL ROUTES REQUIRE USER TO BE LOGGED IN
@@ -20,6 +21,7 @@ import xss from 'xss';
 router
   .route('/')
   .get(async (req, res) => {
+    req.session.user._id = new ObjectId(req.session.user._id);
     // GET / gets all posts
     try {
       // if (!req.session.user) res.render('/login');
@@ -36,6 +38,7 @@ router
 router
   .route('/:id')
   .get(async (req, res) => {
+    req.session.user._id = new ObjectId(req.session.user._id);
     // GET /:id gets a specific post
 
     // let user_id;
@@ -72,6 +75,7 @@ router
   })
 
   .patch(async (req, res) => {
+    req.session.user._id = new ObjectId(req.session.user._id);
     // PATCH /:id likes a specific post (if it already hasn't been liked by the user)
 
     // let user_id;
@@ -114,6 +118,7 @@ router
   })
 
   .delete(async (req, res) => {
+    req.session.user._id = new ObjectId(req.session.user._id);
     // DELETE /:id deletes a specific post (only if the user owns it)
 
     // let user_id;
@@ -152,6 +157,7 @@ router
 router
   .route('/:id/edit')
   .get(async (req, res) => {
+    req.session.user._id = new ObjectId(req.session.user._id);
     // GET /:id/edit renders the form to edit a specific post (only if the user owns it)
 
     // let user_id;
@@ -183,6 +189,7 @@ router
 
 
   .patch(async (req, res) => {
+    req.session.user._id = new ObjectId(req.session.user._id);
     // PATCH /:id/edit modifies the rating/content of a specific post (only if the user owns it)
     for (let key of Object.keys(req.body)) {
       req.body[key] = xss(req.body[key])

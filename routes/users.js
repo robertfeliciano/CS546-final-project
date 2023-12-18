@@ -4,6 +4,7 @@ import * as validation  from '../validation.js';
 import {fromPostman} from "../helpers.js";
 import xss from 'xss';
 import {ObjectId} from "mongodb";
+import {getFollowing} from "../data/users.js";
 
 const router = Router();
 
@@ -43,10 +44,9 @@ router
 router
     .route('/:id')
     .get(async (req, res) => {
+      // req.session.user._id = new ObjectId(req.session.user._id);
         // let user_id;
         try {
-          // if (!req.session.user) res.render('/login');
-          // user_id = validation.checkId(req.session.user._id, 'User ID');
           req.params.id = validation.checkId(req.params.id, 'User Page ID');
         } catch (e) {
           return res.status(400).render("error/error",{error: e, link:`/home/`});
@@ -59,18 +59,27 @@ router
           let owner = curr_user_id.equals(req.params.id);
           if (fromPostman(req.headers['user-agent']))
             return res.json({userInfo: req.session.user, user: user, posts: userPosts, owner: owner});
-          // TODO pass in whether or not current user follows the user by :id
-          // this determines whether or not to render a follow button
-          // if they are NOT the same user and they DO NOT follow:
-          // display follow button
-          // if they are NOT the same user and they DO follow:
-          // display UNfollow button
-          res.render('users/userSingle', {userInfo: req.session.user, user: user, posts: userPosts, owner: owner})
+
+          let isFollowing = false;
+          for (let following of req.session.user.following){
+            if (following.username === user.username) {
+              isFollowing = true;
+              break;
+            }
+          }
+
+          res.render('users/userSingle', {
+            userInfo: req.session.user,
+            user: user,
+            posts: userPosts,
+            owner: owner,
+            isFollowing: isFollowing});
         } catch (e) {
           res.status(404).render("error/error",{error: e, link:`/home/`});
         }
     })
     .delete(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
         //code here for DELETE
         try {
             // if (!req.session.user) res.render('/login');
@@ -83,7 +92,9 @@ router
 
         try {
             if (!curr_user_id.equals(req.params.id)) {
-                return res.status(400).render("error/error",{error: e, link:`User ${req.session.user._id} does not own user ${req.params.id}'s profile`});
+                return res.status(403).render("error/error",{
+                  error: `User ${req.session.user._id} does not own user ${req.params.id}'s profile`,
+                  link: `/home/`});
             }
 
             let removed = await usersData.removeUser(req.params.id);
@@ -93,6 +104,7 @@ router
             if (fromPostman(req.headers['user-agent']))
               return res.json({deleted: removed});
 
+            req.session.destroy();
             return res.redirect('/register');
         } catch (e) {
             // e is always an array after removing user
@@ -101,6 +113,7 @@ router
     });
 
 router.route('/:id/followers').get(async (req, res) => {
+  req.session.user._id = new ObjectId(req.session.user._id);
     //code here for GET
     try {
         // if (!req.session.user) res.render('/login');
@@ -110,7 +123,7 @@ router.route('/:id/followers').get(async (req, res) => {
     }
 
     try {
-        const followerList = await usersData.getFollowing(req.params.id);
+        const followerList = await usersData.getFollowers(req.params.id);
         if (fromPostman(req.headers['user-agent']))
           return res.json({followers: followerList});
         return res.render('users/followers', {userInfo: req.session.user, users: followerList});
@@ -120,6 +133,7 @@ router.route('/:id/followers').get(async (req, res) => {
 });
 
 router.route('/:id/likes').get(async (req, res) => {
+  req.session.user._id = new ObjectId(req.session.user._id);
   //code here for GET
   try {
     // if (!req.session.user) res.render('/login');
@@ -144,6 +158,7 @@ router.route('/:id/likes').get(async (req, res) => {
 })
 
 router.route('/:id/following').get(async (req, res) => {
+  req.session.user._id = new ObjectId(req.session.user._id);
     //code here for GET
     try {
         // if (!req.session.user) res.render('/login');
@@ -164,6 +179,7 @@ router.route('/:id/following').get(async (req, res) => {
 router
     .route('/:id/edit')
     .get(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
         //code here for GET
         try {
             // if (!req.session.user) res.render('/login');
@@ -186,6 +202,7 @@ router
         }
     })
     .patch(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
         //code here for PATCH
         req.body.userBio = xss(req.body.userBio);
         try {
@@ -214,6 +231,7 @@ router
 router
     .route('/:id/follow')
     .patch(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
         //code here for PATCH
         try {
             // if (!req.session.user) res.render('/login');
@@ -244,6 +262,7 @@ router
 router
     .route('/:id/unfollow')
     .patch(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
         //code here for PATCH
         try {
             // if (!req.session.user) res.render('/login');

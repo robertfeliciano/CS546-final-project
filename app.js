@@ -80,21 +80,21 @@ app.use(
 // });
 
 // MIDDLEWARE FOR USER AUTH
-app.get('/', (req, res, next) => {
-    const user = req.session.user;
-    // const ts = new Date().toUTCString();
-    // const usertype = user === undefined ? "Non-Authenticated User" : "Authenticated User";
-    // console.log(`[${ts}]: ${req.method} ${req.originalUrl} (${usertype})`)
+app.use('/', (req, res, next) => {
+  const user = req.session.user;
 
-    const authenticated = user !== undefined;
+  const authenticated = user !== undefined;
 
-    if (authenticated)
-        return res.redirect('/home');
-
-    if (req.originalUrl === '/login' || req.originalUrl === '/register')
-        return next();
+  if (authenticated)
+    if (req.originalUrl === '/')
+      return res.redirect('/home');
     else
-        return res.redirect('/login');
+      return next();
+
+  if (req.originalUrl === '/login' || req.originalUrl === '/register')
+    return next();
+  else
+    return res.redirect('/login');
 
 });
 
@@ -130,14 +130,9 @@ app.get('/logout', (req, res, next) => {
 });
 
 
+
 app.engine('handlebars', exphbs.engine({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
-
-app.use((req, res, next) => {
-  res.locals.user = req.session.user || null; // Pass user information to views
-  next();
-});
-
 
 configRoutes(app);
 app.listen(3000, () => {

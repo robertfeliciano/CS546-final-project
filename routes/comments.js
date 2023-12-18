@@ -4,6 +4,7 @@ import {commentsData, postsData} from '../data/index.js';
 import * as validation from '../validation.js';
 import xss from 'xss';
 import {fromPostman} from "../helpers.js";
+import {ObjectId} from "mongodb";
 
 
 // ALL ROUTES REQUIRE USER TO BE LOGGED IN
@@ -17,6 +18,7 @@ import {fromPostman} from "../helpers.js";
 router
   .route('/:id')
   .post(async (req, res) => {
+    req.session.user._id = new ObjectId(req.session.user._id);
     // POST /comments/:id creates a comment on a post
     // let user_id;
     try {
@@ -46,6 +48,7 @@ router
     }
   })
   .get(async (req, res) => {
+    req.session.user._id = new ObjectId(req.session.user._id);
     // GET /comments/:id gets a comment
     // let user_id;
     try {
@@ -75,6 +78,7 @@ router
     }
   })
   .delete(async (req, res) => {
+    req.session.user._id = new ObjectId(req.session.user._id);
     // DELETE /comments/:id deletes a comment
     // let user_id;
     try {

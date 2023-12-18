@@ -2,6 +2,7 @@ import {Router} from 'express';
 import {loginUser} from '../data/users.js';
 import * as val from '../validation.js';
 import xss from 'xss';
+import {ObjectId} from "mongodb";
 
 const router = Router();
 
@@ -47,7 +48,7 @@ router
       if (user) {
         
           req.session.user = {
-              _id: user._id,
+              _id: new ObjectId(user._id),
               username: user.username,
               emailAddress: user.email,
               following: user.following,

@@ -101,13 +101,18 @@ export const removeComment = async (commentId, deleterId) => {
 
 
     const commentsCollection = await comments();
-    let comment = await getCommentById(commentId);
+    let comment;
+    try {
+        comment = await getCommentById(commentId);
+    } catch(e) {
+        throw [400, e];
+    }
 
     const comment_id_to_remove = new ObjectId(commentId);
     const user_id = new ObjectId(comment.user_id);
     const post_id = new ObjectId(comment.post_id)
     deleterId = new ObjectId(deleterId);
-    commentId = new ObjectId(commentId);
+    // commentId = new ObjectId(commentId);
 
     if (!deleterId.equals(user_id)) throw [400, `Only the original poster is allowed to delete a comment`];
 
@@ -130,7 +135,7 @@ export const removeComment = async (commentId, deleterId) => {
         throw [404, `Could not delete comment with id of ${commentId} from user ${user_id.toString()}`];
     
     const deletionInfo = await commentsCollection.findOneAndDelete({
-        _id: new ObjectId(commentId)
+        _id: comment_id_to_remove
     })
     
     if (!deletionInfo) {

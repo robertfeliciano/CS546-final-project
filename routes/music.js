@@ -4,10 +4,12 @@ import {musicData, postsData, usersData} from '../data/index.js'
 import {fromPostman} from "../helpers.js";
 const router = Router();
 import xss from 'xss';
+import {ObjectId} from "mongodb";
 
 router
     .route('/')
     .get(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
       try {
         const all_music = await musicData.getAllMusic();
         if (fromPostman(req.headers['user-agent']))
@@ -21,6 +23,7 @@ router
 router
     .route('/songs')
     .get(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
       try {
         const all_songs = await musicData.getAllSongs();
         if (fromPostman(req.headers['user-agent']))
@@ -35,6 +38,7 @@ router
 router
     .route('/albums')
     .get(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
       try {
         const all_albums = await musicData.getAllAlbums();
         if (fromPostman(req.headers['user-agent']))
@@ -48,6 +52,7 @@ router
 router
     .route('/recommendations')
     .get(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
       try {
         const musicRecs = await usersData.getRecommendations(req.session.user._id);
         if (fromPostman(req.headers['user-agent']))
@@ -62,17 +67,7 @@ router
 router
     .route('/search')
     .get(async (req, res) => {
-      /**
-       * TODO: FRONT END TEAM
-       * upon submitting something to a search bar
-       * the action should be /music/search?piece=nameofpiece
-       * with method GET
-       * Also...
-       * When the user inputs something into a search bar,
-       * for example: "The life of pablo"
-       * replace spaces with %20
-       * so: "The%20life%20of%20pablo"
-       */
+      req.session.user._id = new ObjectId(req.session.user._id);
       let query = req.query.piece;
       query = val.checkName(query, 'search query');
       // albums and songs could potentially be empty, thats fine
@@ -105,6 +100,7 @@ router
 router
     .route('/:id')
     .get(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
       try {
         req.params.id = val.checkId(req.params.id, "music id");
       } catch(e) {
@@ -140,6 +136,7 @@ router
       }
     })
     .post(async (req, res) => {
+      req.session.user._id = new ObjectId(req.session.user._id);
       // create a post for the song with the id in the url
       try{
         req.params.id = val.checkId(req.params.id, "music id");

@@ -27,7 +27,7 @@ $(document).ready(function () {
                 })
             } 
             $.ajax(requestConfig).then(function (responseMessage) {
-                let postEl = `<div class="post-1" onclick="redirectToPost(${responseMessage._id})">
+                let postEl = `<div class="post-1" onclick="redirectToPost('${responseMessage._id}')">
                 <div class="top">
                     <div class="user">
 												<div class="profile-photo">
